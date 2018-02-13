@@ -3,6 +3,7 @@ dist/electron/*
 dist/web/*
 build/*
 !build/icons
+!build/lxd-ui-0.0.0-x86_64.AppImage
 coverage
 node_modules/
 npm-debug.log

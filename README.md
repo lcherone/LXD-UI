@@ -13,6 +13,10 @@ More to come... It my first project playing with electron-vue, contributions/fee
 
 > testing it...
 
+#### Download
+
+The latest build (.AppImage) can be found in [./builds](./builds) called `lxd-ui-0.0.0-x86_64.AppImage`, just download and run it, or build it like below.
+
 #### Build Setup
 
 ``` bash
