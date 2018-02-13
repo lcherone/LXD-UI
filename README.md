@@ -9,7 +9,7 @@ A LXD user interface, powered by electron-vue, which will allow you to manage lo
  - List, start and stop containers
  - Shell access into containers (xterm.js), and no need to setup any certificates.
 
-> More to come... It my first project playing with electron-vue, contributions/feedback is very welcome.
+> More to come... Its my first project with electron-vue and node in general, contributions/feedback is very welcome.
 
 #### Download (.AppImage)
 
