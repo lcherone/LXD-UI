@@ -1,0 +1,9 @@
+#wrapper {
+  height: 100vh;
+  padding: 10px 20px 0px 10px;
+  width: 100vw;
+}
+
+.table tr:hover {
+  background-color: transparent!important;
+}
