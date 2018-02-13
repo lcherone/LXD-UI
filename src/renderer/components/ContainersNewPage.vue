@@ -11,6 +11,16 @@
               </span>
               Containers
             </strong>
+            <button 
+                    class="button is-small is-primary is-pulled-right" 
+                    @click="refresh_containers()" 
+                    v-bind:class="{ 'is-loading': btn.refresh_containers }" 
+                    v-bind:disabled="btn.refresh_containers">
+              <span class="icon">
+                <i class="fa fa-refresh"></i> 
+              </span>
+              &nbsp; Refresh
+            </button>
             <table class="table is-fullwidth is-narrow" style="margin-top:10px">
               <thead>
                 <tr>
@@ -25,15 +35,44 @@
               <tbody>
                 <tr v-for="container in containers">
                   <td>
-                    <router-link :to="{ path: '/console/' + container.name }" target="_blank">{{ container.name }}</router-link>
+                    <router-link v-show="container.status === 'Running'" :to="{ path: '/console/' + container.name }" target="_blank">{{ container.name }}</router-link>
+                    <span v-show="container.status === 'Stopped'">{{ container.name }}</span>
                   </td>
-                  <td>{{ container.network ? container.network.eth0.addresses[0].address : '-' }}</td>
-                  <td>{{ container.cpu.usage !== 0 ? container.cpu.usage : '-' }}</td>
-                  <td>{{ container.memory.usage !== 0 ? container.memory.usage : '-' }}</td>
-                  <td>{{ container.status }}</td>
                   <td>
-                    <button class="button is-small is-danger" v-show="container.status == 'Running'" @click="stop_container(container.name)">Stop</button>
-                    <button class="button is-small is-success" v-show="container.status == 'Stopped'" @click="start_container(container.name)">Start</button>
+                    <!-- Running is ip4 -->
+                    <a 
+                       v-show="container.status === 'Running' && isIP4(container.network.eth0.addresses[0].address)" 
+                       @click="open('http://' + container.network.eth0.addresses[0].address)">
+                      {{ container.network ? container.network.eth0.addresses[0].address : '-' }}
+                    </a>
+                    <!-- Running not ip4 -->
+                    <span 
+                          v-show="container.status === 'Running' && isIP4(container.network.eth0.addresses[0].address) === false" 
+                          @click="refresh_containers()">
+                      <i class="fa fa-refresh"></i>
+                    </span>
+                    <!-- Stopped -->
+                    <span v-show="container.status === 'Stopped'">-</span>
+                  </td>
+                  <td>{{ container.cpu.usage !== 0 ? Number(container.cpu.usage/1000000000).toFixed(2) + ' seconds' : '-' }}</td>
+                  <td>{{ container.memory.usage !== 0 ? formatBytes(container.memory.usage) : '-' }}</td>
+                  <td>
+                    <span class="tag is-success" v-show="container.status === 'Running'">Running</span>
+                    <span class="tag is-danger" v-show="container.status === 'Stopped'">Stopped</span>
+                  </td>
+                  <td>
+                    <button class="button is-small is-danger" v-show="container.status == 'Running'" @click="stop_container(container.name)">
+                      <span class="icon">
+                        <i class="fa fa-stop"></i> 
+                      </span>
+                      &nbsp; Stop
+                    </button>
+                    <button class="button is-small is-success" v-show="container.status == 'Stopped'" @click="start_container(container.name)">
+                      <span class="icon">
+                        <i class="fa fa-play"></i> 
+                      </span>
+                      &nbsp; Start
+                    </button>
                   </td>
                 </tr>
               </tbody>
@@ -48,68 +87,82 @@
 <script>
   // import _ from 'lodash'
 
+  import helpers from '../mixins/helpers.js'
   import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
 
   export default {
     name: 'containers-page',
     components: { MainHeader },
-    mixins: [lxc],
+    mixins: [lxc, helpers],
     data () {
       return {
         search: null,
         search_result: null,
         containers: [],
-        info: {
-          server: {config: null},
-          resources: null,
-          containers: null,
-          profiles: null,
-          certificates: null,
-          images: null,
-          remotes: null,
-          networks: null
+        btn: {
+          refresh_containers: false
         }
       }
     },
     mounted: function () {
-      this.$nextTick(function () {
+      this.$nextTick(() => {
         this.get_containers()
       })
     },
     methods: {
-      get_containers () {
+      /**
+       *
+       */
+      refresh_containers () {
+        this.btn.refresh_containers = true
+        this.get_containers(() => {
+          this.btn.refresh_containers = false
+        })
+      },
+      /**
+       *
+       */
+      get_containers (callback) {
         this.containers = []
-        var self = this
-        this.lxc_query('/1.0/containers', 'GET', null, function (response) {
+        this.lxc_query('/1.0/containers', 'GET', null, (response) => {
           for (var key in response) {
             var name = response[key].substr(response[key].lastIndexOf('/') + 1)
-            self.lxc_query(response[key] + '/state', 'GET', null, function (response, index) {
+            this.lxc_query(response[key] + '/state', 'GET', null, (response, index) => {
               response.name = index
-              self.containers.push(response)
+              this.containers.push(response)
             }, name)
+          }
+          if (typeof callback === 'function') {
+            callback()
           }
         })
       },
+      /**
+       *
+       */
       start_container (name) {
-        var self = this
-        this.lxc_start(name, function (response) {
+        this.lxc_start(name, (response) => {
           //
-          self.get_containers()
+          this.get_containers()
         })
       },
+      /**
+       *
+       */
       stop_container (name) {
-        var self = this
-        this.lxc_stop(name, function (response) {
+        this.lxc_stop(name, (response) => {
           //
-          self.get_containers()
+          this.get_containers()
         })
       },
+      /**
+       *
+       */
       handleSearchEvent (value) {
-        var self = this
         //
-        this.lxc_list(value, function (response) {
-          self.search_result = response
+        this.lxc_list(value, (response) => {
+          this.search_result = response
         })
       },
       open (link) {
