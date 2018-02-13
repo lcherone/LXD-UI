@@ -1,13 +1,13 @@
-# lxd-ui
+# LXD-UI
 
 **WIP:***
 
-A LXD user interface, powered by electron-vue.
+A LXD user interface, powered by electron-vue, which will allow you to manage your local LXC containers in a GUI.
 
-Current features:
+**Current features:**
 
  - List, start and stop containers
- - Shell access into containers (xterm.js)
+ - Shell access into containers (xterm.js), and no need to setup any certificates.
 
 More to come... It my first project playing with electron-vue, contributions/feedback is very welcome.
 
