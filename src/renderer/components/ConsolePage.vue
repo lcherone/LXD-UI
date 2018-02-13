@@ -5,7 +5,6 @@
       <div id="content-wrapper">
         <div class="columns">
           <div class="column">
-
             <div id="terminal"></div>
           </div>
         </div>

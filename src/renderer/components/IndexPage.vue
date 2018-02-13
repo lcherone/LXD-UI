@@ -7,30 +7,19 @@
       <div id="content-wrapper">
         <div class="columns">
           <div class="column is-narrow">
-            <aside class="menu">
+            <aside class="menu" style="width: 200px;">
               <p class="menu-label">
                 General
               </p>
               <ul class="menu-list">
-                <li><a class="is-active">Dashboard</a></li>
+                <li><a class="is-active">Home</a></li>
                 <li><router-link :to="{ path: '/console/testing' }" target="_blank">Container</router-link></li>
               </ul>
               <p class="menu-label">
                 Administration
               </p>
               <ul class="menu-list">
-                <li><a>Team Settings</a></li>
-                <li>
-                  <a>Manage Your Team</a>
-                  <ul>
-                    <li><a>Members</a></li>
-                    <li><a>Plugins</a></li>
-                    <li><a>Add a member</a></li>
-                  </ul>
-                </li>
-                <li><a>Invitations</a></li>
-                <li><a>Cloud Storage Environment Settings</a></li>
-                <li><a>Authentication</a></li>
+                <li><a>Settings</a></li>
               </ul>
               <p class="menu-label">
                 Transactions
@@ -45,64 +34,51 @@
           <div class="column">
             <h6 class="title is-6">Dashboard</h6>
 
-            <pre>{{ info }}</pre>
-
-
-            <div class="box">
-              <article class="media">
-                <div class="media-left">
-                  <span class="icon is-large">
-                    <i class="fa fa-3x fa-cog"></i>
-                  </span>
-                </div>
-                <div class="media-content">
-                  <div class="content">
-                    <strong>Config</strong> <small>@johnsmith</small> <small>31m</small>
-                    <ul>
-                      <li v-for="(value, key) in info.server.config"><strong>{{ key }}:</strong> {{ value }}</li>
-                    </ul>
+            <div class="columns">
+              <div class="column">
+                <div class="card">
+                  <div class="card-content">
+                    <div class="media">
+                      <div class="media-left">
+                        <span class="icon is-large">
+                          <i class="fa fa-3x fa-shield"></i>
+                        </span>
+                      </div>
+                      <div class="media-content">
+                        <p class="title is-4">CPUs</p>
+                        <p class="subtitle is-6">
+                          {{ info.resources.cpu.sockets[0].name }} - {{ info.resources.cpu.total }} @ {{ Number(info.resources.cpu.sockets[0].frequency_turbo / 1000).toFixed(2) }}GHz
+                        </p>
+                      </div>
+                    </div>
+                    <div class="content">
+                      <strong>Load averages:</strong> {{ info.loadavg[0].toFixed(2) }}, {{ info.loadavg[1].toFixed(2) }}, {{ info.loadavg[2].toFixed(2) }}
+                    </div>
                   </div>
                 </div>
-              </article>
-            </div>
-
-            <div class="box">
-              <article class="media">
-                <div class="media-left">
-                  <span class="icon is-large">
-                    <i class="fa fa-3x fa-cog"></i>
-                  </span>
-                </div>
-                <div class="media-content">
-                  <div class="content">
-                    <strong>Environment</strong>
-                    <table class="table is-fullwidth is-narrow is-striped">
-                      <thead>
-                        <tr>
-                          <th>A</th>
-                          <th>B</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>1</td>
-                          <td>2</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <ul>
-                      <li v-for="(value, key) in info.server.environment"><strong>{{ key }}:</strong> {{ value }}</li>
-                    </ul>
+              </div>
+              <div class="column">
+                <div class="card">
+                  <div class="card-content">
+                    <div class="media">
+                      <div class="media-left">
+                        <span class="icon is-large">
+                          <i class="fa fa-3x fa-microchip"></i>
+                        </span>
+                      </div>
+                      <div class="media-content">
+                        <p class="title is-4">Memory</p>
+                        <p class="subtitle is-6">{{ formatBytes(info.resources.memory.total) }}</p>
+                      </div>
+                    </div>
+                    <div class="content">
+                      <strong>Total:</strong> {{ formatBytes(info.resources.memory.total) }}
+                      <strong>Used:</strong> {{ formatBytes(info.resources.memory.used) }}
+                    </div>
                   </div>
                 </div>
-              </article>
+              </div>
             </div>
-
-            <h5>Config</h5>
-            <p></p>
-            <h5>Environment</h5>
-            <h5>Public</h5>
-            <h5>Extensions</h5>
 
             <div class="columns">
               <div class="column">
@@ -157,54 +133,8 @@
                 </div>
               </div>
             </div>
-
-            <article class="message is-success">
-              <div class="message-header">
-                <p>Success</p>
-                <button class="delete" aria-label="delete"></button>
-              </div>
-              <div class="message-body">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. <strong>Pellentesque risus mi</strong>, tempus quis placerat ut, porta nec nulla. Vestibulum rhoncus ac ex sit amet fringilla. Nullam gravida purus diam, et dictum <a>felis venenatis</a> efficitur. Aenean ac <em>eleifend lacus</em>, in mollis lectus. Donec sodales, arcu et sollicitudin porttitor, tortor urna tempor ligula, id porttitor mi magna a neque. Donec dui urna, vehicula et sem eget, facilisis sodales sem.
-              </div>
-            </article>
-            <!--                        <div style="white-space: pre-wrap;">{{ this.$data }}</div>-->
           </div>
         </div>
-
-      </div>
-
-
-
-      <div style="margin-top:-10px">
-        <div style="margin-bottom:10px">
-          <strong class="subtitle is-5">Home</strong>
-        </div>
-
-
-
-        <h5>Config</h5>
-        <h5>Environment</h5>
-        <h5>Public</h5>
-        <h5>Extensions</h5>
-
-        <span class="icon">
-          <i class="fa fa-home"></i>
-        </span>
-
-        <table class="table is-fullwidth is-narrow">
-          <thead>
-            <tr>
-              <th>A</th>
-              <th>B</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>2</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -213,18 +143,26 @@
 <script>
   // import _ from 'lodash'
 
+  import helpers from '../mixins/helpers.js'
   import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
+
+  import ElectronStore from 'electron-store'
+  const storage = new ElectronStore({
+    cwd: 'lxd-ui',
+    encryptionKey: 'obfuscation'
+  })
 
   export default {
     name: 'index-page',
     components: { MainHeader },
-    mixins: [lxc],
+    mixins: [lxc, helpers],
     data () {
       return {
         search: null,
         search_result: null,
         info: {
+          loadavg: require('os').loadavg(),
           server: {config: null},
           resources: null,
           containers: null,
@@ -237,35 +175,90 @@
       }
     },
     mounted: function () {
-      var self = this
       //
-      this.lxc_info('/', function (response) {
-        self.info.server = response
-      })
-      //
-      this.lxc_query('/1.0/resources', 'GET', null, function (response) {
-        self.info.resources = response
-      })
-      //
-      this.lxc_query('/1.0/containers', 'GET', null, function (response) {
-        self.info.containers = response.length
-      })
-      //
-      this.lxc_query('/1.0/profiles', 'GET', null, function (response) {
-        self.info.profiles = response.length
-      })
-      //
-      this.lxc_query('/1.0/images', 'GET', null, function (response) {
-        self.info.images = response.length
-      })
-      //
+      let cacheTime = 0
+
+      // info.server
+      // cacheTime = 1 day
+      cacheTime = Number(1000 * 86400)
+      if (Date.now() - Number(storage.get('info.server.cached', 0)) > cacheTime) {
+        this.lxc_info('/', (response) => {
+          this.info.server = response
+          response.cached = Date.now()
+          storage.set('info.server', response)
+        })
+      } else {
+        this.info.server = storage.get('info.server')
+      }
+
+      // info.resources
+      // cacheTime = 1 day
+      cacheTime = Number(1000 * 86400)
+      if (Date.now() - Number(storage.get('info.resources.cached', 0)) > cacheTime) {
+        //
+        this.lxc_query('/1.0/resources', 'GET', null, (response) => {
+          this.info.resources = response
+          response.cached = Date.now()
+          storage.set('info.resources', response)
+        })
+      } else {
+        this.info.resources = storage.get('info.resources')
+      }
+
+      // info.containers
+      // cacheTime = 1 day
+      cacheTime = Number(1000 * 86400)
+      if (Date.now() - Number(storage.get('info.containers.cached', 0)) > cacheTime) {
+        //
+        this.lxc_query('/1.0/containers', 'GET', null, (response) => {
+          this.info.containers = response.length
+          response.cached = Date.now()
+          storage.set('info.containers', response)
+        })
+      } else {
+        this.info.containers = storage.get('info.containers')
+      }
+
+      // info.profiles
+      // cacheTime = 1 day
+      cacheTime = Number(1000 * 86400)
+      if (Date.now() - Number(storage.get('info.profiles.cached', 0)) > cacheTime) {
+        //
+        this.lxc_query('/1.0/profiles', 'GET', null, (response) => {
+          this.info.profiles = response.length
+          response.cached = Date.now()
+          storage.set('info.profiles', response)
+        })
+      } else {
+        this.info.profiles = storage.get('info.profiles')
+      }
+
+      // info.images
+      // cacheTime = 1 day
+      cacheTime = Number(1000 * 86400)
+      if (Date.now() - Number(storage.get('info.images.cached', 0)) > cacheTime) {
+        //
+        this.lxc_query('/1.0/images', 'GET', null, (response) => {
+          this.info.images = response.length
+          response.cached = Date.now()
+          storage.set('info.images', response)
+        })
+      } else {
+        this.info.images = storage.get('info.images')
+      }
+
+      this.foo()
     },
     methods: {
+      foo () {
+        storage.set('unicorn', '🦄')
+        console.log(this.$electron.remote.app.getPath('userData'))
+        // console.log(storage.openInEditor())
+      },
       handleSearchEvent (value) {
-        var self = this
         //
-        this.lxc_list(value, function (response) {
-          self.search_result = response
+        this.lxc_list(value, (response) => {
+          this.search_result = response
         })
       },
       open (link) {
@@ -276,7 +269,7 @@
 </script>
 
 <style>
-  
+
   #content-wrapper {
     margin-top: -20px;
   }
@@ -285,5 +278,9 @@
     background-color: #23d160;
     border-color: transparent;
     color: #fff;
+  }
+
+  .media-content {
+    overflow: hidden;
   }
 </style>
