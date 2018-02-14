@@ -34,17 +34,21 @@
         <p class="level-item" v-show="current != 'containers'"><router-link :to="{ name: 'containers' }">Images</router-link></p>
         <p class="level-item" v-show="current == 'containers'"><strong>Images</strong></p>
         <!-- New -->
-        <p class="level-item"><a class="button is-success">New</a></p>
+        <p class="level-item"><a class="button is-success" @click="modalActive=true">New</a></p>
       </div>
     </nav>
     <hr>
+    <new-container-modal v-bind:isActive="modalActive" @close-modal="close_modal"></new-container-modal>
   </div>
 </template>
 
 <script>
   import _ from 'lodash'
+  
+  import NewContainerModal from '../Containers/NewModal'
 
   export default {
+    components: { NewContainerModal },
     props: {
       current: {},
       show_search: {
@@ -61,7 +65,8 @@
         // show_search: true,
         // show_links: true,
         search: null,
-        placeholder: null
+        placeholder: null,
+        modalActive: false
       }
     },
     mounted: function () {
@@ -74,6 +79,9 @@
       })
     },
     methods: {
+      close_modal: function () {
+        this.modalActive = false
+      },
       search_execute: _.debounce(function (e) {
         // get event value
         if (typeof e !== 'undefined' && typeof e.target !== 'undefined') {

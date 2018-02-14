@@ -1,10 +1,10 @@
 {
   "name": "lxd-ui",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "Lawrence Cherone <lawrence@cherone.co.uk>",
-  "description": "testing it...",
+  "description": "A LXD user interface, powered by electron-vue, which will allow you to manage local LXC containers in a GUI.",
   "homepage": "http://cherone.co.uk",
-  "license": null,
+  "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
@@ -24,7 +24,7 @@
   },
   "build": {
     "productName": "lxd-ui",
-    "appId": "org.simulatedgreg.electron-vue",
+    "appId": "org.lcherone.lxd-ui",
     "directories": {
       "output": "build"
     },

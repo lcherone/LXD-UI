@@ -149,8 +149,8 @@
 
   import ElectronStore from 'electron-store'
   const storage = new ElectronStore({
-    cwd: 'lxd-ui',
-    encryptionKey: 'obfuscation'
+    cwd: 'lxd-ui' // ,
+    // encryptionKey: 'obfuscation'
   })
 
   export default {
@@ -163,14 +163,65 @@
         search_result: null,
         info: {
           loadavg: require('os').loadavg(),
-          server: {config: null},
-          resources: null,
-          containers: null,
-          profiles: null,
-          certificates: null,
-          images: null,
-          remotes: null,
-          networks: null
+          resources: {
+            cpu: {
+              sockets: [
+                {
+                  cores: 0,
+                  frequency: 0,
+                  frequency_turbo: 0,
+                  name: null,
+                  threads: 0,
+                  vendor: null
+                }
+              ],
+              total: 0
+            },
+            memory: {
+              total: 0,
+              used: 0
+            },
+            pool: {
+              inodes: {
+                total: 0,
+                used: 0
+              },
+              space: {
+                total: 0
+              }
+            }
+          },
+          server: {
+            api_extensions: [],
+            api_status: 'stable',
+            api_version: '1.0',
+            auth: null,
+            auth_methods: [],
+            config: {},
+            environment: {
+              addresses: [],
+              architectures: [],
+              certificate: null,
+              certificate_fingerprint: null,
+              driver: null,
+              driver_version: null,
+              kernel: null,
+              kernel_architecture: null,
+              kernel_version: null,
+              server: null,
+              server_pid: 0,
+              server_version: null,
+              storage: null,
+              storage_version: null
+            },
+            public: false
+          },
+          containers: 0,
+          profiles: 0,
+          certificates: 0,
+          images: 0,
+          remotes: 0,
+          networks: 0
         }
       }
     },
@@ -268,12 +319,7 @@
   }
 </script>
 
-<style>
-
-  #content-wrapper {
-    margin-top: -20px;
-  }
-
+<style scoped>
   .card-footer-item.is-success {
     background-color: #23d160;
     border-color: transparent;
