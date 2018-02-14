@@ -119,6 +119,29 @@ export default {
         }
         callback(JSON.parse(response))
       })
+    },
+    /**
+     *
+     */
+    lxc_images: function (remote, callback) {
+      //
+      if (remote === undefined || remote === null) {
+        remote = 'local:'
+      }
+      if (typeof callback !== 'function') {
+        callback = function (response) {
+          console.log('ERROR: no callback supplied for lxc_images(' + name + ', *missing)')
+          console.log(response)
+        }
+      }
+      //
+      var shellescape = require('shell-escape')
+      this.exec('lxc image list ' + shellescape([remote]) + ' --format=json', function (response) {
+        if (response === '') {
+          response = []
+        }
+        callback(JSON.parse(response))
+      })
     }
   }
 }

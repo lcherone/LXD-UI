@@ -12,7 +12,7 @@
               <div class="column">
                 <h6 class="title is-6">Settings</h6>
 
-                ...
+                <p>This is a placeholder page for any settings which may be added later.</p>
               </div>
             </div>
           </div>

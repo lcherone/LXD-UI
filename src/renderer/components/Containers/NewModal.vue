@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-cloak>
     <div class="modal" v-bind:class="{ 'is-active': isActive }">
       <div class="modal-background"></div>
       <div class="modal-card" style="margin-top:-35vh">
