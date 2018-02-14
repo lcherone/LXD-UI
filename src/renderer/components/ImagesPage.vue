@@ -23,7 +23,7 @@
         <div style="margin-top:-10px">
           <div class="tabs is-small">
             <ul>
-              <li v-bind:class="{ 'is-active': disto === active_distro }" @click="filter_distro(disto)" v-for="disto in distos_list"><a>{{ disto }}</a></li>
+              <li v-bind:class="{ 'is-active': distro === active_distro }" @click="filter_distro(distro)" v-for="distro in distros_list"><a>{{ distro }}</a></li>
             </ul>
           </div>
           <table class="table is-fullwidth is-narrow">
@@ -93,7 +93,7 @@
         active_distro: 'Ubuntu',
         search_result: null,
         remotes: [],
-        distos: [],
+        distros: [],
         images: [],
         btn: {
           refresh_containers: false
@@ -125,8 +125,8 @@
           return row
         })
       },
-      distos_list: function () {
-        return _.uniq(this.distos)
+      distros_list: function () {
+        return _.uniq(this.distros)
       }
     },
     methods: {
@@ -153,20 +153,20 @@
           let imagefilter = 'architecture=\'' + architectures.join('|') + '\''
           //
           this.lxc_images(remote + ':', imagefilter, (response) => {
-            this.distos = []
+            this.distros = []
             this.images = []
             for (var key in response) {
               this.images.push(response[key])
-              this.distos.push(_.upperFirst(response[key].properties.os))
+              this.distros.push(_.upperFirst(response[key].properties.os))
             }
-            this.distos = _.uniq(this.distos)
+            this.distros = _.uniq(this.distros)
             storage.set('images.' + remote, this.images)
-            storage.set('images_distos.' + remote, this.distos)
+            storage.set('images_distros.' + remote, this.distros)
             storage.set('images_cached.' + remote, Date.now())
           })
         } else {
           this.images = storage.get('images.' + remote)
-          this.distos = storage.get('images_distos.' + remote)
+          this.distros = storage.get('images_distros.' + remote)
         }
       },
       /**
