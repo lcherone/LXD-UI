@@ -13,18 +13,17 @@
             </strong>
             <div class="tabs is-small is-toggle is-pulled-right">
               <ul>
-                <li v-bind:class="{ 'is-active': show_images === remote }" v-for="remote in remotes">
-                  <a @click="show_images_table(remote)"><span>{{ remote | ucfirst }}</span></a>
+                <li v-bind:class="{ 'is-active': remote === active_remote }" v-for="remote in remotes">
+                  <a @click="load_remote_images(remote)"><span>{{ remote | ucfirst }}</span></a>
                 </li>
               </ul>
             </div>
           </div>
         </div>
-        <!-- Local Images -->
-        <div style="margin-top:-10px" v-show="show_images === 'local'">
+        <div style="margin-top:-10px">
           <div class="tabs is-small">
             <ul>
-              <li v-bind:class="{ 'is-active': disto === show_distro }" @click="filter_distro(disto)" v-for="disto in distos_list"><a>{{ disto }}</a></li>
+              <li v-bind:class="{ 'is-active': disto === active_distro }" @click="filter_distro(disto)" v-for="disto in distos_list"><a>{{ disto }}</a></li>
             </ul>
           </div>
           <table class="table is-fullwidth is-narrow">
@@ -40,39 +39,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="image in local_images">
-                <td>{{ image.properties.description | ucfirst }}</td>
-                <td>{{ image.properties.version ? image.properties.version : '-' }}</td>
-                <td>{{ image.properties.os | ucfirst }}</td>
-                <td>{{ image.properties.release | ucfirst }}</td>
-                <td>{{ formatBytes(image.size) }}</td>
-                <td>{{ image.uploaded_at | formatDate }}</td>
-                <td><a class="button is-primary is-small">Launch</a></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <!-- Public Images -->
-        <div style="margin-top:-10px" v-show="show_images !== 'local'">
-          <div class="tabs is-small">
-            <ul>
-              <li v-bind:class="{ 'is-active': disto === show_distro }" @click="filter_distro(disto)" v-for="disto in distos_list"><a>{{ disto }}</a></li>
-            </ul>
-          </div>
-          <table class="table is-fullwidth is-narrow">
-            <thead>
-              <tr>
-                <th style="width:40%">Description</th>
-                <th style="width:12%">Version</th>
-                <th style="width:12%">OS</th>
-                <th style="width:12%">Release</th>
-                <th style="width:12%">Size</th>
-                <th style="width:12%">Uploaded</th>
-                <th style="width:1%"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="image in public_images">
+              <tr v-for="image in image_list">
                 <td>{{ image.properties.description | ucfirst }}</td>
                 <td>{{ image.properties.version ? image.properties.version : '-' }}</td>
                 <td>{{ image.properties.os | ucfirst }}</td>
@@ -122,10 +89,10 @@
     data () {
       return {
         cache_time: Number(1000 * 86400),
-        remotes: [],
-        show_images: 'local',
-        show_distro: 'Ubuntu',
+        active_remote: 'local',
+        active_distro: 'Ubuntu',
         search_result: null,
+        remotes: [],
         distos: [],
         images: [],
         btn: {
@@ -135,7 +102,7 @@
     },
     mounted: function () {
       this.$nextTick(() => {
-        this.show_images_table('local')
+        this.load_remote_images('local')
         //
         if (Date.now() - Number(storage.get('remotes_cached', 0)) > this.cache_time) {
           //
@@ -150,23 +117,9 @@
       })
     },
     computed: {
-      local_images: function () {
-        if (this.show_images !== 'local') {
-          // return []
-        }
+      image_list: function () {
         return this.images.filter((row) => {
-          if (_.lowerCase(this.show_distro) !== _.lowerCase(row.properties.os)) {
-            return false
-          }
-          return row
-        })
-      },
-      public_images: function () {
-        if (this.show_images !== 'public') {
-          // return []
-        }
-        return this.images.filter((row) => {
-          if (_.lowerCase(this.show_distro) !== _.lowerCase(row.properties.os)) {
+          if (_.lowerCase(this.active_distro) !== _.lowerCase(row.properties.os)) {
             return false
           }
           return row
@@ -178,13 +131,13 @@
     },
     methods: {
       filter_distro (distro) {
-        this.show_distro = distro
+        this.active_distro = distro
       },
-      show_images_table (location) {
-        this.show_images = location
-        this.show_distro = 'Ubuntu'
-
-        this.get_images(location)
+      load_remote_images (remote) {
+        this.active_remote = remote
+        // default back to ubuntu
+        this.active_distro = 'Ubuntu'
+        this.get_images(remote)
       },
       /**
        *
