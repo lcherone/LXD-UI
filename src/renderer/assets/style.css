@@ -13,5 +13,14 @@
 }
 
 .table tr:hover {
-  background-color: transparent!important;
+  background-color: transparent !important;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+  font-size: 0.93rem;
+}
+
+.tabs.is-small {
+  font-size: 0.84rem;
 }

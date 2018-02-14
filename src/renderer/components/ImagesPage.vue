@@ -13,11 +13,8 @@
             </strong>
             <div class="tabs is-small is-toggle is-pulled-right">
               <ul>
-                <li v-bind:class="{ 'is-active': show_images === 'local' }">
-                  <a @click="show_images_table('local')"><span>Local</span></a>
-                </li>
-                <li v-bind:class="{ 'is-active': show_images === 'public' }">
-                  <a @click="show_images_table('public')"><span>Public</span></a>
+                <li v-bind:class="{ 'is-active': show_images === remote }" v-for="remote in remotes">
+                  <a @click="show_images_table(remote)"><span>{{ remote | ucfirst }}</span></a>
                 </li>
               </ul>
             </div>
@@ -33,12 +30,12 @@
           <table class="table is-fullwidth is-narrow">
             <thead>
               <tr>
-                <th style="width:39%">Description</th>
-                <th style="width:10%">Version</th>
-                <th style="width:10%">OS</th>
-                <th style="width:10%">Release</th>
-                <th style="width:10%">Size</th>
-                <th style="width:20%">Uploaded</th>
+                <th style="width:40%">Description</th>
+                <th style="width:12%">Version</th>
+                <th style="width:12%">OS</th>
+                <th style="width:12%">Release</th>
+                <th style="width:12%">Size</th>
+                <th style="width:12%">Uploaded</th>
                 <th style="width:1%"></th>
               </tr>
             </thead>
@@ -56,7 +53,7 @@
           </table>
         </div>
         <!-- Public Images -->
-        <div style="margin-top:-10px" v-show="show_images === 'public'">
+        <div style="margin-top:-10px" v-show="show_images !== 'local'">
           <div class="tabs is-small">
             <ul>
               <li v-bind:class="{ 'is-active': disto === show_distro }" @click="filter_distro(disto)" v-for="disto in distos_list"><a>{{ disto }}</a></li>
@@ -65,12 +62,12 @@
           <table class="table is-fullwidth is-narrow">
             <thead>
               <tr>
-                <th style="width:39%">Description</th>
-                <th style="width:10%">Version</th>
-                <th style="width:10%">OS</th>
-                <th style="width:10%">Release</th>
-                <th style="width:10%">Size</th>
-                <th style="width:20%">Uploaded</th>
+                <th style="width:40%">Description</th>
+                <th style="width:12%">Version</th>
+                <th style="width:12%">OS</th>
+                <th style="width:12%">Release</th>
+                <th style="width:12%">Size</th>
+                <th style="width:12%">Uploaded</th>
                 <th style="width:1%"></th>
               </tr>
             </thead>
@@ -100,6 +97,12 @@
   import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
 
+  import ElectronStore from 'electron-store'
+  const storage = new ElectronStore({
+    cwd: 'lxd-ui' // ,
+    // encryptionKey: 'obfuscation'
+  })
+
   export default {
     name: 'images-page',
     components: { MainHeader },
@@ -107,7 +110,7 @@
     filters: {
       formatDate: function (value) {
         if (value) {
-          return moment(String(value)).format('DD/MM/YYYY h:mma')
+          return moment(String(value)).format('DD/MM/YYYY')
         }
       },
       ucfirst: function (value) {
@@ -118,6 +121,8 @@
     },
     data () {
       return {
+        cache_time: Number(1000 * 86400),
+        remotes: [],
         show_images: 'local',
         show_distro: 'Ubuntu',
         search_result: null,
@@ -130,13 +135,24 @@
     },
     mounted: function () {
       this.$nextTick(() => {
-        this.get_local_images()
+        this.show_images_table('local')
+        //
+        if (Date.now() - Number(storage.get('remotes_cached', 0)) > this.cache_time) {
+          //
+          this.lxc_remotes((response) => {
+            this.remotes = response
+            storage.set('remotes', response)
+            storage.set('remotes_cached', Date.now())
+          })
+        } else {
+          this.remotes = storage.get('remotes')
+        }
       })
     },
     computed: {
       local_images: function () {
         if (this.show_images !== 'local') {
-          return []
+          // return []
         }
         return this.images.filter((row) => {
           if (_.lowerCase(this.show_distro) !== _.lowerCase(row.properties.os)) {
@@ -147,7 +163,7 @@
       },
       public_images: function () {
         if (this.show_images !== 'public') {
-          return []
+          // return []
         }
         return this.images.filter((row) => {
           if (_.lowerCase(this.show_distro) !== _.lowerCase(row.properties.os)) {
@@ -168,38 +184,37 @@
         this.show_images = location
         this.show_distro = 'Ubuntu'
 
-        if (location === 'local') {
-          this.get_local_images()
+        this.get_images(location)
+      },
+      /**
+       *
+       */
+      get_images (remote) {
+        //
+        if (Date.now() - Number(storage.get('images_cached.' + remote, 0)) > this.cache_time) {
+          let architectures = storage.get('info.server.environment.architectures', ['x86_64', 'i686', 'amd64'])
+          // for some reason amd64 is not in server environment architectures array :/ so append it if x86_64 is found
+          if (_.indexOf(architectures, 'x86_64') > -1) {
+            architectures.push('amd64')
+          }
+          let imagefilter = 'architecture=\'' + architectures.join('|') + '\''
+          //
+          this.lxc_images(remote + ':', imagefilter, (response) => {
+            this.distos = []
+            this.images = []
+            for (var key in response) {
+              this.images.push(response[key])
+              this.distos.push(_.upperFirst(response[key].properties.os))
+            }
+            this.distos = _.uniq(this.distos)
+            storage.set('images.' + remote, this.images)
+            storage.set('images_distos.' + remote, this.distos)
+            storage.set('images_cached.' + remote, Date.now())
+          })
         } else {
-          this.get_public_images()
+          this.images = storage.get('images.' + remote)
+          this.distos = storage.get('images_distos.' + remote)
         }
-      },
-      /**
-       *
-       */
-      get_local_images (callback) {
-        this.lxc_images('local:', (response) => {
-          console.log(response)
-          this.distos = []
-          this.images = []
-          for (var key in response) {
-            this.images.push(response[key])
-            this.distos.push(_.upperFirst(response[key].properties.os))
-          }
-        })
-      },
-      /**
-       *
-       */
-      get_public_images (callback) {
-        this.lxc_images('images:', (response) => {
-          this.distos = []
-          this.images = []
-          for (var key in response) {
-            this.images.push(response[key])
-            this.distos.push(_.upperFirst(response[key].properties.os))
-          }
-        })
       },
       /**
        *

@@ -11,8 +11,26 @@
               </div>
               <div class="column">
                 <h6 class="title is-6">Settings</h6>
-
-                <p>This is a placeholder page for any settings which may be added later.</p>
+                <div class="tabs is-small" style="margin-top:-10px">
+                  <ul>
+                    <li class="is-active"><a>Containers</a></li>
+                    <li><a>Images</a></li>
+                  </ul>
+                </div>
+                <div class="box">
+                  <div class="field is-horizontal">
+                    <div class="field-label is-normal">
+                      <label class="label" for="name">Cache Time</label>
+                    </div>
+                    <div class="field-body">
+                      <div class="field">
+                        <p class="control">
+                          <input id="name" class="input" type="number" placeholder="">
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

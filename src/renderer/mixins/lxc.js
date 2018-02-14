@@ -123,10 +123,14 @@ export default {
     /**
      *
      */
-    lxc_images: function (remote, callback) {
+    lxc_images: function (remote, filter, callback) {
       //
       if (remote === undefined || remote === null) {
         remote = 'local:'
+      }
+      //
+      if (filter === undefined || filter === null) {
+        filter = ''
       }
       if (typeof callback !== 'function') {
         callback = function (response) {
@@ -134,13 +138,29 @@ export default {
           console.log(response)
         }
       }
+      console.log('lxc image list ' + remote + ' ' + filter + ' --format=json')
       //
-      var shellescape = require('shell-escape')
-      this.exec('lxc image list ' + shellescape([remote]) + ' --format=json', function (response) {
+      this.exec('lxc image list ' + remote + ' ' + filter + ' --format=json', function (response) {
         if (response === '') {
           response = []
         }
         callback(JSON.parse(response))
+      })
+    },
+    /**
+     * gets an array of remotes names only
+     */
+    lxc_remotes: function (callback) {
+      //
+      if (typeof callback !== 'function') {
+        callback = function (response) {
+          console.log('ERROR: no callback supplied for lxc_remotes(*missing)')
+          console.log(response)
+        }
+      }
+      /* eslint-disable no-useless-escape */
+      this.exec('lxc remote list | tail -n +4 | awk \'{print $2}\' | egrep -v \'^(\\||^$)\'', function (response) {
+        callback(response.trim().split(/\r?\n/))
       })
     }
   }
