@@ -1,7 +1,7 @@
 <template>
   <div id="wrapper">
     <div class="container is-fluid">
-      <main-header v-bind:current="this.$route.name" @search-event="handleSearchEvent"></main-header>
+      <main-header v-bind:current="$route.name" @search-event="handleSearchEvent"></main-header>
       <div id="content-wrapper">
         <div class="columns">
           <div class="column">

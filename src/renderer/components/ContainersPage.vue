@@ -2,7 +2,7 @@
   <div id="wrapper">
 
     <div class="container is-fluid">
-      <main-header v-bind:current="this.$route.name"></main-header>
+      <main-header v-bind:current="$route.name"></main-header>
 
       <div style="margin-top:-10px">
         <div style="margin-bottom:10px">

@@ -28,11 +28,11 @@
         <p class="level-item" v-show="current != 'containers'"><router-link :to="{ name: 'containers' }">Containers</router-link></p>
         <p class="level-item" v-show="current == 'containers'"><strong>Containers</strong></p>        
         <!-- Profiles -->
-        <p class="level-item" v-show="current != 'containers'"><router-link :to="{ name: 'containers' }">Profiles</router-link></p>
-        <p class="level-item" v-show="current == 'containers'"><strong>Profiles</strong></p>
+        <p class="level-item" v-show="current != 'profiles'"><router-link :to="{ name: 'profiles' }">Profiles</router-link></p>
+        <p class="level-item" v-show="current == 'profiles'"><strong>Profiles</strong></p>
         <!-- Images -->
-        <p class="level-item" v-show="current != 'containers'"><router-link :to="{ name: 'containers' }">Images</router-link></p>
-        <p class="level-item" v-show="current == 'containers'"><strong>Images</strong></p>
+        <p class="level-item" v-show="current != 'images'"><router-link :to="{ name: 'images' }">Images</router-link></p>
+        <p class="level-item" v-show="current == 'images'"><strong>Images</strong></p>
         <!-- New -->
         <p class="level-item"><a class="button is-success" @click="modalActive=true">New</a></p>
       </div>

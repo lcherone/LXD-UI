@@ -22,6 +22,21 @@ export default new Router({
       props: true
     },
     {
+      path: '/settings',
+      name: 'settings',
+      component: require('@/components/SettingsPage').default
+    },
+    {
+      path: '/images',
+      name: 'images',
+      component: require('@/components/ImagesPage').default
+    },
+    {
+      path: '/profiles',
+      name: 'profiles',
+      component: require('@/components/ProfilesPage').default
+    },
+    {
       path: '*',
       redirect: '/'
     }

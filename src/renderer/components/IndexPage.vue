@@ -2,34 +2,12 @@
   <div id="wrapper">
 
     <div class="container is-fluid">
-      <main-header v-bind:current="this.$route.name" @search-event="handleSearchEvent"></main-header>
+      <main-header v-bind:current="$route.name" @search-event="handleSearchEvent"></main-header>
 
       <div id="content-wrapper">
         <div class="columns">
           <div class="column is-narrow">
-            <aside class="menu" style="width: 200px;">
-              <p class="menu-label">
-                General
-              </p>
-              <ul class="menu-list">
-                <li><a class="is-active">Home</a></li>
-                <li><router-link :to="{ path: '/console/testing' }" target="_blank">Container</router-link></li>
-              </ul>
-              <p class="menu-label">
-                Administration
-              </p>
-              <ul class="menu-list">
-                <li><a>Settings</a></li>
-              </ul>
-              <p class="menu-label">
-                Transactions
-              </p>
-              <ul class="menu-list">
-                <li><a>Payments</a></li>
-                <li><a>Transfers</a></li>
-                <li><a>Balance</a></li>
-              </ul>
-            </aside>
+            <side-menu></side-menu>
           </div>
           <div class="column">
             <h6 class="title is-6">Dashboard</h6>
@@ -146,6 +124,7 @@
   import helpers from '../mixins/helpers.js'
   import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
+  import SideMenu from './Layout/SideMenu'
 
   import ElectronStore from 'electron-store'
   const storage = new ElectronStore({
@@ -155,7 +134,7 @@
 
   export default {
     name: 'index-page',
-    components: { MainHeader },
+    components: { MainHeader, SideMenu },
     mixins: [lxc, helpers],
     data () {
       return {
