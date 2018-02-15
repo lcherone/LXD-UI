@@ -1,3 +1,4 @@
+
 # LXD-UI
 
 **WIP:***
@@ -9,6 +10,9 @@ A LXD user interface, powered by electron-vue, which will allow you to manage lo
  - Create, start and stop containers.
  - Shell access into containers (xterm.js), and no need to setup any certificates.
  - Launch containers images.
+
+**Screen**
+![enter image description here](https://i.imgur.com/wbSSIBe.gif)
 
 > More to come... Its my first project with [electron-vue](https://github.com/SimulatedGREG/electron-vue) and node in general, contributions/feedback is very welcome.
 
