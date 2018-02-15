@@ -11,72 +11,89 @@
               </span>
               Containers
             </strong>
-            <button 
-                    class="button is-small is-primary is-pulled-right" 
-                    @click="refresh_containers()" 
-                    v-bind:class="{ 'is-loading': btn.refresh_containers }" 
-                    v-bind:disabled="btn.refresh_containers">
-              <span class="icon">
-                <i class="fa fa-refresh"></i> 
-              </span>
-              &nbsp; Refresh
-            </button>
-            <table class="table is-fullwidth is-narrow" style="margin-top:10px">
-              <thead>
-                <tr>
-                  <th style="width:20%">Name</th>
-                  <th style="width:20%">IP</th>
-                  <th style="width:20%">CPU</th>
-                  <th style="width:20%">Memory</th>
-                  <th style="width:10%">Status</th>
-                  <th style="width:1%"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="container in containers">
-                  <td>
-                    <router-link v-show="container.status === 'Running'" :to="{ path: '/console/' + container.name }" target="_blank">{{ container.name }}</router-link>
-                    <span v-show="container.status === 'Stopped'">{{ container.name }}</span>
-                  </td>
-                  <td>
-                    <!-- Running is ip4 -->
-                    <a 
-                       v-show="container.state && container.status === 'Running' && isIP4(container.state.network.eth0.addresses[0].address)" 
-                       @click="open('http://' + container.state.network.eth0.addresses[0].address)">
-                      {{ container.state && container.state.network ? container.state.network.eth0.addresses[0].address : '-' }}
-                    </a>
-                    <!-- Running not ip4 -->
-                    <span 
-                          v-show="container.status === 'Running' && isIP4(container.state.network.eth0.addresses[0].address) === false" 
-                          @click="refresh_containers()">
-                      <i class="fa fa-refresh"></i>
-                    </span>
-                    <!-- Stopped -->
-                    <span v-show="container.status === 'Stopped'">-</span>
-                  </td>
-                  <td>{{ container.state && container.state.cpu.usage !== 0 ? Number(container.state.cpu.usage/1000000000).toFixed(2) + ' seconds' : '-' }}</td>
-                  <td>{{ container.state && container.state.memory.usage !== 0 ? formatBytes(container.state.memory.usage) : '-' }}</td>
-                  <td>
-                    <span class="tag is-success" v-show="container.status === 'Running'">Running</span>
-                    <span class="tag is-danger" v-show="container.status === 'Stopped'">Stopped</span>
-                  </td>
-                  <td>
-                    <button class="button is-small is-danger" v-show="container.status == 'Running'" @click="stop_container(container.name)">
-                      <span class="icon">
-                        <i class="fa fa-stop"></i> 
+            <div v-show="containers.length > 0">
+              <button 
+                      class="button is-small is-primary is-pulled-right" 
+                      @click="refresh_containers()" 
+                      v-bind:class="{ 'is-loading': btn.refresh_containers }" 
+                      v-bind:disabled="btn.refresh_containers">
+                <span class="icon">
+                  <i class="fa fa-refresh"></i> 
+                </span>
+                &nbsp; Refresh
+              </button>
+              <table class="table is-fullwidth is-narrow" style="margin-top:10px">
+                <thead>
+                  <tr>
+                    <th style="width:20%">Name</th>
+                    <th style="width:20%">IP</th>
+                    <th style="width:20%">CPU</th>
+                    <th style="width:20%">Memory</th>
+                    <th style="width:10%">Status</th>
+                    <th style="width:1%"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="container in containers">
+                    <td>
+                      <router-link v-show="container.status === 'Running'" :to="{ path: '/console/' + container.name }" target="_blank">{{ container.name }}</router-link>
+                      <span v-show="container.status === 'Stopped'">{{ container.name }}</span>
+                    </td>
+                    <td>
+                      <!-- Running is ip4 -->
+                      <a 
+                         v-show="container.state && container.status === 'Running' && isIP4(container.state.network.eth0.addresses[0].address)" 
+                         @click="open('http://' + container.state.network.eth0.addresses[0].address)">
+                        {{ container.state && container.state.network ? container.state.network.eth0.addresses[0].address : '-' }}
+                      </a>
+                      <!-- Running not ip4 -->
+                      <span 
+                            v-show="container.status === 'Running' && isIP4(container.state.network.eth0.addresses[0].address) === false" 
+                            @click="refresh_containers()">
+                        <i class="fa fa-refresh"></i>
                       </span>
-                      <span>Stop</span>
-                    </button>
-                    <button class="button is-small is-success" v-show="container.status == 'Stopped'" @click="start_container(container.name)">
-                      <span class="icon">
-                        <i class="fa fa-play"></i> 
-                      </span>
-                      <span>Start</span>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                      <!-- Stopped -->
+                      <span v-show="container.status === 'Stopped'">-</span>
+                    </td>
+                    <td>{{ container.state && container.state.cpu.usage !== 0 ? Number(container.state.cpu.usage/1000000000).toFixed(2) + ' seconds' : '-' }}</td>
+                    <td>{{ container.state && container.state.memory.usage !== 0 ? formatBytes(container.state.memory.usage) : '-' }}</td>
+                    <td>
+                      <span class="has-text-success" v-show="container.status === 'Running'">Running</span>
+                      <span class="has-text-danger" v-show="container.status === 'Stopped'">Stopped</span>
+                    </td>
+                    <td>
+                      <div style="display: flex">
+                        <button class="button is-small is-warning" v-show="container.status === 'Running'" @click="stop_container(container.name)">
+                          <span class="icon">
+                            <i class="fa fa-stop"></i> 
+                          </span>
+                          <span>Stop</span>
+                        </button>
+                        <button class="button is-small is-success" v-show="container.status === 'Stopped'" @click="start_container(container.name)">
+                          <span class="icon">
+                            <i class="fa fa-play"></i> 
+                          </span>
+                          <span>Start</span>
+                        </button>
+                        <button class="button is-small is-danger" v-show="container.status === 'Stopped'" @click="delete_container(container.name)">
+                          <span class="icon">
+                            <i class="fa fa-times"></i> 
+                          </span>
+                          <span>Delete</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div v-show="containers.length === 0" style="margin-top:10px">
+              <article class="message">
+                <div class="message-body">
+                  No containers, you can <router-link :to="{ name: 'images' }">launch one from an image</router-link>.
+                </div>
+              </article>
+            </div>
           </div>
         </div>
       </div>
@@ -145,6 +162,15 @@
        */
       stop_container (name) {
         this.lxc_stop(name, (response) => {
+          //
+          this.get_containers()
+        })
+      },
+      /**
+       *
+       */
+      delete_container (name) {
+        this.lxc_delete(name, (response) => {
           //
           this.get_containers()
         })

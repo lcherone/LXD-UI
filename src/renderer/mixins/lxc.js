@@ -77,6 +77,26 @@ export default {
     /**
      *
      */
+    lxc_delete: function (name, callback) {
+      //
+      if (name === undefined || name === null) {
+        name = ''
+      }
+      if (typeof callback !== 'function') {
+        callback = function (response) {
+          console.log('ERROR: no callback supplied for lxc_stop(' + name + ', *missing)')
+          console.log(response)
+        }
+      }
+      //
+      var shellescape = require('shell-escape')
+      this.exec('lxc delete ' + shellescape([name, '--force']), function (response) {
+        callback()
+      })
+    },
+    /**
+     *
+     */
     lxc_info: function (remote, callback) {
       //
       if (remote === undefined || remote === null) {
