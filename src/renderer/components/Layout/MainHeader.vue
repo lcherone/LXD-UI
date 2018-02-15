@@ -34,11 +34,13 @@
         <p class="level-item" v-show="current != 'images'"><router-link :to="{ name: 'images' }">Images</router-link></p>
         <p class="level-item" v-show="current == 'images'"><strong>Images</strong></p>
         <!-- New -->
-        <p class="level-item"><a class="button is-success" @click="modalActive=true">New Container</a></p>
+        <p class="level-item">
+<!--          <a class="button is-success" @click="modalActive=true">New Container</a>-->
+        </p>
       </div>
     </nav>
     <hr>
-    <new-container-modal v-bind:isActive="modalActive" @close-modal="close_modal"></new-container-modal>
+<!--    <new-container-modal v-bind:isActive="modalActive" @close-modal="close_modal"></new-container-modal>-->
   </div>
 </template>
 

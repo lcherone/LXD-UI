@@ -20,7 +20,7 @@
             </div>
           </div>
         </div>
-        <div style="margin-top:-10px">
+        <div style="margin-top:-10px" v-show="distros_list.length > 0">
           <div class="tabs is-small">
             <ul>
               <li v-bind:class="{ 'is-active': distro === active_distro }" @click="filter_distro(distro)" v-for="distro in distros_list"><a>{{ distro }}</a></li>
@@ -55,6 +55,14 @@
               </tr>
             </tbody>
           </table>
+        </div>
+        <div v-show="distros_list.length === 0">
+          <article class="message">
+            <div class="message-body">
+              <span v-show="active_remote === 'local'">Currently, there are no locally cached images.</span>
+              <span v-show="active_remote !== 'local'">Oops! There was a problem when trying to fetch images from: {{ active_remote }}, check your internet connection and try again.</span>
+            </div>
+          </article>
         </div>
       </div>
     </div>

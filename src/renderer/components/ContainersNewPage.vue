@@ -41,21 +41,21 @@
                   <td>
                     <!-- Running is ip4 -->
                     <a 
-                       v-show="container.status === 'Running' && isIP4(container.network.eth0.addresses[0].address)" 
-                       @click="open('http://' + container.network.eth0.addresses[0].address)">
-                      {{ container.network ? container.network.eth0.addresses[0].address : '-' }}
+                       v-show="container.state && container.status === 'Running' && isIP4(container.state.network.eth0.addresses[0].address)" 
+                       @click="open('http://' + container.state.network.eth0.addresses[0].address)">
+                      {{ container.state && container.state.network ? container.state.network.eth0.addresses[0].address : '-' }}
                     </a>
                     <!-- Running not ip4 -->
                     <span 
-                          v-show="container.status === 'Running' && isIP4(container.network.eth0.addresses[0].address) === false" 
+                          v-show="container.status === 'Running' && isIP4(container.state.network.eth0.addresses[0].address) === false" 
                           @click="refresh_containers()">
                       <i class="fa fa-refresh"></i>
                     </span>
                     <!-- Stopped -->
                     <span v-show="container.status === 'Stopped'">-</span>
                   </td>
-                  <td>{{ container.cpu.usage !== 0 ? Number(container.cpu.usage/1000000000).toFixed(2) + ' seconds' : '-' }}</td>
-                  <td>{{ container.memory.usage !== 0 ? formatBytes(container.memory.usage) : '-' }}</td>
+                  <td>{{ container.state && container.state.cpu.usage !== 0 ? Number(container.state.cpu.usage/1000000000).toFixed(2) + ' seconds' : '-' }}</td>
+                  <td>{{ container.state && container.state.memory.usage !== 0 ? formatBytes(container.state.memory.usage) : '-' }}</td>
                   <td>
                     <span class="tag is-success" v-show="container.status === 'Running'">Running</span>
                     <span class="tag is-danger" v-show="container.status === 'Stopped'">Stopped</span>
@@ -65,13 +65,13 @@
                       <span class="icon">
                         <i class="fa fa-stop"></i> 
                       </span>
-                      &nbsp; Stop
+                      <span>Stop</span>
                     </button>
                     <button class="button is-small is-success" v-show="container.status == 'Stopped'" @click="start_container(container.name)">
                       <span class="icon">
                         <i class="fa fa-play"></i> 
                       </span>
-                      &nbsp; Start
+                      <span>Start</span>
                     </button>
                   </td>
                 </tr>
@@ -124,15 +124,8 @@
        *
        */
       get_containers (callback) {
-        this.containers = []
-        this.lxc_query('/1.0/containers', 'GET', null, (response) => {
-          for (var key in response) {
-            var name = response[key].substr(response[key].lastIndexOf('/') + 1)
-            this.lxc_query(response[key] + '/state', 'GET', null, (response, index) => {
-              response.name = index
-              this.containers.push(response)
-            }, name)
-          }
+        this.lxc_list(null, (response) => {
+          this.containers = response
           if (typeof callback === 'function') {
             callback()
           }

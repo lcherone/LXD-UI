@@ -5,7 +5,7 @@
 
     <div class="modal" v-bind:class="{ 'is-active': isActive }">
       <div class="modal-background"></div>
-      <div class="modal-card" style="margin-top:-29vh">
+      <div class="modal-card" style="margin-top:-20vh">
         <header class="modal-card-head">
           <p class="modal-card-title">New Container</p>
           <button class="delete" aria-label="close" @click="isActive = false"></button>
@@ -14,7 +14,7 @@
 
           <div class="console" :id="'terminal-' + fingerprint"></div>
 
-          <div v-show="!launching">
+          <div v-show="!launching && !launched">
             <div class="field is-horizontal">
               <div class="field-label is-normal">
                 <label class="label" for="name">Name</label>
@@ -27,31 +27,46 @@
                 </div>
               </div>
             </div>
-
             <div class="field is-horizontal">
               <div class="field-label is-normal">
-                <label class="label" for="name">Profile</label>
+                <label class="label" for="profile">Profile</label>
               </div>
               <div class="field-body">
                 <div class="field">
                   <div class="select">
-                    <select v-model="profile">
+                    <select v-model="profile" id="profile">
                       <option>default</option>
                     </select>
                   </div>
                 </div>
               </div>
+            </div>            
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label" for="ephemeral">Ephemeral</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    <label class="checkbox">
+                      <input type="checkbox" id="ephemeral" v-model="ephemeral">
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
         </section>
-        <footer class="modal-card-foot">
+        <footer class="modal-card-foot" v-show="!launched">
           <button 
                   @click="launch()" 
                   v-bind:class="{ 'is-loading': launching }" 
                   v-bind:disabled="launching"
                   class="button is-success">Launch</button>
           <button class="button" @click="isActive = false" v-bind:disabled="launching">Cancel</button>
+        </footer>
+        <footer class="modal-card-foot" v-show="launched">
+          <button class="button" @click="isActive = false">Close</button>
         </footer>
       </div>
     </div>
@@ -77,6 +92,7 @@
         isActive: false,
         name: null,
         profile: 'default',
+        ephemeral: null,
         launching: false,
         launched: false
       }
@@ -96,7 +112,7 @@
 
         //
         xterm.open(document.getElementById('terminal-' + this.fingerprint))
-        xterm.resize(0, 10)
+        xterm.resize(0, 15)
         xterm.fit()
 
         //
@@ -105,7 +121,8 @@
           'lxc launch', [
             this.remote + ':' + this.fingerprint,
             this.name,
-            '-p' + this.profile
+            '-p' + this.profile,
+            (this.ephemeral ? '-e' : '')
           ],
           {
             shell: true
