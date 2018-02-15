@@ -82,6 +82,9 @@
             xterm.open(document.getElementById('terminal'))
             xterm.resize(0, height)
             xterm.fit()
+            xterm.focus()
+
+            //
             window.addEventListener('resize', _.debounce(function (e) {
               var height = Math.max(Math.round(window.innerHeight / 19.53), 15)
               xterm.resize(0, height)
@@ -113,7 +116,7 @@
             }
           }
           sock.onerror = function (e) {
-            xterm.write('An error occured, press enter to close window.')
+            xterm.writeln('An error occured, press enter to close window.')
             window.close()
             xterm.destroy()
           }
@@ -130,5 +133,5 @@
     width: 100%;
     height: 100%!important;
   }
-  
+
 </style>

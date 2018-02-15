@@ -138,7 +138,6 @@ export default {
           console.log(response)
         }
       }
-      console.log('lxc image list ' + remote + ' ' + filter + ' --format=json')
       //
       this.exec('lxc image list ' + remote + ' ' + filter + ' --format=json', function (response) {
         if (response === '') {
@@ -161,6 +160,54 @@ export default {
       /* eslint-disable no-useless-escape */
       this.exec('lxc remote list | tail -n +4 | awk \'{print $2}\' | egrep -v \'^(\\||^$)\'', function (response) {
         callback(response.trim().split(/\r?\n/))
+      })
+    },
+    /**
+     *
+     */
+    lxc_launch: function (remote, fingerprint, name, callback) {
+      //
+      if (remote === undefined || remote === null) {
+        remote = 'local:'
+      }
+      //
+      if (fingerprint === undefined || fingerprint === null) {
+        console.log('ERROR: Image fingerprint must be supplied to lxc_launch(remote, fingerprint, name, callback)')
+        return false
+      }
+      //
+      if (name === undefined || name === null) {
+        name = ''
+      }
+      //
+      if (typeof callback !== 'function') {
+        callback = function (response) {
+          console.log('ERROR: no callback supplied for lxc_launch(*missing)')
+          console.log(response)
+        }
+      }
+      this.exec('lxc launch ' + remote + ':' + fingerprint + ' ' + name, function (response) {
+        callback(response.trim().split(/\r?\n/))
+      })
+    },
+    /**
+     *
+     */
+    lxc_image_delete: function (fingerprint, callback) {
+      //
+      if (fingerprint === undefined || fingerprint === null) {
+        console.log('ERROR: Image fingerprint must be supplied to lxc_image_delete(remote, fingerprint, name, callback)')
+        return false
+      }
+      //
+      if (typeof callback !== 'function') {
+        callback = function (response) {
+          console.log('ERROR: no callback supplied for lxc_image_delete(*missing)')
+          console.log(response)
+        }
+      }
+      this.exec('lxc image delete ' + fingerprint, function (response) {
+        callback(response)
       })
     }
   }

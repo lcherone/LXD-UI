@@ -26,7 +26,7 @@
               <li v-bind:class="{ 'is-active': distro === active_distro }" @click="filter_distro(distro)" v-for="distro in distros_list"><a>{{ distro }}</a></li>
             </ul>
           </div>
-          <table class="table is-fullwidth is-narrow">
+          <table class="table is-fullwidth is-narrow" style="margin-top:-20px">
             <thead>
               <tr>
                 <th style="width:40%">Description</th>
@@ -46,7 +46,12 @@
                 <td>{{ image.properties.release | ucfirst }}</td>
                 <td>{{ formatBytes(image.size) }}</td>
                 <td>{{ image.uploaded_at | formatDate }}</td>
-                <td><a class="button is-primary is-small">Launch</a></td>
+                <td>
+                  <div style="display:flex">
+                    <a v-show="active_remote === 'local'" class="button is-danger is-small" @click="delete_image(image.fingerprint)"><i class="fa fa-times"></i></a>
+                    <launch-container v-bind:remote="active_remote" v-bind:fingerprint="image.fingerprint"></launch-container>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -63,6 +68,7 @@
   import helpers from '../mixins/helpers.js'
   import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
+  import LaunchContainer from './Images/LaunchContainer'
 
   import ElectronStore from 'electron-store'
   const storage = new ElectronStore({
@@ -72,7 +78,7 @@
 
   export default {
     name: 'images-page',
-    components: { MainHeader },
+    components: { MainHeader, LaunchContainer },
     mixins: [lxc, helpers],
     filters: {
       formatDate: function (value) {
@@ -130,6 +136,12 @@
       }
     },
     methods: {
+      delete_image (fingerprint) {
+        this.lxc_image_delete(fingerprint, (response) => {
+          storage.set('images_cached.local', 0)
+          this.load_remote_images('local')
+        })
+      },
       filter_distro (distro) {
         this.active_distro = distro
       },
