@@ -29,7 +29,7 @@ export default {
       var shellescape = require('shell-escape')
       this.exec('lxc query -X ' + action + ' ' + (data !== false ? '-d ' + shellescape([data]) + '' : '') + ' ' + shellescape([remote]), function (response) {
         if (response === '') {
-          response = []
+          response = '[]'
         }
         callback(JSON.parse(response), index)
       })

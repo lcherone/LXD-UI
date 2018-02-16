@@ -39,7 +39,12 @@
               </thead>
               <tbody>
                 <tr v-for="image in image_list">
-                  <td>{{ image.properties.description | ucfirst }}</td>
+                  <td>
+                    <span v-show="active_remote === 'local'">
+                      <edit-image v-bind:remote="active_remote" v-bind:fingerprint="image.fingerprint" @on-save="load_remote_images(active_remote)">{{ image.properties.description | ucfirst }}</edit-image>
+                    </span>
+                    <span v-show="active_remote !== 'local'">{{ image.properties.description | ucfirst }}</span>
+                  </td>
                   <td>{{ image.properties.version ? image.properties.version : '-' }}</td>
                   <td>{{ image.properties.release | ucfirst }}</td>
                   <td>{{ formatBytes(image.size) }}</td>
@@ -76,6 +81,7 @@
   import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
   import LaunchContainer from './Images/LaunchContainer'
+  import EditImage from './Images/EditImage'
 
   import ElectronStore from 'electron-store'
   const storage = new ElectronStore({
@@ -85,7 +91,7 @@
 
   export default {
     name: 'images-page',
-    components: { MainHeader, LaunchContainer },
+    components: { MainHeader, LaunchContainer, EditImage },
     mixins: [lxc, helpers],
     filters: {
       formatDate: function (value) {
