@@ -38,8 +38,7 @@
               <tbody>
                 <tr v-for="container in containers">
                   <td>
-                    <router-link v-show="container.status === 'Running'" :to="{ path: '/console/' + container.name }" target="_blank">{{ container.name }}</router-link>
-                    <span v-show="container.status === 'Stopped'">{{ container.name }}</span>
+                    <edit-container v-bind:name="container.name" @on-save="refresh_containers()">{{ container.name }}</edit-container>
                   </td>
                   <td>
                     <!-- Running is ip4 -->
@@ -65,23 +64,25 @@
                   </td>
                   <td>
                     <div style="display: flex">
-                      <button class="button is-small is-warning" v-show="container.status === 'Running'" @click="stop_container(container.name)">
+                      <router-link class="button is-small is-info" v-show="container.status === 'Running'" :to="{ path: '/console/' + container.name }" target="_blank" title="Open terminal">
+                        <span class="icon">
+                          <i class="fa fa-terminal"></i> 
+                        </span>
+                      </router-link>
+                      <button class="button is-small is-warning" v-show="container.status === 'Running'" @click="stop_container(container.name)" title="Stop">
                         <span class="icon">
                           <i class="fa fa-stop"></i> 
                         </span>
-                        <span>Stop</span>
                       </button>
-                      <button class="button is-small is-success" v-show="container.status === 'Stopped'" @click="start_container(container.name)">
+                      <button class="button is-small is-success" v-show="container.status === 'Stopped'" @click="start_container(container.name)" title="Start">
                         <span class="icon">
                           <i class="fa fa-play"></i> 
                         </span>
-                        <span>Start</span>
                       </button>
-                      <button class="button is-small is-danger" v-show="container.status === 'Stopped'" @click="delete_container(container.name)">
+                      <button class="button is-small is-danger" v-show="container.status === 'Stopped'" @click="delete_container(container.name)" title="Delete">
                         <span class="icon">
                           <i class="fa fa-times"></i> 
                         </span>
-                        <span>Delete</span>
                       </button>
                     </div>
                   </td>
@@ -104,10 +105,11 @@
   import helpers from '../mixins/helpers.js'
   import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
+  import EditContainer from './Containers/EditContainer'
 
   export default {
     name: 'containers-page',
-    components: { MainHeader },
+    components: { MainHeader, EditContainer },
     mixins: [lxc, helpers],
     data () {
       return {

@@ -27,6 +27,7 @@ export default {
       }
       //
       var shellescape = require('shell-escape')
+      // console.log('lxc query -X ' + action + ' ' + (data !== false ? '-d ' + shellescape([data]) + '' : '') + ' ' + shellescape([remote]))
       this.exec('lxc query -X ' + action + ' ' + (data !== false ? '-d ' + shellescape([data]) + '' : '') + ' ' + shellescape([remote]), function (response) {
         if (response === '') {
           response = '[]'
