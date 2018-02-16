@@ -1,16 +1,7 @@
 <template>
-  <div id="wrapper">
-    <div class="container is-fluid">
-      <main-header v-bind:show_search="false" v-bind:show_links="false"></main-header>
-      <div id="content-wrapper">
-        <div class="columns">
-          <div class="column">
-            <div id="terminal"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <el-main>
+    <div id="terminal"></div>
+  </el-main>
 </template>
 
 <script>
@@ -41,7 +32,7 @@
       console () {
         //
         var width = 100
-        var height = Math.max(Math.round(window.innerHeight / 19.53), 15)
+        var height = Math.max(Math.round(window.innerHeight / 19.50), 15)
 
         //
         this.lxc_query('/1.0/containers/' + this.container + '/exec', 'POST', JSON.stringify({
@@ -86,7 +77,7 @@
 
             //
             window.addEventListener('resize', _.debounce(function (e) {
-              var height = Math.max(Math.round(window.innerHeight / 19.53), 15)
+              var height = Math.max(Math.round(window.innerHeight / 19.50), 15)
               xterm.resize(0, height)
               xterm.fit()
             }, 300))
@@ -126,12 +117,53 @@
   }
 </script>
 
-<style scoped>
+<style>
+  html {
+    overflow: auto;
+  }
+  html, body {
+    background:black;
+    height: 100%
+  }
+  body {
+    position: absolute;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  .el-main {
+    background-color: #000;
+    color: #333;
+    height: calc(100vh);
+    padding-top: 20px;
+    padding-right: 0px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(227, 75, 20, 0.8); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+  }
+
+  ::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(227, 75, 20, 0.4); 
+  }
 
   #terminal {
     overflow: hidden;
     width: 100%;
-    height: 100%!important;
+    height: calc(100vh - 40px);
   }
 
 </style>

@@ -1,120 +1,117 @@
 <template>
-  <div id="wrapper">
+  <div>
+    <!-- Main header -->
+    <main-header :current="$route.path"></main-header>
 
-    <div class="container is-fluid">
-      <main-header v-bind:current="$route.name" @search-event="handleSearchEvent"></main-header>
-
-      <div id="content-wrapper">
-        <div class="columns">
-          <div class="column is-narrow">
-            <side-menu></side-menu>
-          </div>
-          <div class="column">
-            <h6 class="title is-6">Dashboard</h6>
-
-            <div class="columns">
-              <div class="column">
-                <div class="card">
-                  <div class="card-content">
-                    <div class="media">
-                      <div class="media-left">
-                        <span class="icon is-large">
-                          <i class="fa fa-3x fa-shield"></i>
-                        </span>
-                      </div>
-                      <div class="media-content">
-                        <p class="title is-4">CPUs</p>
-                        <p class="subtitle is-6">
-                          {{ info.resources.cpu.sockets[0].name }} - {{ info.resources.cpu.total }} @ {{ Number(info.resources.cpu.sockets[0].frequency_turbo / 1000).toFixed(2) }}GHz
-                        </p>
-                      </div>
+    <!-- Main element -->
+    <el-main>
+      <div class="columns">
+        <div class="column is-narrow">
+          <side-menu></side-menu>
+        </div>
+        <div class="column">
+          <h6 class="title is-6">Dashboard</h6>
+          <div class="columns">
+            <div class="column">
+              <div class="card">
+                <div class="card-content">
+                  <div class="media">
+                    <div class="media-left">
+                      <span class="icon is-large">
+                        <i class="fa fa-3x fa-shield"></i>
+                      </span>
                     </div>
-                    <div class="content">
-                      <strong>Load averages:</strong> {{ info.loadavg[0].toFixed(2) }}, {{ info.loadavg[1].toFixed(2) }}, {{ info.loadavg[2].toFixed(2) }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="column">
-                <div class="card">
-                  <div class="card-content">
-                    <div class="media">
-                      <div class="media-left">
-                        <span class="icon is-large">
-                          <i class="fa fa-3x fa-microchip"></i>
-                        </span>
-                      </div>
-                      <div class="media-content">
-                        <p class="title is-4">Memory</p>
-                        <p class="subtitle is-6">{{ formatBytes(info.resources.memory.total) }}</p>
-                      </div>
-                    </div>
-                    <div class="content">
-                      <strong>Total:</strong> {{ formatBytes(info.resources.memory.total) }}
-                      <strong>Used:</strong> {{ formatBytes(info.resources.memory.used) }}
+                    <div class="media-content">
+                      <p class="title is-5">CPUs</p>
+                      <p class="subtitle is-6">
+                        {{ info.resources.cpu.sockets[0].name }} - {{ info.resources.cpu.total }} @ {{ Number(info.resources.cpu.sockets[0].frequency_turbo / 1000).toFixed(2) }}GHz
+                      </p>
+                      <p style="margin-top:-6px">
+                        <strong>Load:</strong> {{ info.loadavg[0].toFixed(2) }}, {{ info.loadavg[1].toFixed(2) }}, {{ info.loadavg[2].toFixed(2) }}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div class="columns">
-              <div class="column">
-                <div class="card">
-                  <header class="card-header">
-                    <p class="card-header-title">
-                      Containers {{ info.containers }}
-                    </p>
-                  </header>
-                  <footer class="card-footer">
-                    <a href="#" class="card-footer-item is-success">
-                      <span class="icon">
-                        <i class="fa fa-plus"></i>
+            <div class="column">
+              <div class="card">
+                <div class="card-content">
+                  <div class="media">
+                    <div class="media-left">
+                      <span class="icon is-large">
+                        <i class="fa fa-3x fa-microchip"></i>
                       </span>
-                      New
-                    </a>
-                  </footer>
+                    </div>
+                    <div class="media-content">
+                      <p class="title is-4">Memory</p>
+                      <p class="subtitle is-6"></p>
+                    </div>
+                  </div>
+                  <div class="content">
+                    <strong>Total:</strong> {{ formatBytes(info.resources.memory.total) }}
+                    <strong>Used:</strong> {{ formatBytes(info.resources.memory.used) }}
+                  </div>
                 </div>
               </div>
-              <div class="column">
-                <div class="card">
-                  <header class="card-header">
-                    <p class="card-header-title">
-                      Profiles {{ info.profiles }}
-                    </p>
-                  </header>
-                  <footer class="card-footer">
-                    <a href="#" class="card-footer-item is-success">
-                      <span class="icon">
-                        <i class="fa fa-plus"></i>
-                      </span>
-                      New
-                    </a>
-                  </footer>
-                </div>
+            </div>
+          </div>
+          <div class="columns">
+            <div class="column">
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    Containers {{ info.containers }}
+                  </p>
+                </header>
+                <footer class="card-footer">
+                  <a href="#" class="card-footer-item is-success">
+                    <span class="icon">
+                      <i class="fa fa-plus"></i>
+                    </span>
+                    New
+                  </a>
+                </footer>
               </div>
-              <div class="column">
-                <div class="card">
-                  <header class="card-header">
-                    <p class="card-header-title">
-                      Images {{ info.images }}
-                    </p>
-                  </header>
-                  <footer class="card-footer">
-                    <a href="#" class="card-footer-item is-success">
-                      <span class="icon">
-                        <i class="fa fa-plus"></i>
-                      </span>
-                      New
-                    </a>
-                  </footer>
-                </div>
+            </div>
+            <div class="column">
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    Profiles {{ info.profiles }}
+                  </p>
+                </header>
+                <footer class="card-footer">
+                  <a href="#" class="card-footer-item is-success">
+                    <span class="icon">
+                      <i class="fa fa-plus"></i>
+                    </span>
+                    New
+                  </a>
+                </footer>
+              </div>
+            </div>
+            <div class="column">
+              <div class="card">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    Images {{ info.images }}
+                  </p>
+                </header>
+                <footer class="card-footer">
+                  <a href="#" class="card-footer-item is-success">
+                    <span class="icon">
+                      <i class="fa fa-plus"></i>
+                    </span>
+                    New
+                  </a>
+                </footer>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </el-main>
   </div>
 </template>
 
@@ -138,8 +135,7 @@
     mixins: [lxc, helpers],
     data () {
       return {
-        search: null,
-        search_result: null,
+        activeIndex: '/',
         info: {
           loadavg: require('os').loadavg(),
           resources: {
@@ -276,25 +272,8 @@
       } else {
         this.info.images = storage.get('info.images')
       }
-
-      this.foo()
     },
-    methods: {
-      foo () {
-        storage.set('unicorn', '🦄')
-        console.log(this.$electron.remote.app.getPath('userData'))
-        // console.log(storage.openInEditor())
-      },
-      handleSearchEvent (value) {
-        //
-        this.lxc_list(value, (response) => {
-          this.search_result = response
-        })
-      },
-      open (link) {
-        this.$electron.shell.openExternal(link)
-      }
-    }
+    methods: {}
   }
 </script>
 
@@ -307,5 +286,31 @@
 
   .media-content {
     overflow: hidden;
+  }
+
+  .el-header, .el-footer {
+    background-color: #2b001d;
+    color: #333;
+    line-height: 33px;
+    padding: 0
+  }
+
+  .el-main {
+    background-color: #E9EEF3;
+    color: #333;
+    height: calc(100vh - 60px);
+  }
+
+  body > .el-container {
+    margin-bottom: 40px;
+  }
+
+  .el-container:nth-child(5) .el-aside,
+  .el-container:nth-child(6) .el-aside {
+    line-height: 260px;
+  }
+
+  .el-container:nth-child(7) .el-aside {
+    line-height: 320px;
   }
 </style>

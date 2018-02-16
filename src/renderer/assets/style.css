@@ -1,26 +1,57 @@
 [v-cloak] {
-  display: none;
+  display: none
 }
 
-#wrapper {
-  height: 100vh;
-  padding: 10px 20px 0px 10px;
-  width: 100vw;
+html::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
 }
 
-#content-wrapper {
-  margin-top: -20px;
+html {
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+body {
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 .table tr:hover {
-  background-color: transparent !important;
+  background-color: transparent !important
 }
 
 .table td, .table th {
   vertical-align: middle;
-  font-size: 0.93rem;
+  font-size: 0.93rem
 }
 
 .tabs.is-small {
-  font-size: 0.84rem;
+  font-size: 0.80rem
+}
+
+.el-main {
+  background-color: #E9EEF3;
+  color: #333;
+  height: calc(100vh - 60px);
+  padding-top: 20px
+}
+
+.box {
+  border-radius: 0px;
+  padding: 0rem
+}
+
+.card-content {
+  padding: 0.90rem 1rem
+}
+
+.menu-list a.is-active {
+  background-color: #fff;
+  color: #363636;
+  border-radius: 0px
 }

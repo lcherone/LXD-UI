@@ -1,101 +1,89 @@
 <template>
-  <div>
-    <nav class="level" style="margin-bottom: -15px ">
-      <div class="level-left">
-        <div class="level-item">
-          <p class="subtitle is-4">
-            <strong>LXD</strong>UI
-          </p>
+  <el-container>
+    <el-header>
+      <div id="logo">
+        <div style="float:left;">
+          <img src="~@/assets/lxc-logo.png" alt="electron-vue">
         </div>
-        <div class="level-item" v-show="show_search">
-          <div class="field has-addons">
-            <p class="control">
-              <input class="input" type="text" :value="search" @input="search_execute" :placeholder="placeholder">
-            </p>
-            <p class="control">
-              <button class="button" @click="search_execute()">
-                Search
-              </button>
-            </p>
-          </div>
+        <div id="logo-text">
+          <strong>LXD<span>ui</span></strong>
         </div>
       </div>
-      <div class="level-right" v-show="show_links">
-        <!-- Home -->
-        <p class="level-item" v-show="current != 'index'"><router-link :to="{ name: 'index' }">Home</router-link></p>
-        <p class="level-item" v-show="current == 'index'"><strong>Home</strong></p>
-        <!-- Containers -->
-        <p class="level-item" v-show="current != 'containers'"><router-link :to="{ name: 'containers' }">Containers</router-link></p>
-        <p class="level-item" v-show="current == 'containers'"><strong>Containers</strong></p>        
-        <!-- Profiles -->
-        <p class="level-item" v-show="current != 'profiles'"><router-link :to="{ name: 'profiles' }">Profiles</router-link></p>
-        <p class="level-item" v-show="current == 'profiles'"><strong>Profiles</strong></p>
-        <!-- Images -->
-        <p class="level-item" v-show="current != 'images'"><router-link :to="{ name: 'images' }">Images</router-link></p>
-        <p class="level-item" v-show="current == 'images'"><strong>Images</strong></p>
-        <!-- New -->
-        <p class="level-item">
-<!--          <a class="button is-success" @click="modalActive=true">New Container</a>-->
-        </p>
-      </div>
-    </nav>
-    <hr>
-<!--    <new-container-modal v-bind:isActive="modalActive" @close-modal="close_modal"></new-container-modal>-->
-  </div>
+      <el-menu :router="true"
+               :default-active="activeIndex"
+               mode="horizontal"
+               background-color="#e34b14"
+               text-color="#fff"
+               active-text-color="#2b001d">
+        <el-menu-item index="/">Home</el-menu-item>
+        <el-menu-item index="/containers">Containers</el-menu-item>
+        <el-menu-item index="/profiles">Profiles</el-menu-item>
+        <el-menu-item index="/images">Images</el-menu-item>
+      </el-menu>
+    </el-header>
+  </el-container>
 </template>
 
 <script>
-  import _ from 'lodash'
-  
-  import NewContainerModal from '../Containers/NewModal'
-
   export default {
-    components: { NewContainerModal },
-    props: {
-      current: {},
-      show_search: {
-        default: true,
-        type: Boolean
-      },
-      show_links: {
-        default: true,
-        type: Boolean
-      }
-    },
+    // components: { },
+    props: ['current'],
     data () {
       return {
-        // show_search: true,
-        // show_links: true,
-        search: null,
-        placeholder: null,
-        modalActive: false
+        activeIndex: this.current
       }
-    },
-    mounted: function () {
-      this.$nextTick(function () {
-        if (this.$route.name === 'index') {
-          this.placeholder = 'Find containers, images...'
-        } else if (this.$route.name === 'containers') {
-          this.placeholder = 'Find container...'
-        }
-      })
-    },
-    methods: {
-      close_modal: function () {
-        this.modalActive = false
-      },
-      search_execute: _.debounce(function (e) {
-        // get event value
-        if (typeof e !== 'undefined' && typeof e.target !== 'undefined') {
-          this.search = e.target.value
-        }
-        // emit search event
-        this.$emit('search-event', this.search)
-      }, 300)
-    }
+    }// ,
+    // mounted: function () {},
+    // methods: {}
   }
 </script>
 
 <style scoped>
+  .el-header {
+    background-color: #2b001d;
+    color: #333;
+    line-height: 33px;
+    padding: 0
+  }
+
+  .el-menu {
+    margin-left: 150px
+  }
+
+  #logo {
+    width:150px;
+    height:60px;
+    float:left;
+  }
+
+  #logo img {
+    height: auto;
+    width: 45px;
+    margin:8px 12px 0px 15px
+  }
+
+  #logo strong {
+    font-size:20px;
+    text-shadow:
+      -1px -1px 0 #f05e24,  
+      1px -1px 0 #f05e24,
+      -1px 1px 0 #f05e24,
+      1px 1px 0 #f05e24;
+  } 
+
+  #logo-text {
+    color:#31353d;
+    padding-top:12px
+  }
+
+  #logo span {
+    color:#ddd;
+    font-size:18px;
+    text-shadow:
+      -1px -1px 0 #000,  
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000;
+  }
 
 </style>

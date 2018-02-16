@@ -13,7 +13,7 @@ export default new Router({
     {
       path: '/containers',
       name: 'containers',
-      component: require('@/components/ContainersNewPage').default
+      component: require('@/components/ContainersPage').default
     },
     {
       path: '/console/:container',
@@ -22,9 +22,24 @@ export default new Router({
       props: true
     },
     {
-      path: '/settings',
-      name: 'settings',
-      component: require('@/components/SettingsPage').default
+      path: '/about',
+      name: 'about',
+      component: require('@/components/AboutPage').default
+    },
+    {
+      path: '/docs',
+      name: 'docs',
+      component: require('@/components/DocsPage').default
+    },
+    {
+      path: '/settings/lxd',
+      name: 'settings-lxd',
+      component: require('@/components/SettingsLxdPage').default
+    },
+    {
+      path: '/settings/app',
+      name: 'settings-app',
+      component: require('@/components/SettingsAppPage').default
     },
     {
       path: '/images',

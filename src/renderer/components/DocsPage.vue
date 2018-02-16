@@ -10,11 +10,11 @@
           <side-menu></side-menu>
         </div>
         <div class="column">
-          <h6 class="title is-6">Empty Page</h6>
+          <h6 class="title is-6">Docs</h6>
 
           <div class="box">
             <div class="card-content">
-              <p>This is an empty page with side menu.</p>
+              <p>This is a placeholder page, docs which will be added soon.</p>
             </div>
           </div>
         </div>
@@ -28,7 +28,7 @@
   import SideMenu from './Layout/SideMenu'
 
   export default {
-    name: 'empty-page',
+    name: 'docs-page',
     components: { MainHeader, SideMenu },
     mixins: [],
     data () {

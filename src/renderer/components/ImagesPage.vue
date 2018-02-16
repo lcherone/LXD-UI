@@ -1,71 +1,70 @@
 <template>
-  <div id="wrapper">
-    <div class="container is-fluid">
-      <main-header v-bind:current="$route.name" @search-event="handleSearchEvent"></main-header>
-      <div id="content-wrapper">
-        <div class="columns">
-          <div class="column">
-            <strong class="title is-5">
-              <span class="icon">
-                <i class="fa fa-cogs"></i>
-              </span>
-              Images
-            </strong>
-            <div class="tabs is-small is-toggle is-pulled-right">
+  <div>
+    <!-- Main header -->
+    <main-header :current="$route.path"></main-header>
+
+    <!-- Main element -->
+    <el-main>
+      <h6 class="title is-6">
+        <span class="icon">
+          <i class="fa fa-cubes"></i>
+        </span>
+        Images
+        <div class="tabs is-small is-toggle is-pulled-right">
+          <ul>
+            <li v-bind:class="{ 'is-active': remote === active_remote }" v-for="remote in remotes">
+              <a @click="load_remote_images(remote)"><span>{{ remote | ucfirst }}</span></a>
+            </li>
+          </ul>
+        </div>
+      </h6>
+      <div class="box">
+        <div class="card-content">
+          <div style="margin-top:-5px" v-show="distros_list.length > 0">
+            <div class="tabs is-small">
               <ul>
-                <li v-bind:class="{ 'is-active': remote === active_remote }" v-for="remote in remotes">
-                  <a @click="load_remote_images(remote)"><span>{{ remote | ucfirst }}</span></a>
-                </li>
+                <li v-bind:class="{ 'is-active': distro === active_distro }" @click="filter_distro(distro)" v-for="distro in distros_list"><a>{{ distro }}</a></li>
               </ul>
             </div>
+            <table class="table is-fullwidth is-narrow" style="margin-top:-10px">
+              <thead>
+                <tr>
+                  <th style="width:40%">Description</th>
+                  <th style="width:12%">Version</th>
+                  <th style="width:12%">Release</th>
+                  <th style="width:12%">Size</th>
+                  <th style="width:12%">Uploaded</th>
+                  <th style="width:2%"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="image in image_list">
+                  <td>{{ image.properties.description | ucfirst }}</td>
+                  <td>{{ image.properties.version ? image.properties.version : '-' }}</td>
+                  <td>{{ image.properties.release | ucfirst }}</td>
+                  <td>{{ formatBytes(image.size) }}</td>
+                  <td>{{ image.uploaded_at | formatDate }}</td>
+                  <td>
+                    <div style="display: flex">
+                      <a v-show="active_remote === 'local'" class="button is-danger is-small" @click="delete_image(image.fingerprint)"><i class="fa fa-times"></i></a>
+                      <launch-container v-bind:remote="active_remote" v-bind:fingerprint="image.fingerprint"></launch-container>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </div>
-        <div style="margin-top:-10px" v-show="distros_list.length > 0">
-          <div class="tabs is-small">
-            <ul>
-              <li v-bind:class="{ 'is-active': distro === active_distro }" @click="filter_distro(distro)" v-for="distro in distros_list"><a>{{ distro }}</a></li>
-            </ul>
+          <div v-show="distros_list.length === 0">
+            <article class="message">
+              <div class="message-body">
+                <span v-show="active_remote === 'local'">Currently, there are no locally cached images.</span>
+                <span v-show="active_remote !== 'local'">Oops! There was a problem when trying to fetch images from: {{ active_remote }}, check your internet connection and try again.</span>
+              </div>
+            </article>
           </div>
-          <table class="table is-fullwidth is-narrow" style="margin-top:-20px">
-            <thead>
-              <tr>
-                <th style="width:40%">Description</th>
-                <th style="width:12%">Version</th>
-                <th style="width:12%">OS</th>
-                <th style="width:12%">Release</th>
-                <th style="width:12%">Size</th>
-                <th style="width:12%">Uploaded</th>
-                <th style="width:1%"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="image in image_list">
-                <td>{{ image.properties.description | ucfirst }}</td>
-                <td>{{ image.properties.version ? image.properties.version : '-' }}</td>
-                <td>{{ image.properties.os | ucfirst }}</td>
-                <td>{{ image.properties.release | ucfirst }}</td>
-                <td>{{ formatBytes(image.size) }}</td>
-                <td>{{ image.uploaded_at | formatDate }}</td>
-                <td>
-                  <div style="display:flex">
-                    <a v-show="active_remote === 'local'" class="button is-danger is-small" @click="delete_image(image.fingerprint)"><i class="fa fa-times"></i></a>
-                    <launch-container v-bind:remote="active_remote" v-bind:fingerprint="image.fingerprint"></launch-container>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div v-show="distros_list.length === 0">
-          <article class="message">
-            <div class="message-body">
-              <span v-show="active_remote === 'local'">Currently, there are no locally cached images.</span>
-              <span v-show="active_remote !== 'local'">Oops! There was a problem when trying to fetch images from: {{ active_remote }}, check your internet connection and try again.</span>
-            </div>
-          </article>
         </div>
       </div>
-    </div>
+    </el-main>
   </div>
 </template>
 
@@ -206,9 +205,5 @@
 </script>
 
 <style>
-
-  #content-wrapper {
-    margin-top: -20px;
-  }
 
 </style>

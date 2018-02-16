@@ -1,272 +1,193 @@
 <template>
-  <div id="wrapper">
+  <div>
+    <!-- Main header -->
+    <main-header :current="$route.path"></main-header>
 
-    <div class="container is-fluid">
-      <main-header v-bind:current="$route.name"></main-header>
-
-      <div style="margin-top:-10px">
-        <div style="margin-bottom:10px">
-          <strong class="subtitle is-4">Containers</strong>
-        </div>
-
-        <div class="columns">
-          <div class="column" v-for="(item, index) in search_result">
-            <div class="card">
-              <header class="card-header">
-                <p class="card-header-title">
-                  {{ item.name }}
-                </p>
-                <a href="#" class="card-header-icon" aria-label="more options">
-                  <span class="icon">
-                    <i class="fas fa-angle-down" aria-hidden="true"></i>
-                  </span>
-                </a>
-              </header>
-              <div class="card-content">
-                <div class="content">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                  <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
-                  <br>
-                  <time datetime="2016-1-1"><strong>Created:</strong> 11:09 PM - 1 Jan 2016</time>
-                </div>
-              </div>
-              <footer class="card-footer">
-                <a href="#" class="card-footer-item">Stop</a>
-                <a href="#" class="card-footer-item">Start</a>
-                <a href="#" class="card-footer-item">Delete</a>
-              </footer>
-            </div>
+    <!-- Main element -->
+    <el-main>
+      <h6 class="title is-6">
+        <span class="icon">
+          <i class="fa fa-cubes"></i>
+        </span>
+        Containers
+        <button 
+                class="button is-small is-primary is-pulled-right" 
+                @click="refresh_containers()" 
+                v-bind:class="{ 'is-loading': btn.refresh_containers }" 
+                v-bind:disabled="btn.refresh_containers">
+          <span class="icon">
+            <i class="fa fa-refresh"></i> 
+          </span>
+          &nbsp; Refresh
+        </button>
+      </h6>
+      <div class="box">
+        <div class="card-content">
+          <div v-show="containers.length > 0">
+            <table class="table is-fullwidth is-narrow">
+              <thead>
+                <tr>
+                  <th style="width:20%">Name</th>
+                  <th style="width:20%">IP</th>
+                  <th style="width:20%">CPU</th>
+                  <th style="width:20%">Memory</th>
+                  <th style="width:10%">Status</th>
+                  <th style="width:1%"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="container in containers">
+                  <td>
+                    <router-link v-show="container.status === 'Running'" :to="{ path: '/console/' + container.name }" target="_blank">{{ container.name }}</router-link>
+                    <span v-show="container.status === 'Stopped'">{{ container.name }}</span>
+                  </td>
+                  <td>
+                    <!-- Running is ip4 -->
+                    <a 
+                       v-show="container.state && container.status === 'Running' && isIP4(container.state.network.eth0.addresses[0].address)" 
+                       @click="open('http://' + container.state.network.eth0.addresses[0].address)">
+                      {{ container.state && container.state.network ? container.state.network.eth0.addresses[0].address : '-' }}
+                    </a>
+                    <!-- Running not ip4 -->
+                    <span 
+                          v-show="container.status === 'Running' && isIP4(container.state.network.eth0.addresses[0].address) === false" 
+                          @click="refresh_containers()">
+                      <i class="fa fa-refresh"></i>
+                    </span>
+                    <!-- Stopped -->
+                    <span v-show="container.status === 'Stopped'">-</span>
+                  </td>
+                  <td>{{ container.state && container.state.cpu.usage !== 0 ? Number(container.state.cpu.usage/1000000000).toFixed(2) + ' seconds' : '-' }}</td>
+                  <td>{{ container.state && container.state.memory.usage !== 0 ? formatBytes(container.state.memory.usage) : '-' }}</td>
+                  <td>
+                    <span class="has-text-success" v-show="container.status === 'Running'">Running</span>
+                    <span class="has-text-danger" v-show="container.status === 'Stopped'">Stopped</span>
+                  </td>
+                  <td>
+                    <div style="display: flex">
+                      <button class="button is-small is-warning" v-show="container.status === 'Running'" @click="stop_container(container.name)">
+                        <span class="icon">
+                          <i class="fa fa-stop"></i> 
+                        </span>
+                        <span>Stop</span>
+                      </button>
+                      <button class="button is-small is-success" v-show="container.status === 'Stopped'" @click="start_container(container.name)">
+                        <span class="icon">
+                          <i class="fa fa-play"></i> 
+                        </span>
+                        <span>Start</span>
+                      </button>
+                      <button class="button is-small is-danger" v-show="container.status === 'Stopped'" @click="delete_container(container.name)">
+                        <span class="icon">
+                          <i class="fa fa-times"></i> 
+                        </span>
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div v-show="containers.length === 0">
+            No containers, you can <router-link :to="{ name: 'images' }">launch one from an image</router-link>.
           </div>
         </div>
       </div>
-    </div>
-
-
-    <div class="modal" v-bind:class="{ 'is-active': isActive }">
-      <div class="modal-background"></div>
-      <div class="modal-card" style="margin-top:-50vh">
-        <header class="modal-card-head">
-          <p class="modal-card-title">Modal title</p>
-          <button class="delete" aria-label="close" @click="isActive=false"></button>
-        </header>
-        <section class="modal-card-body">
-          ...
-        </section>
-        <footer class="modal-card-foot">
-          <button class="button is-success">Save changes</button>
-          <button class="button" @click="isActive=false">Cancel</button>
-        </footer>
-      </div>
-    </div>
-
-
-    {~ search ~}
-
-    <pre>{~ cmdout ~}</pre>
-
-
-    <div>
-      <button class="button" @click="isActive=true">Electron</button>
-      <button class="alt" @click="open('https://electron.atom.io/docs/')">Electron</button>
-    </div>
-
-
-    <pre>{{ this.$data }}</pre>
-    <pre>{{ require('os').cpus() }}</pre>
-    <pre>{- execute("lxc list", function(name){ return name; }) -}</pre>
-
-
-
-    <!--    <system-information v-bind:cmdout="cmdout"></system-information>-->
-
-    <footer class="footer">
-      <div class="container">
-        <div class="content has-text-centered">
-          <p>
-            <strong>Bulma</strong> by <a href="https://jgthms.com">Jeremy Thomas</a>. The source code is licensed
-            <a href="http://opensource.org/licenses/mit-license.php">MIT</a>. The website content
-            is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
-          </p>
-        </div>
-      </div>
-    </footer>
-
-
-
-
-    <!--
-<img id="logo" src="~@/assets/logo.png" alt="electron-vue">
-<main>
-<div class="left-side">
-<span class="title">
-Welcome to your new pdfgroject!
-</span>
-<system-information></system-information>
-</div>
-
-<div class="right-side">
-<div class="doc">
-<div class="title">Getting Ssdfsdsdfdfftarted</div>
-
-
-<p>
-electron-vue comes packed with detailed documentation that cov;;;ers everything from
-internal configurations, using the project structure, building your application,
-and so much more.
-</p>
-<button @click="open('https://simulatedgreg.gitbooks.io/electron-vue/content/')">Read the Docs</button><br><br>
-</div>
-<div class="doc">
-<div class="title alt">Other Documentation</div>
-<button class="alt" @click="open('https://electron.atom.io/docs/')">Electron</button>
-<button class="alt" @click="open('https://vuejs.org/v2/guide/')">Vue.js</button>
-</div>
-</div>
-</main>
--->
+    </el-main>
   </div>
 </template>
 
 <script>
-  import _ from 'lodash'
-  
-  import lxc from '../mixins/lxc.js'
+  // import _ from 'lodash'
 
+  import helpers from '../mixins/helpers.js'
+  import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
-  import SystemInformation from './LandingPage/SystemInformation'
 
   export default {
     name: 'containers-page',
-    components: { MainHeader, SystemInformation },
-    mixins: [lxc],
+    components: { MainHeader },
+    mixins: [lxc, helpers],
     data () {
       return {
-        electron: process.versions['atom-shell'],
-        name: this.$route.name,
-        node: process.versions.node,
-        path: this.$route.path,
-        platform: require('os').platform(),
-        vue: require('vue/package.json').version,
-        isActive: false,
-        search: '',
-        search_result: null
+        search: null,
+        search_result: null,
+        containers: [],
+        btn: {
+          refresh_containers: false
+        }
       }
     },
+    mounted: function () {
+      this.$nextTick(() => {
+        this.get_containers()
+      })
+    },
     methods: {
+      /**
+       *
+       */
+      refresh_containers () {
+        this.btn.refresh_containers = true
+        this.get_containers(() => {
+          this.btn.refresh_containers = false
+        })
+      },
+      /**
+       *
+       */
+      get_containers (callback) {
+        this.lxc_list(null, (response) => {
+          this.containers = response
+          if (typeof callback === 'function') {
+            callback()
+          }
+        })
+      },
+      /**
+       *
+       */
+      start_container (name) {
+        this.lxc_start(name, (response) => {
+          //
+          this.get_containers()
+        })
+      },
+      /**
+       *
+       */
+      stop_container (name) {
+        this.lxc_stop(name, (response) => {
+          //
+          this.get_containers()
+        })
+      },
+      /**
+       *
+       */
+      delete_container (name) {
+        this.lxc_delete(name, (response) => {
+          //
+          this.get_containers()
+        })
+      },
+      /**
+       *
+       */
+      handleSearchEvent (value) {
+        //
+        this.lxc_list(value, (response) => {
+          this.search_result = response
+        })
+      },
       open (link) {
         this.$electron.shell.openExternal(link)
-      },
-      search_execute: _.debounce(function (e) {
-        //
-        var self = this
-        //
-        if (typeof e !== 'undefined' && typeof e.target !== 'undefined') {
-          this.search = e.target.value
-        }
-        //
-        var cmd = null
-        if (this.search === '') {
-          cmd = 'lxc list --format json'
-        } else {
-          cmd = 'lxc list \'^' + this.search + '(.*)$\' --format json'
-        }
-        //
-        var exec = require('child_process').exec
-        exec(cmd, function (error, stdout, stderr) {
-          console.log('stdout: ' + stdout)
-          console.log('stderr: ' + stderr)
-          if (error !== null) {
-            console.log('exec error: ' + error)
-          }
-          if (stdout === '') {
-            stdout = []
-          }
-          self.search_result = JSON.parse(stdout)
-        })
-      }, 500)
+      }
     }
   }
 </script>
 
 <style>
-  #wrapper {
-    height: 100vh;
-    padding: 10px 20px 0px 10px;
-    width: 100vw;
-  }
 
-
-  /*
-  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
-
-  * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  }
-
-  body { font-family: 'Source Sans Pro', sans-serif; }
-
-
-
-  #logo {
-  height: auto;
-  margin-bottom: 20px;
-  width: 420px;
-  }
-
-  main {
-  display: flex;
-  justify-content: space-between;
-  }
-
-  main > div { flex-basis: 50%; }
-
-  .left-side {
-  display: flex;
-  flex-direction: column;
-  }
-
-  .welcome {
-  color: #555;
-  font-size: 23px;
-  margin-bottom: 10px;
-  }
-
-  .title {
-  color: #2c3e50;
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 6px;
-  }
-
-  .title.alt {
-  font-size: 18px;
-  margin-bottom: 10px;
-  }
-
-  .doc p {
-  color: black;
-  margin-bottom: 10px;
-  }
-
-  .doc button {
-  font-size: .8em;
-  cursor: pointer;
-  outline: none;
-  padding: 0.75em 2em;
-  border-radius: 2em;
-  display: inline-block;
-  color: #fff;
-  background-color: #4fc08d;
-  transition: all 0.15s ease;
-  box-sizing: border-box;
-  border: 1px solid #4fc08d;
-  }
-
-  .doc button.alt {
-  color: #42b983;
-  background-color: transparent;
-  }
-  */
 </style>
