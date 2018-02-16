@@ -201,6 +201,8 @@
       }
     },
     mounted: function () {
+      document.title = 'LXDui - Home'
+
       //
       let cacheTime = 0
 

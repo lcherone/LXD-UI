@@ -59,12 +59,14 @@
                   <td>{{ container.state && container.state.cpu.usage !== 0 ? Number(container.state.cpu.usage/1000000000).toFixed(2) + ' seconds' : '-' }}</td>
                   <td>{{ container.state && container.state.memory.usage !== 0 ? formatBytes(container.state.memory.usage) : '-' }}</td>
                   <td>
-                    <span class="has-text-success" v-show="container.status === 'Running'">Running</span>
-                    <span class="has-text-danger" v-show="container.status === 'Stopped'">Stopped</span>
+                    <span :class="{
+                                  'has-text-success': (container.status === 'Running'),
+                                  'has-text-danger': (container.status === 'Stopped')
+                                  }">{{ container.status }}</span>
                   </td>
                   <td>
                     <div style="display: flex">
-                      <router-link class="button is-small is-info" v-show="container.status === 'Running'" :to="{ path: '/console/' + container.name }" target="_blank" title="Open terminal">
+                      <router-link class="button is-small is-info" v-show="container.status === 'Running'" :to="{ path: '/terminal/' + container.name }" target="_blank" title="Open terminal">
                         <span class="icon">
                           <i class="fa fa-terminal"></i> 
                         </span>
@@ -122,6 +124,8 @@
       }
     },
     mounted: function () {
+      document.title = 'LXDui - Containers'
+
       this.$nextTick(() => {
         this.get_containers()
       })
@@ -152,6 +156,12 @@
        */
       start_container (name) {
         this.lxc_start(name, (response) => {
+          this.$notify({
+            duration: 2000,
+            title: 'Success',
+            message: 'Container ' + name + ' started.',
+            type: 'success'
+          })
           //
           this.get_containers()
         })
@@ -161,6 +171,12 @@
        */
       stop_container (name) {
         this.lxc_stop(name, (response) => {
+          this.$notify({
+            duration: 2000,
+            title: 'Success',
+            message: 'Container ' + name + ' stopped.',
+            type: 'success'
+          })
           //
           this.get_containers()
         })
@@ -170,6 +186,12 @@
        */
       delete_container (name) {
         this.lxc_delete(name, (response) => {
+          this.$notify({
+            duration: 2000,
+            title: 'Success',
+            message: 'Container ' + name + ' deleted.',
+            type: 'success'
+          })
           //
           this.get_containers()
         })

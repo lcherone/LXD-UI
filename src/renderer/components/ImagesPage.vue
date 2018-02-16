@@ -60,12 +60,8 @@
             </table>
           </div>
           <div v-show="distros_list.length === 0">
-            <article class="message">
-              <div class="message-body">
-                <span v-show="active_remote === 'local'">Currently, there are no locally cached images.</span>
-                <span v-show="active_remote !== 'local'">Oops! There was a problem when trying to fetch images from: {{ active_remote }}, check your internet connection and try again.</span>
-              </div>
-            </article>
+            <span v-show="active_remote === 'local'">Currently, there are no locally cached images.</span>
+            <span v-show="active_remote !== 'local'">Oops! There was a problem when trying to fetch images from: {{ active_remote }}, check your internet connection and try again.</span>
           </div>
         </div>
       </div>
@@ -120,6 +116,8 @@
       }
     },
     mounted: function () {
+      document.title = 'LXDui - Images'
+
       this.$nextTick(() => {
         this.load_remote_images('local')
         //
@@ -153,6 +151,12 @@
         this.lxc_image_delete(fingerprint, (response) => {
           storage.set('images_cached.local', 0)
           this.load_remote_images('local')
+          this.$notify({
+            duration: 1200,
+            title: 'Success',
+            message: 'Image deleted.',
+            type: 'success'
+          })
         })
       },
       filter_distro (distro) {

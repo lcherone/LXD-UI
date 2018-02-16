@@ -16,9 +16,9 @@ export default new Router({
       component: require('@/components/ContainersPage').default
     },
     {
-      path: '/console/:container',
-      name: 'console',
-      component: require('@/components/ConsolePage').default,
+      path: '/terminal/:container',
+      name: 'terminal',
+      component: require('@/components/TerminalPage').default,
       props: true
     },
     {

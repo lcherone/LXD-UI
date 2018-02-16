@@ -42,6 +42,7 @@
       }
     },
     mounted: function () {
+      document.title = 'LXDui - Profiles'
       this.$nextTick(() => {
         // this.get_containers()
       })

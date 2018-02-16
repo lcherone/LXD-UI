@@ -33,11 +33,10 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <div class="select">
-                    <select v-model="profile" id="profile">
-                      <option>default</option>
-                    </select>
-                  </div>
+                  <el-select v-model="profiles" multiple placeholder="Select container profile">
+                    <el-option label="default" value="default"></el-option>
+                    <el-option label="profile-nameb" value="profile-nameb"></el-option>
+                  </el-select>
                 </div>
               </div>
             </div>            
@@ -47,11 +46,7 @@
               </div>
               <div class="field-body">
                 <div class="field">
-                  <div class="control">
-                    <label class="checkbox">
-                      <input type="checkbox" id="ephemeral" v-model="ephemeral">
-                    </label>
-                  </div>
+                  <el-switch active-color="#13ce66" v-model="ephemeral"></el-switch>
                 </div>
               </div>
             </div>
@@ -66,7 +61,7 @@
           <button class="button" @click="isActive = false" v-bind:disabled="launching">Cancel</button>
         </footer>
         <footer class="modal-card-foot" v-show="launched">
-          <button class="button" @click="isActive = false">Close</button>
+          <button class="button is-success" @click="isActive = false">Close</button>
         </footer>
       </div>
     </div>
@@ -91,7 +86,7 @@
       return {
         isActive: false,
         name: null,
-        profile: 'default',
+        profiles: ['default'],
         ephemeral: null,
         launching: false,
         launched: false
@@ -104,7 +99,7 @@
 
         //
         Terminal.applyAddon(fit)
-        var xterm = new Terminal({
+        const xterm = new Terminal({
           useStyle: false,
           screenKeys: false,
           cursorBlink: true
@@ -115,19 +110,18 @@
         xterm.resize(0, 15)
         xterm.fit()
 
+        // define spawn arguments array
+        let spawnProps = []
+        spawnProps.push(this.remote + ':' + this.fingerprint)
+        spawnProps.push(this.name)
+        spawnProps.push('-p ' + this.profiles.join(' -p '))
+        spawnProps.push((this.ephemeral ? '-e' : ''))
+
         //
         const { spawn } = require('child_process')
-        const ls = spawn(
-          'lxc launch', [
-            this.remote + ':' + this.fingerprint,
-            this.name,
-            '-p' + this.profile,
-            (this.ephemeral ? '-e' : '')
-          ],
-          {
-            shell: true
-          }
-        )
+        const ls = spawn('lxc launch', spawnProps, {
+          shell: true
+        })
 
         ls.stdout.on('data', (data) => {
           let line = data.toString().trim()
@@ -145,6 +139,12 @@
 
         ls.on('close', (code) => {
           if (code === 0) {
+            this.$notify({
+              duration: 2000,
+              title: 'Success',
+              message: 'Container successfully created.',
+              type: 'success'
+            })
             xterm.writeln('Container successfully created.')
             this.launching = false
             this.launched = true

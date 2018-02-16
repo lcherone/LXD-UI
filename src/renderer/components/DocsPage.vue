@@ -34,7 +34,9 @@
     data () {
       return {}
     },
-    mounted: function () {},
+    mounted: function () {
+      document.title = 'LXDui - Docs'
+    },
     methods: {
       open (link) {
         this.$electron.shell.openExternal(link)

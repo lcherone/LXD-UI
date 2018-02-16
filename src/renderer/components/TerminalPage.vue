@@ -16,7 +16,7 @@
   const WebSocket = require('ws')
 
   export default {
-    name: 'console-page',
+    name: 'terminal-page',
     components: { MainHeader },
     mixins: [lxc],
     props: ['container'],
@@ -24,6 +24,8 @@
       return {}
     },
     mounted: function () {
+      document.title = 'LXDui - Terminal - ' + this.container
+
       this.$nextTick(() => {
         this.console()
       })
