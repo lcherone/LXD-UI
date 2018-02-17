@@ -10,7 +10,6 @@
           <i class="fa fa-cubes"></i>
         </span>
         Containers
-
         <div v-if="containers.length > 0" class="is-pulled-right">
           <button
                   class="button is-small is-link" 
@@ -63,18 +62,28 @@
               <tbody>
                 <tr v-for="container in containers">
                   <td>
-                    <edit-container v-bind:name="container.name" @on-save="refresh_containers()" @clicked="manage_dropdown_close_all">{{ container.name }}</edit-container>
+                    <edit-container :name="container.name" 
+                                    @on-save="refresh_containers" 
+                                    @container-stopped="refresh_containers"
+                                    @clicked="manage_dropdown_close_all">
+                      {{ container.name }}
+                    </edit-container>
                   </td>
                   <td>
                     <!-- Running is ip4 -->
                     <a 
-                       v-show="container.state && container.status === 'Running' && isIP4(container.state.network.eth0.addresses[0].address)" 
+                       v-if="container.state && 
+                             container.state.network.eth0.addresses.length > 0 && 
+                             container.status === 'Running' && 
+                             isIP4(container.state.network.eth0.addresses[0].address)" 
                        @click="open('http://' + container.state.network.eth0.addresses[0].address)">
                       {{ container.state && container.state.network ? container.state.network.eth0.addresses[0].address : '-' }}
                     </a>
                     <!-- Running not ip4 -->
                     <span 
-                          v-show="container.status === 'Running' && isIP4(container.state.network.eth0.addresses[0].address) === false" 
+                          v-if="container.state &&
+                                container.status === 'Running' && 
+                                (container.state.network.eth0.addresses.length === 0 || isIP4(container.state.network.eth0.addresses[0].address) === false)"
                           @click="refresh_containers()">
                       <i class="fa fa-refresh"></i>
                     </span>
@@ -84,10 +93,8 @@
                   <td>{{ container.state && container.state.cpu.usage !== 0 ? Number(container.state.cpu.usage/1000000000).toFixed(2) + ' seconds' : '-' }}</td>
                   <td>{{ container.state && container.state.memory.usage !== 0 ? formatBytes(container.state.memory.usage) : '-' }}</td>
                   <td>
-                    <strong :class="{
-                                    'has-text-success': (container.status === 'Running'),
-                                    'has-text-danger': (container.status === 'Stopped')
-                                    }">{{ container.status }}</strong>
+                    <strong :class="{'has-text-success': (container.status === 'Running'),
+                                    'has-text-danger': (container.status === 'Stopped')}">{{ container.status }}</strong>
                   </td>
                   <td>
                     <div class="dropdown is-small is-right" :class="manage_dropdown_class(container.name)">
@@ -101,7 +108,7 @@
                       </div>
                       <div class="dropdown-menu" id="dropdown-menu3" role="menu">
                         <div class="dropdown-content">
-                          <router-link class="dropdown-item" v-show="container.status === 'Running'" :to="{ path: '/terminal/' + container.name }" target="_blank" title="Open terminal">
+                          <router-link class="dropdown-item" v-show="container.status === 'Running'" :to="{ path: '/terminal/' + container.name }" target="_blank" v-on:click.native="manage_dropdown_close_all()" title="Open terminal">
                             <span class="icon">
                               <i class="fa fa-terminal"></i> 
                             </span>
@@ -219,6 +226,9 @@
       })
     },
     methods: {
+      /**
+       * [Manage] Dropdown button methods
+       */
       manage_dropdown_close_all (name) {
         for (var prop in this.manageButton) {
           if (!name || (prop !== name && this.manageButton[prop] === true)) {
@@ -355,15 +365,8 @@
       /**
        *
        */
-      handleSearchEvent (value) {
-        //
-        this.lxc_list(value, (response) => {
-          this.search_result = response
-        })
-      },
       open (link) {
         this.manage_dropdown_close_all()
-
         this.$electron.shell.openExternal(link)
       }
     }

@@ -17,7 +17,7 @@
             <div class="field-body">
               <div class="field">
                 <p class="control">
-                  <input id="description" class="input" type="text" v-model="image.properties.description" @input="image.properties.description = image.properties.description.trim()" placeholder="Enter image description...">
+                  <el-input placeholder="Enter image description..." v-model="image.properties.description"></el-input>
                 </p>
               </div>
             </div>
@@ -29,7 +29,7 @@
             <div class="field-body">
               <div class="field">
                 <p class="control">
-                  <input id="version" class="input" type="text" v-model="image.properties.version" @input="image.properties.version = image.properties.version.trim()" placeholder="Enter image version...">
+                  <el-input placeholder="Enter image version..." v-model="image.properties.version"></el-input>
                 </p>
               </div>
             </div>
@@ -39,7 +39,7 @@
               <label class="label" for="auto_update">Auto Update</label>
             </div>
             <div class="field-body">
-              <div class="field">
+              <div class="field" style="margin-top:5px">
                 <el-switch active-color="#13ce66" v-model="image.auto_update"></el-switch>
               </div>
             </div>
@@ -49,7 +49,7 @@
               <label class="label" for="public">Public</label>
             </div>
             <div class="field-body">
-              <div class="field">
+              <div class="field" style="margin-top:5px">
                 <el-switch active-color="#13ce66" v-model="image.public"></el-switch>
               </div>
             </div>

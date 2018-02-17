@@ -20,7 +20,7 @@
                   <input id="name" class="input" type="text" v-model="container.name" @input="safe_name()" placeholder="Enter container name..." :disabled="container.status === 'Running'">
                 </p>
                 <p class="help" v-show="container.status === 'Stopped'">Only letters, digits or hyphens. No leading hyphen or digit. Dots are converted to hyphens.</p>
-                <p class="help" v-show="container.status === 'Running'">You must stop the container before changing its name.</p>
+                <p class="help" v-show="container.status === 'Running'">You must <a @click="stop_container(container.name)">stop the container</a> before changing its name.</p>
               </div>
             </div>
           </div>
@@ -41,7 +41,7 @@
               <label class="label" for="ephemeral">Ephemeral</label>
             </div>
             <div class="field-body">
-              <div class="field">
+              <div class="field" style="margin-top:5px">
                 <el-switch active-color="#13ce66" v-model="container.ephemeral"></el-switch>
               </div>
             </div>
@@ -117,6 +117,9 @@
     },
     mounted: function () {},
     methods: {
+      /**
+       *
+       */
       initialise () {
         this.$emit('clicked')
 
@@ -134,11 +137,33 @@
           }
         })
       },
+      /**
+       *
+       */
       safe_name: _.debounce(function (e) {
         this.container.name = this.container.name.replace(/[.]/g, '-').trim()
         this.container.name = this.container.name.replace(/^[0-9-]|[^a-zA-Z+-\d+]/g, '')
         this.container.name = this.container.name.replace(/[-.]+$/g, '')
-      }, 500),
+      }, 1000),
+      /**
+       *
+       */
+      stop_container () {
+        this.lxc_stop(this.container.name, (response) => {
+          this.$notify({
+            duration: 2000,
+            title: 'Success',
+            message: 'Container ' + this.container.name + ' stopped.',
+            type: 'success'
+          })
+          this.$emit('container-stopped')
+          //
+          this.initialise()
+        })
+      },
+      /**
+       *
+       */
       save () {
         //
         this.isSaving = true

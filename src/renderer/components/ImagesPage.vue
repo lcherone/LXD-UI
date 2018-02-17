@@ -170,14 +170,20 @@
        *
        */
       delete_image (fingerprint) {
-        this.lxc_image_delete(fingerprint, (response) => {
-          storage.set('images_cached.local', 0)
-          this.load_remote_images('local')
-          this.$notify({
-            duration: 1200,
-            title: 'Success',
-            message: 'Image deleted.',
-            type: 'success'
+        this.$confirm('Are you sure you want to delete this image?', 'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          this.lxc_image_delete(fingerprint, (response) => {
+            storage.set('images_cached.local', 0)
+            this.load_remote_images('local')
+            this.$notify({
+              duration: 1200,
+              title: 'Success',
+              message: 'Image deleted.',
+              type: 'success'
+            })
           })
         })
       },
