@@ -12,7 +12,7 @@ A LXD user interface, powered by electron-vue, which will allow you to manage lo
  - Launch containers images.
 
 **Screen**
-![enter image description here](https://i.imgur.com/wbSSIBe.gif)
+![enter image description here](https://i.imgur.com/zQDknja.gif)
 
 > More to come... Its my first project with [electron-vue](https://github.com/SimulatedGREG/electron-vue) and node in general, contributions/feedback is very welcome.
 
