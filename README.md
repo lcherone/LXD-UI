@@ -3,16 +3,17 @@
 
 **WIP:***
 
-A LXD user interface, powered by electron-vue, which will allow you to manage local LXC containers in a GUI.
+A LXD user interface, which allows you to manage your local LXD instance in a GUI.
 
 **Current features:**
 
- - Create, start and stop containers.
- - Shell access into containers (xterm.js), and no need to setup any certificates.
- - Launch containers images.
+ - Create, edit, start and stop containers.
+ - Launch containers from images, for any set LXD remotes.
+ - Direct access the containers using xterm.js terminal.
+ - Edit local images.
 
 **Screen**
-![enter image description here](https://i.imgur.com/zQDknja.gif)
+![Screenshot](https://i.imgur.com/zQDknja.gif)
 
 > More to come... Its my first project with [electron-vue](https://github.com/SimulatedGREG/electron-vue) and node in general, contributions/feedback is very welcome.
 
@@ -24,22 +25,30 @@ which you can just download an run, or you can build as shown below.
 #### Build Setup
 
 ``` bash
+# download source
+git clone git@github.com:lcherone/lxd-ui.git && cd lxd-ui
+
 # install dependencies
 npm install
 
-# serve with hot reload at localhost:9080
-npm run dev
-
-# build electron application for production
+# build application - built app will be here: ./build/lxd-ui-0.0.*-x86_64.AppImage
 npm run build
+
+```
+
+#### Developer Setup
+
+``` bash
+# download source
+git clone git@github.com:lcherone/lxd-ui.git && cd lxd-ui
+
+# serve with hot reload
+npm run dev
 
 # run unit & end-to-end tests
 npm test
 
-
 # lint all JS/Vue component files in `src/`
 npm run lint
-
-```
 
 ---
