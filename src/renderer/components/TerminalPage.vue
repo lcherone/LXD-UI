@@ -119,14 +119,16 @@
   }
 </script>
 
-<style>
+<style scoped>
   html {
     overflow: auto;
   }
+  
   html, body {
-    background:black;
+    background: black;
     height: 100%
   }
+  
   body {
     position: absolute;
     overflow-y: scroll;
@@ -139,27 +141,6 @@
     height: calc(100vh);
     padding-top: 20px;
     padding-right: 0px;
-  }
-
-  ::-webkit-scrollbar {
-    width: 12px;
-  }
-
-  ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-    background: rgba(227, 75, 20, 0.8); 
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
-  }
-
-  ::-webkit-scrollbar-thumb:window-inactive {
-    background: rgba(227, 75, 20, 0.4); 
   }
 
   #terminal {
