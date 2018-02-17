@@ -58,7 +58,7 @@
                   <td>
                     <div style="display: flex">
                       <a v-if="active_remote === 'local'" class="button is-danger is-small" @click="delete_image(image.fingerprint)"><i class="fa fa-times"></i></a>
-                      <a class="button is-primary is-small" @click="launch_container(active_remote, image.fingerprint)">Launch</a>
+                      <a class="button is-primary is-small" @click="launch_container(active_remote, image.fingerprint, image.properties.description)">Launch</a>
                     </div>
                   </td>
                 </tr>
@@ -159,10 +159,11 @@
        * Directly call child component LaunchContainer::open()
        * - huge speed improvement over component instance per table row
        */
-      launch_container (remote, fingerprint) {
+      launch_container (remote, fingerprint, description) {
         this.$refs.LaunchContainer.open({
           remote: remote,
-          fingerprint: fingerprint
+          fingerprint: fingerprint,
+          description: _.upperFirst(description)
         })
       },
       /**

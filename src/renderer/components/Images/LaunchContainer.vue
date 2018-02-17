@@ -24,6 +24,18 @@
             </div>
             <div class="field is-horizontal">
               <div class="field-label is-normal">
+                <label class="label">Image</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <p class="control">
+                    <input class="input is-static" type="text" v-model="description" readonly>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
                 <label class="label" for="profile">Profile</label>
               </div>
               <div class="field-body">
@@ -79,6 +91,7 @@
     data () {
       return {
         isActive: false,
+        description: null,
         fingerprint: null,
         remote: null,
         name: null,
@@ -97,6 +110,7 @@
         this.isActive = true
         this.remote = value.remote
         this.fingerprint = value.fingerprint
+        this.description = value.description
       },
       /**
        *

@@ -176,8 +176,8 @@
             })
             // emit event so table will update
             this.$emit('on-save')
-            this.isActive = false
           }
+          this.isActive = false
         })
       }
     }

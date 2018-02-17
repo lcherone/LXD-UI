@@ -11,7 +11,7 @@
         </span>
         Containers
         <button 
-                class="button is-small is-primary is-pulled-right" 
+                class="button is-small is-link is-pulled-right" 
                 @click="refresh_containers()" 
                 v-bind:class="{ 'is-loading': btn.refresh_containers }" 
                 v-bind:disabled="btn.refresh_containers">
@@ -59,15 +59,15 @@
                   <td>{{ container.state && container.state.cpu.usage !== 0 ? Number(container.state.cpu.usage/1000000000).toFixed(2) + ' seconds' : '-' }}</td>
                   <td>{{ container.state && container.state.memory.usage !== 0 ? formatBytes(container.state.memory.usage) : '-' }}</td>
                   <td>
-                    <span :class="{
-                                  'has-text-success': (container.status === 'Running'),
-                                  'has-text-danger': (container.status === 'Stopped')
-                                  }">{{ container.status }}</span>
+                    <strong :class="{
+                                    'has-text-success': (container.status === 'Running'),
+                                    'has-text-danger': (container.status === 'Stopped')
+                                    }">{{ container.status }}</strong>
                   </td>
                   <td>
                     <div class="dropdown is-small is-right" :class="manage_dropdown_class(container.name)">
                       <div class="dropdown-trigger" @click="manage_dropdown_toggle(container.name)">
-                        <button class="button is-small">
+                        <button class="button is-info is-small">
                           <span>Manage</span>
                           <span class="icon is-small">
                             <i class="fa fa-angle-down"></i>
