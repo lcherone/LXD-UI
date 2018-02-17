@@ -25,7 +25,6 @@
     },
     mounted: function () {
       document.title = 'LXDui - Terminal - ' + this.container
-      this.$emit('launched')
       this.$nextTick(() => {
         this.console()
       })

@@ -12,6 +12,23 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
  - Direct access into the containers using xterm.js terminal.
  - Edit local images.
 
+**Planned features:**
+
+ - Finish off:
+  - snapshots create and restore
+  - create image from container/snapshot
+  - restart container
+ - Manage profiles.
+ - Further work on per-container config, like setting max cpu, memory etc.
+ - Mount local devices/disks into containers, whilst avoiding need to sudo.
+ - User cloud-init scripts or an easy single click solution to deploy stuff.
+ - Add LXD settings.
+ - Add in-app docs.
+ - Add app settings.
+
+Want anything else added? Feel free to open an issue...
+
+
 **Screen**
 ![Screenshot](https://i.imgur.com/zQDknja.gif)
 
