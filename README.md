@@ -3,7 +3,7 @@
 
 **WIP:***
 
-A LXD user interface, which allows you to manage your local LXD instance in a GUI. Built with [electron-vue](https://github.com/SimulatedGREG/electron-vue).
+A LXD user interface, which allows you to manage your local LXD instance in a GUI, **no dependencies** simply just run the self contained AppImage! Built with [electron-vue](https://github.com/SimulatedGREG/electron-vue).
 
 **Current features:**
 
@@ -20,7 +20,7 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
 #### Download (.AppImage)
 
 As versions are released, they will be posted here: [https://github.com/lcherone/lxd-ui/releases](https://github.com/lcherone/lxd-ui/releases) 
-which you can just download and run, or you can build as shown below.
+which you can just download and run. Or you can build as shown below.
 
 #### Build Setup
 
