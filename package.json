@@ -23,7 +23,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "lxd-ui",
+    "productName": "LXDui",
     "appId": "org.lcherone.lxd-ui",
     "directories": {
       "output": "build"

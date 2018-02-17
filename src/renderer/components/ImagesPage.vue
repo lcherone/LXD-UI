@@ -19,7 +19,7 @@
         </div>
       </h6>
       <div class="box">
-        <div class="card-content">
+        <div class="card-content" v-loading="loading">
           <div style="margin-top:-5px" v-show="distros_list.length > 0">
             <div class="tabs is-small">
               <ul>
@@ -40,10 +40,10 @@
               <tbody>
                 <tr v-for="image in image_list">
                   <td>
-                    <span v-show="active_remote === 'local'">
+                    <span v-if="active_remote === 'local'">
                       <edit-image v-bind:remote="active_remote" v-bind:fingerprint="image.fingerprint" @on-save="load_remote_images(active_remote)">{{ image.properties.description | ucfirst }}</edit-image>
                     </span>
-                    <span v-show="active_remote !== 'local'">{{ image.properties.description | ucfirst }}</span>
+                    <span v-else>{{ image.properties.description | ucfirst }}</span>
                   </td>
                   <td>{{ image.properties.version ? image.properties.version : '-' }}</td>
                   <td>{{ image.properties.release | ucfirst }}</td>
@@ -52,7 +52,8 @@
                   <td>
                     <div style="display: flex">
                       <a v-show="active_remote === 'local'" class="button is-danger is-small" @click="delete_image(image.fingerprint)"><i class="fa fa-times"></i></a>
-                      <launch-container v-bind:remote="active_remote" v-bind:fingerprint="image.fingerprint"></launch-container>
+                      <a class="button is-primary is-small" @click="launch_container(active_remote, image.fingerprint)">Launch</a>
+                      <!--                      <launch-container v-bind:remote="active_remote" v-bind:fingerprint="image.fingerprint"></launch-container>-->
                     </div>
                   </td>
                 </tr>
@@ -66,6 +67,7 @@
         </div>
       </div>
     </el-main>
+    <launch-container ref="LaunchContainer"></launch-container>
   </div>
 </template>
 
@@ -103,6 +105,7 @@
     },
     data () {
       return {
+        loading: false,
         cache_time: Number(1000 * 86400),
         active_remote: 'local',
         active_distro: 'Ubuntu',
@@ -147,6 +150,12 @@
       }
     },
     methods: {
+      launch_container (remote, fingerprint) {
+        this.$refs.LaunchContainer.open({
+          remote: remote,
+          fingerprint: fingerprint
+        })
+      },
       delete_image (fingerprint) {
         this.lxc_image_delete(fingerprint, (response) => {
           storage.set('images_cached.local', 0)

@@ -1,9 +1,9 @@
 <template>
-  <div v-cloak>
+  <div>
 
-    <a class="button is-primary is-small" @click="isActive = true">Launch</a>
+    <!--    <a class="button is-primary is-small" @click="isActive = true">Launch</a>-->
 
-    <div class="modal" v-bind:class="{ 'is-active': isActive }">
+    <div class="modal" :class="{ 'is-active': isActive }">
       <div class="modal-background"></div>
       <div class="modal-card" style="margin-top:-20vh">
         <header class="modal-card-head">
@@ -61,7 +61,7 @@
           <button class="button" @click="isActive = false" v-bind:disabled="launching">Cancel</button>
         </footer>
         <footer class="modal-card-foot" v-show="launched">
-          <button class="button is-success" @click="isActive = false">Close</button>
+          <button class="button is-success" @click="close_modal()">Close</button>
         </footer>
       </div>
     </div>
@@ -81,34 +81,40 @@
   })
 
   export default {
-    props: ['remote', 'fingerprint'],
     data () {
       return {
         isActive: false,
+        fingerprint: null,
+        remote: null,
         name: null,
         profiles: ['default'],
         ephemeral: null,
         launching: false,
-        launched: false
+        launched: false,
+        xterm: null
       }
     },
-    mounted: function () {},
     methods: {
+      open (value) {
+        this.isActive = true
+        this.remote = value.remote
+        this.fingerprint = value.fingerprint
+      },
       launch () {
         this.launching = true
 
         //
         Terminal.applyAddon(fit)
-        const xterm = new Terminal({
+        this.xterm = new Terminal({
           useStyle: false,
           screenKeys: false,
           cursorBlink: true
         })
 
         //
-        xterm.open(document.getElementById('terminal-' + this.fingerprint))
-        xterm.resize(0, 15)
-        xterm.fit()
+        this.xterm.open(document.getElementById('terminal-' + this.fingerprint))
+        this.xterm.resize(0, 15)
+        this.xterm.fit()
 
         // define spawn arguments array
         let spawnProps = []
@@ -126,14 +132,14 @@
         ls.stdout.on('data', (data) => {
           let line = data.toString().trim()
           if (line !== '') {
-            xterm.writeln(line)
+            this.xterm.writeln(line)
           }
         })
 
         ls.stderr.on('data', (data) => {
           let line = data.toString().trim()
           if (line !== '') {
-            xterm.writeln(line)
+            this.xterm.writeln(line)
           }
         })
 
@@ -145,7 +151,7 @@
               message: 'Container successfully created.',
               type: 'success'
             })
-            xterm.writeln('Container successfully created.')
+            this.xterm.writeln('Container successfully created.')
             this.launching = false
             this.launched = true
           }
@@ -153,8 +159,13 @@
 
         storage.set('images_cached.local', 0)
       },
-      close_modal: function () {
-        this.$emit('close-modal', true)
+      close_modal () {
+        this.xterm.destroy()
+        this.remote = null
+        this.fingerprint = null
+        this.launching = false
+        this.launched = false
+        this.isActive = false
       }
     }
   }
