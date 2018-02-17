@@ -118,6 +118,8 @@
     mounted: function () {},
     methods: {
       initialise () {
+        this.$emit('clicked')
+
         this.lxc_list(this.name, (response) => {
           if (response[0]) {
             this.container = response[0]

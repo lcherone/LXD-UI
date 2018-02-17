@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-cloak>
     <!-- Main header -->
     <main-header :current="$route.path"></main-header>
 
@@ -22,8 +22,8 @@
         </button>
       </h6>
       <div class="box">
-        <div class="card-content">
-          <div v-show="containers.length > 0">
+        <div class="card-content" v-loading="loading">
+          <div v-if="containers.length > 0">
             <table class="table is-fullwidth is-narrow">
               <thead>
                 <tr>
@@ -38,7 +38,7 @@
               <tbody>
                 <tr v-for="container in containers">
                   <td>
-                    <edit-container v-bind:name="container.name" @on-save="refresh_containers()">{{ container.name }}</edit-container>
+                    <edit-container v-bind:name="container.name" @on-save="refresh_containers()" @clicked="manage_dropdown_close_all">{{ container.name }}</edit-container>
                   </td>
                   <td>
                     <!-- Running is ip4 -->
@@ -65,35 +65,83 @@
                                   }">{{ container.status }}</span>
                   </td>
                   <td>
-                    <div style="display: flex">
-                      <router-link class="button is-small is-info" v-show="container.status === 'Running'" :to="{ path: '/terminal/' + container.name }" target="_blank" title="Open terminal">
-                        <span class="icon">
-                          <i class="fa fa-terminal"></i> 
-                        </span>
-                      </router-link>
-                      <button class="button is-small is-warning" v-show="container.status === 'Running'" @click="stop_container(container.name)" title="Stop">
-                        <span class="icon">
-                          <i class="fa fa-stop"></i> 
-                        </span>
-                      </button>
-                      <button class="button is-small is-success" v-show="container.status === 'Stopped'" @click="start_container(container.name)" title="Start">
-                        <span class="icon">
-                          <i class="fa fa-play"></i> 
-                        </span>
-                      </button>
-                      <button class="button is-small is-danger" v-show="container.status === 'Stopped'" @click="delete_container(container.name)" title="Delete">
-                        <span class="icon">
-                          <i class="fa fa-times"></i> 
-                        </span>
-                      </button>
+                    <div class="dropdown is-small is-right" :class="manage_dropdown_class(container.name)">
+                      <div class="dropdown-trigger" @click="manage_dropdown_toggle(container.name)">
+                        <button class="button is-small">
+                          <span>Manage</span>
+                          <span class="icon is-small">
+                            <i class="fa fa-angle-down"></i>
+                          </span>
+                        </button>
+                      </div>
+                      <div class="dropdown-menu" id="dropdown-menu3" role="menu">
+                        <div class="dropdown-content">
+                          <router-link class="dropdown-item" v-show="container.status === 'Running'" :to="{ path: '/terminal/' + container.name }" target="_blank" title="Open terminal">
+                            <span class="icon">
+                              <i class="fa fa-terminal"></i> 
+                            </span>
+                            <span>Terminal</span>
+                          </router-link>
+                          <a @click="start_container(container.name)" class="dropdown-item" v-if="container.status === 'Stopped'">
+                            <span class="icon">
+                              <i class="fa fa-play"></i> 
+                            </span>
+                            <span>Start</span>
+                          </a>
+                          <a @click="stop_container(container.name)" class="dropdown-item" v-if="container.status === 'Running'">
+                            <span class="icon">
+                              <i class="fa fa-stop"></i> 
+                            </span>
+                            <span>Stop</span>
+                          </a>
+                          <a @click="freeze_container(container.name)" class="dropdown-item" v-if="container.status === 'Running'">
+                            <span class="icon">
+                              <i class="fa fa-pause"></i> 
+                            </span>
+                            <span>Freeze</span>
+                          </a>
+                          <a @click="thaw_container(container.name)" class="dropdown-item" v-if="container.status === 'Frozen'">
+                            <span class="icon">
+                              <i class="fa fa-play"></i> 
+                            </span>
+                            <span>Thaw</span>
+                          </a>
+                          <a @click="restart_container(container.name)" class="dropdown-item" v-if="container.status === 'Running'">
+                            <span class="icon">
+                              <i class="fa fa-refresh"></i> 
+                            </span>
+                            <span>Restart</span>
+                          </a>
+                          <a @click="snapshot_container(container.name)" class="dropdown-item" v-if="container.status === 'Stopped'">
+                            <span class="icon">
+                              <i class="fa fa-cubes"></i> 
+                            </span>
+                            <span>Snapshot</span>
+                          </a>
+                          <a @click="image_container(container.name)" class="dropdown-item" v-if="container.status === 'Stopped'">
+                            <span class="icon">
+                              <i class="fa fa-hdd-o"></i> 
+                            </span>
+                            <span>Image</span>
+                          </a>
+                          <hr class="dropdown-divider" v-if="container.status === 'Stopped'">
+                          <a @click="delete_container(container.name)" class="dropdown-item" v-if="container.status === 'Stopped'">
+                            <span class="icon">
+                              <i class="fa fa-times"></i> 
+                            </span>
+                            <span>Delete</span>
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div v-show="containers.length === 0">
-            No containers, you can <router-link :to="{ name: 'images' }">launch one from an image</router-link>.
+          <div v-else>
+            <span v-if="!loading">No containers, you can <router-link :to="{ name: 'images' }">launch one from an image</router-link>.</span>
+            <span v-else>&nbsp;</span>
           </div>
         </div>
       </div>
@@ -115,6 +163,8 @@
     mixins: [lxc, helpers],
     data () {
       return {
+        loading: true,
+        manageButton: [],
         search: null,
         search_result: null,
         containers: [],
@@ -127,14 +177,35 @@
       document.title = 'LXDui - Containers'
 
       this.$nextTick(() => {
-        this.get_containers()
+        this.get_containers(() => {
+          this.loading = false
+        })
       })
     },
     methods: {
+      manage_dropdown_close_all (name) {
+        for (var prop in this.manageButton) {
+          if (!name || (prop !== name && this.manageButton[prop] === true)) {
+            this.manageButton[prop] = false
+          }
+        }
+      },
+      manage_dropdown_toggle (name) {
+        this.manage_dropdown_close_all(name)
+        this.$set(this.manageButton, name, !this.manageButton[name])
+      },
+      manage_dropdown_class (name) {
+        return {
+          'is-active': this.manageButton[name]
+        }
+      },
       /**
        *
        */
       refresh_containers () {
+        //
+        this.manage_dropdown_close_all()
+
         this.btn.refresh_containers = true
         this.get_containers(() => {
           this.btn.refresh_containers = false
@@ -155,6 +226,9 @@
        *
        */
       start_container (name) {
+        //
+        this.manage_dropdown_close_all()
+
         this.lxc_start(name, (response) => {
           this.$notify({
             duration: 2000,
@@ -170,6 +244,9 @@
        *
        */
       stop_container (name) {
+        //
+        this.manage_dropdown_close_all()
+
         this.lxc_stop(name, (response) => {
           this.$notify({
             duration: 2000,
@@ -185,6 +262,9 @@
        *
        */
       delete_container (name) {
+        //
+        this.manage_dropdown_close_all()
+
         this.lxc_delete(name, (response) => {
           this.$notify({
             duration: 2000,
@@ -206,6 +286,8 @@
         })
       },
       open (link) {
+        this.manage_dropdown_close_all()
+
         this.$electron.shell.openExternal(link)
       }
     }

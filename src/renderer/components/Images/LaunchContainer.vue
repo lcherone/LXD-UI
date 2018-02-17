@@ -1,8 +1,5 @@
 <template>
   <div>
-
-    <!--    <a class="button is-primary is-small" @click="isActive = true">Launch</a>-->
-
     <div class="modal" :class="{ 'is-active': isActive }">
       <div class="modal-background"></div>
       <div class="modal-card" style="margin-top:-20vh">
@@ -11,9 +8,7 @@
           <button class="delete" aria-label="close" @click="isActive = false"></button>
         </header>
         <section class="modal-card-body">
-
           <div class="console" :id="'terminal-' + fingerprint"></div>
-
           <div v-show="!launching && !launched">
             <div class="field is-horizontal">
               <div class="field-label is-normal">
@@ -95,11 +90,17 @@
       }
     },
     methods: {
+      /**
+       * Fired from parent
+       */
       open (value) {
         this.isActive = true
         this.remote = value.remote
         this.fingerprint = value.fingerprint
       },
+      /**
+       *
+       */
       launch () {
         this.launching = true
 
@@ -159,6 +160,9 @@
 
         storage.set('images_cached.local', 0)
       },
+      /**
+       *
+       */
       close_modal () {
         this.xterm.destroy()
         this.remote = null

@@ -19,8 +19,8 @@
         </div>
       </h6>
       <div class="box">
-        <div class="card-content" v-loading="loading">
-          <div style="margin-top:-5px" v-show="distros_list.length > 0">
+        <div class="card-content">
+          <div style="margin-top:-5px" v-if="distros_list.length > 0">
             <div class="tabs is-small">
               <ul>
                 <li v-bind:class="{ 'is-active': distro === active_distro }" @click="filter_distro(distro)" v-for="distro in distros_list"><a>{{ distro }}</a></li>
@@ -41,7 +41,13 @@
                 <tr v-for="image in image_list">
                   <td>
                     <span v-if="active_remote === 'local'">
-                      <edit-image v-bind:remote="active_remote" v-bind:fingerprint="image.fingerprint" @on-save="load_remote_images(active_remote)">{{ image.properties.description | ucfirst }}</edit-image>
+                      <edit-image 
+                                  v-bind:remote="active_remote" 
+                                  v-bind:fingerprint="image.fingerprint" 
+                                  @on-save="load_remote_images(active_remote)"
+                                  >
+                        {{ image.properties.description | ucfirst }}
+                      </edit-image>
                     </span>
                     <span v-else>{{ image.properties.description | ucfirst }}</span>
                   </td>
@@ -51,22 +57,22 @@
                   <td>{{ image.uploaded_at | formatDate }}</td>
                   <td>
                     <div style="display: flex">
-                      <a v-show="active_remote === 'local'" class="button is-danger is-small" @click="delete_image(image.fingerprint)"><i class="fa fa-times"></i></a>
+                      <a v-if="active_remote === 'local'" class="button is-danger is-small" @click="delete_image(image.fingerprint)"><i class="fa fa-times"></i></a>
                       <a class="button is-primary is-small" @click="launch_container(active_remote, image.fingerprint)">Launch</a>
-                      <!--                      <launch-container v-bind:remote="active_remote" v-bind:fingerprint="image.fingerprint"></launch-container>-->
                     </div>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div v-show="distros_list.length === 0">
-            <span v-show="active_remote === 'local'">Currently, there are no locally cached images.</span>
-            <span v-show="active_remote !== 'local'">Oops! There was a problem when trying to fetch images from: {{ active_remote }}, check your internet connection and try again.</span>
+          <div v-else>
+            <span v-if="active_remote === 'local'">Currently, there are no locally cached images.</span>
+            <span v-else>Oops! There was a problem when trying to fetch images from: {{ active_remote }}, check your internet connection and try again.</span>
           </div>
         </div>
       </div>
     </el-main>
+    <!-- launch container - triggered by launch_container() - dont this way to speed up table render -->
     <launch-container ref="LaunchContainer"></launch-container>
   </div>
 </template>
@@ -105,7 +111,6 @@
     },
     data () {
       return {
-        loading: false,
         cache_time: Number(1000 * 86400),
         active_remote: 'local',
         active_distro: 'Ubuntu',
@@ -116,6 +121,19 @@
         btn: {
           refresh_containers: false
         }
+      }
+    },
+    computed: {
+      image_list: function () {
+        return this.images.filter((row) => {
+          if (_.lowerCase(this.active_distro) !== _.lowerCase(row.properties.os)) {
+            return false
+          }
+          return row
+        })
+      },
+      distros_list: function () {
+        return _.uniq(this.distros)
       }
     },
     mounted: function () {
@@ -136,26 +154,20 @@
         }
       })
     },
-    computed: {
-      image_list: function () {
-        return this.images.filter((row) => {
-          if (_.lowerCase(this.active_distro) !== _.lowerCase(row.properties.os)) {
-            return false
-          }
-          return row
-        })
-      },
-      distros_list: function () {
-        return _.uniq(this.distros)
-      }
-    },
     methods: {
+      /**
+       * Directly call child component LaunchContainer::open()
+       * - huge speed improvement over component instance per table row
+       */
       launch_container (remote, fingerprint) {
         this.$refs.LaunchContainer.open({
           remote: remote,
           fingerprint: fingerprint
         })
       },
+      /**
+       *
+       */
       delete_image (fingerprint) {
         this.lxc_image_delete(fingerprint, (response) => {
           storage.set('images_cached.local', 0)
@@ -168,9 +180,15 @@
           })
         })
       },
+      /**
+       *
+       */
       filter_distro (distro) {
         this.active_distro = distro
       },
+      /**
+       *
+       */
       load_remote_images (remote) {
         this.active_remote = remote
         // default back to ubuntu
@@ -206,18 +224,6 @@
           this.images = storage.get('images.' + remote)
           this.distros = storage.get('images_distros.' + remote)
         }
-      },
-      /**
-       *
-       */
-      handleSearchEvent (value) {
-        //
-        this.lxc_list(value, (response) => {
-          this.search_result = response
-        })
-      },
-      open (link) {
-        this.$electron.shell.openExternal(link)
       }
     }
   }
