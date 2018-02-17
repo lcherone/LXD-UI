@@ -10,16 +10,41 @@
           <i class="fa fa-cubes"></i>
         </span>
         Containers
-        <button 
-                class="button is-small is-link is-pulled-right" 
-                @click="refresh_containers()" 
-                v-bind:class="{ 'is-loading': btn.refresh_containers }" 
-                v-bind:disabled="btn.refresh_containers">
-          <span class="icon">
-            <i class="fa fa-refresh"></i> 
-          </span>
-          &nbsp; Refresh
-        </button>
+
+        <div v-if="containers.length > 0" class="is-pulled-right">
+          <button
+                  class="button is-small is-link" 
+                  @click="refresh_containers()" 
+                  :class="{ 'is-loading': btn.refresh_containers }" 
+                  :disabled="btn.refresh_containers">
+            <span class="icon">
+              <i class="fa fa-refresh"></i> 
+            </span>
+            <span>Refresh</span>
+          </button>
+          <button v-if="!all_stopped"
+                  style="margin-left:5px"
+                  class="button is-small is-danger" 
+                  @click="stop_containers()" 
+                  :class="{ 'is-loading': btn.stop_containers }" 
+                  :disabled="btn.stop_containers">
+            <span class="icon">
+              <i class="fa fa-stop"></i> 
+            </span>
+            <span>Stop All</span>
+          </button>
+          <button v-else
+                  style="margin-left:5px"
+                  class="button is-small is-success" 
+                  @click="start_containers()" 
+                  :class="{ 'is-loading': btn.start_containers }" 
+                  :disabled="btn.start_containers">
+            <span class="icon">
+              <i class="fa fa-stop"></i> 
+            </span>
+            <span>Start All</span>
+          </button>
+        </div>
       </h6>
       <div class="box">
         <div class="card-content" v-loading="loading">
@@ -173,6 +198,17 @@
         }
       }
     },
+    computed: {
+      all_stopped: function () {
+        var running = this.containers.filter((row) => {
+          if (row.status !== 'Stopped') {
+            return row
+          }
+          return false
+        })
+        return running.length === 0
+      }
+    },
     mounted: function () {
       document.title = 'LXDui - Containers'
 
@@ -198,6 +234,40 @@
         return {
           'is-active': this.manageButton[name]
         }
+      },
+      /**
+       *
+       */
+      start_containers () {
+        //
+        this.manage_dropdown_close_all()
+
+        this.btn.start_containers = true
+
+        for (var key in this.containers) {
+          if (this.containers[key].status !== 'Running') {
+            this.start_container(this.containers[key].name)
+          }
+        }
+
+        this.btn.start_containers = false
+      },
+      /**
+       *
+       */
+      stop_containers () {
+        //
+        this.manage_dropdown_close_all()
+
+        this.btn.stop_containers = true
+
+        for (var key in this.containers) {
+          if (this.containers[key].status === 'Running') {
+            this.stop_container(this.containers[key].name)
+          }
+        }
+
+        this.btn.stop_containers = false
       },
       /**
        *
@@ -265,15 +335,21 @@
         //
         this.manage_dropdown_close_all()
 
-        this.lxc_delete(name, (response) => {
-          this.$notify({
-            duration: 2000,
-            title: 'Success',
-            message: 'Container ' + name + ' deleted.',
-            type: 'success'
+        this.$confirm('Are you sure you want to delete ' + name + '?', 'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          this.lxc_delete(name, (response) => {
+            this.$notify({
+              duration: 2000,
+              title: 'Success',
+              message: 'Container ' + name + ' deleted.',
+              type: 'success'
+            })
+            //
+            this.get_containers()
           })
-          //
-          this.get_containers()
         })
       },
       /**
