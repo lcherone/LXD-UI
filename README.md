@@ -9,7 +9,7 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
 
  - Create, edit, start and stop containers.
  - Launch containers from images, from any defined LXD remote e.g: `local:`, `images:`, `ubuntu:`, `ubuntu-daily:`.
- - Direct access the containers using xterm.js terminal.
+ - Direct access into the containers using xterm.js terminal.
  - Edit local images.
 
 **Screen**
