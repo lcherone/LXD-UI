@@ -19,7 +19,7 @@
     name: 'terminal-page',
     components: { MainHeader },
     mixins: [lxc],
-    props: ['container'],
+    props: ['container', 'os'],
     data () {
       return {}
     },
@@ -35,9 +35,18 @@
         var width = 100
         var height = Math.max(Math.round(window.innerHeight / 19.50), 15)
 
+        // container.config['image.os'] is passed through using router.
+        // we do this to set the type of command, bash in everything except Alpine which uses Ash
+        let command
+        if (this.os === 'Alpine') {
+          command = 'ash'
+        } else {
+          command = 'bash'
+        }
+
         //
         this.lxc_query('/1.0/containers/' + this.container + '/exec', 'POST', JSON.stringify({
-          'command': ['bash'],
+          'command': [command],
           'environment': {
             'HOME': '/root',
             'TERM': 'xterm',
@@ -122,12 +131,12 @@
   html {
     overflow: auto;
   }
-  
+
   html, body {
     background: black;
     height: 100%
   }
-  
+
   body {
     position: absolute;
     overflow-y: scroll;

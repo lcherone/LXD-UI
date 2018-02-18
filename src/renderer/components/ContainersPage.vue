@@ -108,7 +108,7 @@
                       </div>
                       <div class="dropdown-menu" id="dropdown-menu3" role="menu">
                         <div class="dropdown-content">
-                          <router-link class="dropdown-item" v-show="container.status === 'Running'" :to="{ path: '/terminal/' + container.name }" target="_blank" v-on:click.native="manage_dropdown_close_all()" title="Open terminal">
+                          <router-link class="dropdown-item" v-show="container.status === 'Running'" :to="{ path: '/terminal/' + container.name + '/' + container.config['image.os'] }" target="_blank" v-on:click.native="manage_dropdown_close_all()" title="Open terminal">
                             <span class="icon">
                               <i class="fa fa-terminal"></i> 
                             </span>
