@@ -12,6 +12,7 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
  - Launch containers from images, from any defined LXD remote e.g: `local:`, `images:`, `ubuntu:`, `ubuntu-daily:`.
  - Direct access into the containers using xterm.js terminal.
  - Edit local images.
+ - User Scripts (see below)
 
 **Planned features:**
 
@@ -20,7 +21,7 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
  - Manage profiles.
  - Further work on per-container config, like setting max cpu, memory etc.
  - Mount local devices/disks into containers, whilst avoiding need to sudo.
- - An easy single click solution to deploy stuff. (not cloud init, due to it not being included in `images:` images, rather use the file copy and then open a pipe and execute it)
+ - User Scripts - An easy single click solution to deploy stuff. (not cloud init, due to it not being included in `images:` images, rather use the file copy and then open a pipe and execute it)
  - Add LXD settings.
  - Add in-app docs.
  - Add app settings.
