@@ -7,7 +7,8 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
 
 **Current features:**
 
- - Create, edit, start and stop containers.
+ - Create, edit, start, restart, stop, freeze and thaw containers.
+ - Snapshot containers.
  - Launch containers from images, from any defined LXD remote e.g: `local:`, `images:`, `ubuntu:`, `ubuntu-daily:`.
  - Direct access into the containers using xterm.js terminal.
  - Edit local images.
@@ -15,13 +16,11 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
 **Planned features:**
 
  - Finish off:
-   - snapshots create and restore,
-   - create image from container/snapshot,
-   - restart containers.
+   - Create image from container/snapshot.
  - Manage profiles.
  - Further work on per-container config, like setting max cpu, memory etc.
  - Mount local devices/disks into containers, whilst avoiding need to sudo.
- - User cloud-init scripts or an easy single click solution to deploy stuff.
+ - An easy single click solution to deploy stuff. (not cloud init, due to it not being included in `images:` images, rather use the file copy and then open a pipe and execute it)
  - Add LXD settings.
  - Add in-app docs.
  - Add app settings.
