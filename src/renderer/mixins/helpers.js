@@ -16,6 +16,24 @@ export default {
       } else {
         return false
       }
+    },
+    uniqueId (length) {
+      if (!length) {
+        length = 8
+      }
+      var str = ''
+      for (var i = 1; i < length + 1; i = i + 8) {
+        str += Math.random().toString(36).substr(2, 10)
+      }
+      return str.substr(0, length)
+    },
+    UUID () {
+      function chr4 () {
+        return Math.random().toString(16).slice(-4)
+      }
+      return chr4() + chr4() +
+        '-' + chr4() + '-' + chr4() +
+        '-' + chr4() + '-' + chr4() + chr4() + chr4()
     }
   }
 }

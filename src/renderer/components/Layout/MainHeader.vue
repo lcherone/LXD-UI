@@ -16,6 +16,7 @@
                text-color="#fff"
                active-text-color="#2b001d">
         <el-menu-item index="/">Home</el-menu-item>
+        <el-menu-item index="/scripts">Scripts</el-menu-item>
         <el-menu-item index="/containers">Containers</el-menu-item>
         <el-menu-item index="/profiles">Profiles</el-menu-item>
         <el-menu-item index="/images">Images</el-menu-item>

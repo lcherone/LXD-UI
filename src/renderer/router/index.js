@@ -22,6 +22,11 @@ export default new Router({
       props: true
     },
     {
+      path: '/scripts',
+      name: 'scripts',
+      component: require('@/components/ScriptsPage').default
+    },
+    {
       path: '/about',
       name: 'about',
       component: require('@/components/AboutPage').default

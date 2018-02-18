@@ -172,7 +172,7 @@
             </table>
           </div>
           <div v-else>
-            <span v-if="!loading">No containers, you can <router-link :to="{ name: 'images' }">launch one from an image</router-link>.</span>
+            <span v-if="!loading">No containers, you can <router-link :to="{ name: 'images' }">launch containers from images</router-link>.</span>
             <span v-else>&nbsp;</span>
           </div>
         </div>
