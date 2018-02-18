@@ -4,7 +4,7 @@
       <div class="modal-background"></div>
       <div class="modal-card" style="margin-top:-20vh">
         <header class="modal-card-head">
-          <p class="modal-card-title">New Container</p>
+          <p class="modal-card-title">Launch Container</p>
           <button class="delete" aria-label="close" @click="isActive = false"></button>
         </header>
         <section class="modal-card-body">
@@ -155,18 +155,31 @@
         //
         const { spawn } = require('child_process')
 
+        let messageCallback = (msg) => {
+          return () => {
+            this.$notify({
+              duration: 2000,
+              title: 'Success',
+              message: msg,
+              type: 'success'
+            })
+          }
+        }
+
+        // set name if left blank
+        if (this.name === '' || this.name === null) {
+          this.name = this.random_petname()
+        }
+
         //
         let ls = []
-        for (var i = 1; i <= this.count; i++) {
+        for (let i = 1; i <= this.count; i++) {
+          //
           let spawnProps = []
           spawnProps.push(this.remote + ':' + this.fingerprint)
           if (this.count === 1) {
             spawnProps.push(this.name)
           } else {
-            console.log(this.name)
-            if (this.count > 1 && (this.name === '' || this.name === null)) {
-              this.name = this.random_petname()
-            }
             spawnProps.push(this.name + '-' + i)
           }
           spawnProps.push('-p ' + this.profiles.join(' -p '))
@@ -192,12 +205,13 @@
 
           ls[i].on('close', (code) => {
             if (code === 0) {
-              this.$notify({
-                duration: 2000,
-                title: 'Success',
-                message: 'Container successfully created.',
-                type: 'success'
-              })
+              // do message callback
+              if (this.count === 1) {
+                messageCallback('Container ' + this.name + ' successfully created.')()
+              } else {
+                messageCallback('Container ' + this.name + '-' + i + ' successfully created.')()
+              }
+
               this.launching = false
               this.launched = true
             }
@@ -224,7 +238,7 @@
 <style scoped>
 
   /* for some odd reason, 
-     the above modal title Container word gets selected upon submit, this is to prevent that :/ 
+  the above modal title Container word gets selected upon submit, this is to prevent that :/ 
   */
   .modal-card-title {
     -webkit-touch-callout: none;

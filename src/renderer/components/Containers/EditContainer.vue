@@ -46,6 +46,31 @@
               </div>
             </div>
           </div>
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label" for="snapshots">Snapshots</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <table class="table is-fullwidth is-narrow">
+                  <tbody>
+                    <tr v-for="item in container.snapshots">
+                      <td>{{ item.name.substring(item.name.indexOf('/') + 1) }}</td>
+                      <td style="width:1%">
+                        <div style="display: flex">
+                          <a class="button is-danger is-small" @click="delete_snapshot(item.name)"><i class="fa fa-times"></i></a>
+                          <a class="button is-primary is-small" @click="restore_snapshot(item.name)">Restore</a>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr v-show="container.snapshots.length === 0">
+                      <td colspan="2">No snapshots have been created. <a @click="create_snapshot(container.name)">Create snapshot</a>.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </section>
         <footer class="modal-card-foot">
           <button 
@@ -61,6 +86,7 @@
 </template>
 
 <script>
+  import moment from 'moment'
   import _ from 'lodash'
 
   import lxc from '../../mixins/lxc.js'
@@ -159,6 +185,51 @@
           this.$emit('container-stopped')
           //
           this.initialise()
+        })
+      },
+      /**
+       *
+       */
+      create_snapshot (name) {
+        this.lxc_snapshot(name, name + ' (' + moment().format('LLL') + ')', (response) => {
+          this.$notify({
+            duration: 2000,
+            title: 'Success',
+            message: 'Snapshot created.',
+            type: 'success'
+          })
+          //
+          this.initialise()
+        })
+      },
+      delete_snapshot (name) {
+        this.lxc_snapshot_delete(this.container.name, name.substring(name.indexOf('/') + 1), (response) => {
+          this.$notify({
+            duration: 2000,
+            title: 'Success',
+            message: 'Snapshot deleted.',
+            type: 'success'
+          })
+          //
+          this.initialise()
+        })
+      },
+      restore_snapshot (name) {
+        this.$confirm('Are you sure you want restore container from this snapshot?', 'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          this.lxc_snapshot_restore(this.container.name, name.substring(name.indexOf('/') + 1), (response) => {
+            this.$notify({
+              duration: 2000,
+              title: 'Success',
+              message: 'Container restored from snapshot.',
+              type: 'success'
+            })
+            //
+            this.initialise()
+          })
         })
       },
       /**

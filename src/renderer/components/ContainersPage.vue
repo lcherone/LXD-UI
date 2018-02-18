@@ -183,7 +183,7 @@
 
 <script>
   // import _ from 'lodash'
-
+  import moment from 'moment'
   import helpers from '../mixins/helpers.js'
   import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
@@ -323,6 +323,60 @@
       /**
        *
        */
+      restart_container (name) {
+        //
+        this.manage_dropdown_close_all()
+
+        this.lxc_restart(name, (response) => {
+          this.$notify({
+            duration: 2000,
+            title: 'Success',
+            message: 'Container ' + name + ' restarted.',
+            type: 'success'
+          })
+          //
+          this.get_containers()
+        })
+      },
+      /**
+       *
+       */
+      freeze_container (name) {
+        //
+        this.manage_dropdown_close_all()
+
+        this.lxc_state(name, 'freeze', (response) => {
+          this.$notify({
+            duration: 2000,
+            title: 'Success',
+            message: 'Container ' + name + ' frozen.',
+            type: 'success'
+          })
+          //
+          this.get_containers()
+        })
+      },
+      /**
+       *
+       */
+      thaw_container (name) {
+        //
+        this.manage_dropdown_close_all()
+
+        this.lxc_state(name, 'unfreeze', (response) => {
+          this.$notify({
+            duration: 2000,
+            title: 'Success',
+            message: 'Container ' + name + ' unfrozen.',
+            type: 'success'
+          })
+          //
+          this.get_containers()
+        })
+      },
+      /**
+       *
+       */
       stop_container (name) {
         //
         this.manage_dropdown_close_all()
@@ -332,6 +386,24 @@
             duration: 2000,
             title: 'Success',
             message: 'Container ' + name + ' stopped.',
+            type: 'success'
+          })
+          //
+          this.get_containers()
+        })
+      },
+      /**
+       *
+       */
+      snapshot_container (name) {
+        //
+        this.manage_dropdown_close_all()
+
+        this.lxc_snapshot(name, name + ' (' + moment().format('LLL') + ')', (response) => {
+          this.$notify({
+            duration: 2000,
+            title: 'Success',
+            message: 'Snapshot created.',
             type: 'success'
           })
           //
