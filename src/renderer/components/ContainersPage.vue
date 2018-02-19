@@ -175,7 +175,7 @@
                             </span>
                             <span>Snapshot</span>
                           </a>
-                          <a @click="image_container(container.name)" class="dropdown-item" v-if="container.status === 'Stopped'">
+                          <a @click="image_container(container.name, index)" class="dropdown-item" v-if="container.status === 'Stopped'">
                             <span class="icon">
                               <i class="fa fa-hdd-o"></i> 
                             </span>
@@ -219,9 +219,13 @@
   import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
   import EditContainer from './Containers/EditContainer'
-  // import checkPort from './Containers/CheckPort.js'
 
-  // const fs = require('fs')
+  import ElectronStore from 'electron-store'
+  const storage = new ElectronStore({
+    cwd: 'lxd-ui' // ,
+    // encryptionKey: 'obfuscation'
+  })
+
   const checkPort = require('./Containers/CheckPort.js').default
 
   export default {
@@ -490,6 +494,69 @@
             message: 'Snapshot created.',
             type: 'success'
           })
+          //
+          this.get_containers()
+        })
+      },
+      /**
+       *
+       */
+      image_container (name, index) {
+        //
+        this.manage_dropdown_close_all()
+
+        let container = this.containers[index]
+
+        let properties = {
+          description: name,
+          label: (container.config['image.label'] ? container.config['image.label'] : ''),
+          architecture: (container.config['image.architecture'] ? container.config['image.architecture'] : ''),
+          build: new Date(),
+          distribution: (container.config['image.distribution'] ? container.config['image.distribution'] : ''),
+          os: (container.config['image.os'] ? container.config['image.os'] : ''),
+          release: (container.config['image.release'] ? container.config['image.release'] : ''),
+          version: (container.config['image.version'] ? container.config['image.version'] : '')
+        }
+
+        this.lxc_image_container(name, properties, (response) => {
+          this.$notify({
+            duration: 2000,
+            title: 'Creating image',
+            message: 'This may take a minutes mins.',
+            type: 'info'
+          })
+          // create polling to check operation status
+          var poll = true
+          var pollOperation = () => {
+            if (poll) {
+              this.lxc_query('/1.0/operations/' + response.id, 'GET', JSON.stringify({}), (operation) => {
+                if (operation.status_code === 103) {
+                  setTimeout(pollOperation, 2000)
+                } else if (operation.status_code === 200) {
+                  this.$notify({
+                    duration: 2000,
+                    title: 'Success',
+                    message: 'Image successfully created.',
+                    type: 'success'
+                  })
+                  poll = false
+                  // invalidate local images cache
+                  storage.set('images_cached.local', 0)
+                } else {
+                  this.$notify({
+                    duration: 2000,
+                    title: 'Error',
+                    message: operation.err,
+                    type: 'error'
+                  })
+                  poll = false
+                }
+              })
+            }
+          }
+          // init poll
+          setTimeout(pollOperation, 1000)
+
           //
           this.get_containers()
         })

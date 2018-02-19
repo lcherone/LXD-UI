@@ -11,6 +11,7 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
  - Snapshot containers.
  - Launch containers from images, from any defined LXD remote e.g: `local:`, `images:`, `ubuntu:`, `ubuntu-daily:`.
  - Direct access into the containers using xterm.js terminal.
+ - Create images from containers.
  - Edit local images.
  - User Scripts (see below).
  - Single click to automatically copy users SSH key to root users authorized_keys file.
@@ -22,7 +23,7 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
 **Planned features:**
 
  - Finish off:
-   - Create image from container/snapshot.
+   - Create image from snapshot.
  - Manage profiles.
  - Further work on per-container config, like setting max cpu, memory etc.
  - Mount local devices/disks into containers, whilst avoiding need to sudo.

@@ -199,7 +199,7 @@
       load_remote_images (remote) {
         this.active_remote = remote
         // default back to ubuntu
-        this.active_distro = 'Ubuntu'
+        this.active_distro = this.active_distro || 'Ubuntu'
         this.get_images(remote)
       },
       /**

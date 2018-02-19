@@ -213,6 +213,48 @@ export default {
     /**
      *
      */
+    lxc_image_container: function (name, properties, callback) {
+      //
+      if (name === undefined || name === null) {
+        name = ''
+      }
+      //
+      if (properties === undefined || properties === null) {
+        properties = {
+          description: name,
+          label: '',
+          architecture: '',
+          build: new Date(),
+          distribution: '',
+          os: '',
+          release: '',
+          version: ''
+        }
+      }
+      if (typeof callback !== 'function') {
+        callback = function (response) {
+          console.log('ERROR: no callback supplied for lxc_image_container(' + name + ', properties, *missing)')
+          console.log(response)
+        }
+      }
+
+      //
+      // var shellescape = require('shell-escape')
+      this.lxc_query('/1.0/images', 'POST', JSON.stringify({
+        source: {
+          type: 'container',
+          name: name
+        },
+        public: false,
+        properties: properties,
+        auto_update: false
+      }), function (response) {
+        callback(response)
+      })
+    },
+    /**
+     *
+     */
     lxc_stop: function (name, callback) {
       //
       if (name === undefined || name === null) {
