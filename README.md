@@ -35,7 +35,7 @@ Want anything else added? Feel free to open an issue...
 
 
 **Screen**
-![Screenshot](https://i.imgur.com/zQDknja.gif)
+![Screenshot](https://i.imgur.com/Yr0WaCy.gif)
 
 > More to come... Its my first project with [electron-vue](https://github.com/SimulatedGREG/electron-vue) and node in general, contributions/feedback is very welcome.
 

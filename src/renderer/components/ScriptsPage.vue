@@ -123,9 +123,15 @@
     encryptionKey: 'obfuscation'
   })
 
+  // const editor = require('./Scripts/Ace.js')
+
   export default {
     name: 'scripts-page',
-    components: { MainHeader, SideMenu, editor: require('./Scripts/Ace.js') },
+    components: {
+      MainHeader,
+      SideMenu,
+      editor: require('vue2-ace-editor-electron')
+    },
     mixins: [helpers],
     filters: {
       formatDate: function (value) {
@@ -137,7 +143,7 @@
     data () {
       return {
         state: 'view',
-        scripts: storage.get('scripts'),
+        scripts: storage.get('scripts', []),
         script: this._emptyScriptModel(),
         content: '',
         table_filter: ''

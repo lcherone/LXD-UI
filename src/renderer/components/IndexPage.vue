@@ -208,6 +208,7 @@
 
       // info.server
       // cacheTime = 1 day
+      /*
       cacheTime = Number(1000 * 86400)
       if (Date.now() - Number(storage.get('info.server.cached', 0)) > cacheTime) {
         this.lxc_info('/', (response) => {
@@ -218,7 +219,7 @@
       } else {
         this.info.server = storage.get('info.server')
       }
-
+      */
       // info.resources
       // cacheTime = 1 day
       cacheTime = Number(1000 * 86400)
