@@ -12,7 +12,12 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
  - Launch containers from images, from any defined LXD remote e.g: `local:`, `images:`, `ubuntu:`, `ubuntu-daily:`.
  - Direct access into the containers using xterm.js terminal.
  - Edit local images.
- - User Scripts (see below)
+ - User Scripts (see below).
+ - Single click to automatically copy users SSH key to root users authorized_keys file.
+ - Port checks:
+   - If port 22 open, shows a link to open in file explorer over SSH.
+   - If port 80 open, shows a link to open in browser.
+  
 
 **Planned features:**
 

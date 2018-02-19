@@ -51,16 +51,17 @@
             <table class="table is-fullwidth is-narrow">
               <thead>
                 <tr>
-                  <th style="width:20%">Name</th>
-                  <th style="width:20%">IP</th>
-                  <th style="width:20%">CPU</th>
-                  <th style="width:20%">Memory</th>
+                  <th style="width:22.5%">Name</th>
+                  <th style="width:1%"></th>
+                  <th style="width:12.5%">IP</th>
+                  <th style="width:13%">CPU</th>
+                  <th style="width:12%">Memory</th>
                   <th style="width:10%">Status</th>
                   <th style="width:1%"></th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="container in containers">
+                <tr v-for="(container, index) in containers">
                   <td>
                     <edit-container :name="container.name" 
                                     @on-save="refresh_containers" 
@@ -68,6 +69,30 @@
                                     @clicked="manage_dropdown_close_all">
                       {{ container.name }}
                     </edit-container>
+                  </td>
+                  <td>
+                    <div style="display:flex">
+                      <a v-show="
+                                 ssh[index] &&
+                                 container.state && 
+                                 container.state.network.eth0.addresses.length > 0 && 
+                                 container.status === 'Running' && 
+                                 isIP4(container.state.network.eth0.addresses[0].address)" @click="open('ssh://root@' + container.state.network.eth0.addresses[0].address)">
+                        <span class="icon has-text-success is-pulled-right" title="SSH">
+                          <i class="fa fa-terminal"></i>
+                        </span>
+                      </a>
+                      <a v-show="
+                                 http[index] &&
+                                 container.state && 
+                                 container.state.network.eth0.addresses.length > 0 && 
+                                 container.status === 'Running' && 
+                                 isIP4(container.state.network.eth0.addresses[0].address)" @click="open('http://' + container.state.network.eth0.addresses[0].address)">
+                        <span class="icon has-text-success is-pulled-right" title="HTTP">
+                          <i class="fa fa-globe"></i>
+                        </span>
+                      </a>
+                    </div>
                   </td>
                   <td>
                     <!-- Running is ip4 -->
@@ -156,7 +181,13 @@
                             </span>
                             <span>Image</span>
                           </a>
-                          <hr class="dropdown-divider" v-if="container.status === 'Stopped'">
+                          <hr class="dropdown-divider">
+                          <a @click="copy_ssh_key(container.name)" class="dropdown-item" v-if="container.status === 'Running'">
+                            <span class="icon">
+                              <i class="fa fa-key"></i> 
+                            </span>
+                            <span>Copy SSH Key</span>
+                          </a>
                           <a @click="delete_container(container.name)" class="dropdown-item" v-if="container.status === 'Stopped'">
                             <span class="icon">
                               <i class="fa fa-times"></i> 
@@ -188,6 +219,10 @@
   import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
   import EditContainer from './Containers/EditContainer'
+  // import checkPort from './Containers/CheckPort.js'
+
+  // const fs = require('fs')
+  const checkPort = require('./Containers/CheckPort.js').default
 
   export default {
     name: 'containers-page',
@@ -200,6 +235,8 @@
         search: null,
         search_result: null,
         containers: [],
+        http: [],
+        ssh: [],
         btn: {
           refresh_containers: false
         }
@@ -222,6 +259,17 @@
       this.$nextTick(() => {
         this.get_containers(() => {
           this.loading = false
+          // check http of containers
+          for (let key in this.containers) {
+            let container = this.containers[key]
+            if (container.state &&
+                container.state.network.eth0.addresses.length > 0 &&
+                container.status === 'Running' &&
+                this.isIP4(container.state.network.eth0.addresses[0].address)) {
+              this.check_http(container.state.network.eth0.addresses[0].address, key)
+              this.check_ssh(container.state.network.eth0.addresses[0].address, key)
+            }
+          }
         })
       })
     },
@@ -244,6 +292,24 @@
         return {
           'is-active': this.manageButton[name]
         }
+      },
+      /**
+       * Checks a containers ip for an open port
+       */
+      check_http (ip, index) {
+        this.$set(this.http, index, false)
+        checkPort(80, {host: ip}).then((reachable) => {
+          this.$set(this.http, index, reachable)
+        })
+      },
+      /**
+       * Checks a containers ip for an open port
+       */
+      check_ssh (ip, index) {
+        this.$set(this.ssh, index, false)
+        checkPort(22, {host: ip}).then((reachable) => {
+          this.$set(this.ssh, index, reachable)
+        })
       },
       /**
        *
@@ -300,6 +366,24 @@
           if (typeof callback === 'function') {
             callback()
           }
+        })
+      },
+      /**
+       *
+       */
+      copy_ssh_key (name) {
+        //
+        this.manage_dropdown_close_all()
+
+        this.lxc_copy_ssh_key(name, process.env['HOME'] + '/.ssh/id_rsa.pub', (response) => {
+          this.$notify({
+            duration: 2000,
+            title: 'Success',
+            message: 'SSH key copied to container.',
+            type: 'success'
+          })
+          //
+          this.get_containers()
         })
       },
       /**

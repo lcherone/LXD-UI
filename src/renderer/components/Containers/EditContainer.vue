@@ -64,7 +64,7 @@
                       </td>
                     </tr>
                     <tr v-show="container.snapshots.length === 0">
-                      <td colspan="2">No snapshots have been created. <a @click="create_snapshot(container.name)">Create snapshot</a>.</td>
+                      <td colspan="2"><p style="padding-top: 3px">No snapshots have been created. <a @click="create_snapshot(container.name)">Create snapshot</a>.</p></td>
                     </tr>
                   </tbody>
                 </table>

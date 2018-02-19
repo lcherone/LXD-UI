@@ -78,6 +78,33 @@ export default {
     /**
      *
      */
+    lxc_copy_ssh_key: function (name, key, callback) {
+      //
+      if (name === undefined || name === null) {
+        name = ''
+      }
+      //
+      if (key === undefined || key === null) {
+        key = ''
+      }
+      if (typeof callback !== 'function') {
+        callback = function (response) {
+          console.log('ERROR: no callback supplied for lxc_copy_ssh_key(' + name + ', ' + key + ', *missing)')
+          console.log(response)
+        }
+      }
+      //
+      // lxc file push [-r|--recursive] [-p|--create-dirs] [--uid=UID] [--gid=GID] [--mode=MODE] <source path> [<source path>...] [<remote>:]<container>/<path>
+      var shellescape = require('shell-escape')
+      this.exec('lxc file push --mode=600 ' + shellescape([key, 'local:' + name + '/root/.ssh/authorized_keys']), (response) => {
+        this.exec('lxc exec ' + name + ' -- /bin/sh -c "sed -i \'s/PermitRootLogin prohibit-password/PermitRootLogin yes/g\' /etc/ssh/sshd_config && sed -i \'s/StrictModes yes/StrictModes no/g\' /etc/ssh/sshd_config && service ssh restart"', function (response) {
+          callback()
+        })
+      })
+    },
+    /**
+     *
+     */
     lxc_state: function (name, state, callback) {
       //
       if (name === undefined || name === null) {
@@ -199,7 +226,7 @@ export default {
       }
       //
       var shellescape = require('shell-escape')
-      this.exec('lxc stop ' + shellescape([name]), function (response) {
+      this.exec('lxc stop ' + shellescape([name, '--force']), function (response) {
         callback()
       })
     },
