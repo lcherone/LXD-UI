@@ -4,7 +4,8 @@
       <div class="modal-background"></div>
       <div class="modal-card" style="margin-top:-20vh">
         <header class="modal-card-head">
-          <p class="modal-card-title">Launch Container</p>
+          <p class="modal-card-title" v-show="script === ''">Launch Container</p>
+          <p class="modal-card-title" v-show="script !== ''">Launch Script</p>
           <button class="delete" aria-label="close" @click="isActive = false"></button>
         </header>
         <section class="modal-card-body">
@@ -29,7 +30,16 @@
               <div class="field-body">
                 <div class="field">
                   <p class="control">
-                    <input class="input is-static" type="text" v-model="description" readonly>
+                    <el-input placeholder="Please input" v-model="description" v-show="description !== ''" readonly v-if="script === ''"></el-input>
+                    <el-input placeholder="Please input" v-model="description" v-show="description !== ''" readonly clearable v-else></el-input>
+                    <el-select v-model="selected_image" placeholder="Select" v-show="description === ''" @change="set_image()" @clear="clear_image()" clearable>
+                      <el-option
+                                 v-for="(item, index) in images"
+                                 :key="item.fingerprint"
+                                 :label="item.properties.description"
+                                 :value="index">
+                      </el-option>
+                    </el-select>
                   </p>
                 </div>
               </div>
@@ -90,12 +100,16 @@
 
   import { Terminal } from 'xterm'
   import * as fit from 'xterm/lib/addons/fit/fit'
+  import path from 'path'
+  import { remote } from 'electron'
 
   import ElectronStore from 'electron-store'
   const storage = new ElectronStore({
     cwd: 'lxd-ui' // ,
     // encryptionKey: 'obfuscation'
   })
+
+  const fs = require('fs')
 
   export default {
     data () {
@@ -106,6 +120,9 @@
         remote: null,
         name: null,
         profiles: ['default'],
+        images: [],
+        selected_image: [],
+        script: {},
         count: 1,
         ephemeral: null,
         launching: false,
@@ -118,10 +135,69 @@
        * Fired from parent
        */
       open (value) {
+        this.script = value.script || ''
         this.isActive = true
         this.remote = value.remote
         this.fingerprint = value.fingerprint
         this.description = value.description
+
+        if (this.fingerprint === '') {
+          this.remote = 'local'
+          this.get_images('local')
+        }
+
+        if (this.script !== '') {
+          fs.writeFile(path.join(remote.app.getPath('userData'), '/script.sh'), this.script.content, 'utf8', (err) => {
+            if (err) {
+              return console.log(err)
+            }
+            this.$notify({
+              duration: 2000,
+              title: 'Success',
+              message: 'Script placed on filesystem',
+              type: 'success'
+            })
+          })
+        }
+      },
+      /**
+       *
+       */
+      get_images (remote) {
+        //
+        if (Date.now() - Number(storage.get('images_cached.' + remote, 0)) > this.cache_time) {
+          let architectures = storage.get('info.server.environment.architectures', ['x86_64', 'i686', 'amd64'])
+          // for some reason amd64 is not in server environment architectures array :/ so append it if x86_64 is found
+          if (_.indexOf(architectures, 'x86_64') > -1) {
+            architectures.push('amd64')
+          }
+          let imagefilter = 'architecture=\'' + architectures.join('|') + '\''
+          //
+          this.lxc_images(remote + ':', imagefilter, (response) => {
+            this.distros = []
+            this.images = []
+            for (var key in response) {
+              this.images.push(response[key])
+              this.distros.push(_.upperFirst(response[key].properties.os))
+            }
+            this.distros = _.uniq(this.distros)
+            storage.set('images.' + remote, this.images)
+            storage.set('images_distros.' + remote, this.distros)
+            storage.set('images_cached.' + remote, Date.now())
+          })
+        } else {
+          this.images = storage.get('images.' + remote)
+          this.distros = storage.get('images_distros.' + remote)
+        }
+      },
+      set_image () {
+        console.log(this.images[this.selected_image])
+        this.fingerprint = this.images[this.selected_image].fingerprint
+        this.description = this.images[this.selected_image].properties.description
+      },
+      clear_image () {
+        this.fingerprint = ''
+        this.description = ''
       },
       /**
        * Used if user does not supply a name and count is > 1
@@ -173,6 +249,10 @@
 
         //
         let ls = []
+        let le = []
+        let lf = []
+        var shellescape = require('shell-escape')
+
         for (let i = 1; i <= this.count; i++) {
           //
           let spawnProps = []
@@ -212,8 +292,73 @@
                 messageCallback('Container ' + this.name + '-' + i + ' successfully created.')()
               }
 
-              this.launching = false
-              this.launched = true
+              // execute script if defined
+              if (this.script !== '') {
+                this.xterm.writeln('Staging script for execution')
+
+                lf[i] = spawn('lxc file push --mode=700 --uid=0 --gid=0 ' + shellescape([path.join(remote.app.getPath('userData'), '/script.sh'), 'local:' + this.name + '/root/script.sh']), [], {
+                  shell: true
+                })
+
+                lf[i].stdout.on('data', (data) => {
+                  let line = data.toString().trim()
+                  if (line !== '') {
+                    this.xterm.writeln(line)
+                  }
+                })
+
+                lf[i].stderr.on('data', (data) => {
+                  let line = data.toString().trim()
+                  if (line !== '') {
+                    this.xterm.writeln(line)
+                  }
+                })
+                lf[i].on('close', (code) => {
+                  if (code === 0) {
+                    this.xterm.writeln('Executing script')
+                    le[i] = spawn('lxc exec ' + this.name + ' -- /bin/sh -c "/root/script.sh"', [], {
+                      shell: true
+                    })
+
+                    le[i].stdout.on('data', (data) => {
+                      let line = data.toString().trim()
+                      if (line !== '') {
+                        this.xterm.writeln(line)
+                      }
+                    })
+
+                    le[i].stderr.on('data', (data) => {
+                      let line = data.toString().trim()
+                      if (line !== '') {
+                        this.xterm.writeln(line)
+                      }
+                    })
+
+                    le[i].on('close', (code) => {
+                      if (code === 0) {
+                        // do message callback
+                        if (this.count === 1) {
+                          messageCallback('Script executed successfully.')()
+                        } else {
+                          messageCallback('Script executed successfully.')()
+                        }
+                      } else {
+                        // do message callback
+                        if (this.count === 1) {
+                          messageCallback('Script returned exit code: ' + code)()
+                        } else {
+                          messageCallback('Script returned exit code: ' + code)()
+                        }
+                      }
+                      this.launching = false
+                      this.launched = true
+                    })
+                  }
+                })
+              } else {
+                this.launching = false
+                this.launched = true
+              }
             }
           })
         }

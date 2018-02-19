@@ -62,7 +62,7 @@
                       <td>
                         <div style="display: flex">
                           <a class="button is-danger is-small" @click="delete_script(item.key)"><i class="fa fa-times"></i></a>
-                          <a class="button is-primary is-small" @click="launch_script(item.key)">Launch</a>
+                          <a class="button is-primary is-small" @click="launch_script(item)">Launch</a>
                         </div>
                       </td>
                     </tr>
@@ -107,6 +107,7 @@
         </div>
       </div>
     </el-main>
+    <launch-container ref="LaunchContainer"></launch-container>
   </div>
 </template>
 
@@ -116,6 +117,7 @@
   import helpers from '../mixins/helpers.js'
   import MainHeader from './Layout/MainHeader'
   import SideMenu from './Layout/SideMenu'
+  import LaunchContainer from './Images/LaunchContainer'
 
   import ElectronStore from 'electron-store'
   const storage = new ElectronStore({
@@ -130,6 +132,7 @@
     components: {
       MainHeader,
       SideMenu,
+      LaunchContainer,
       editor: require('vue2-ace-editor-electron')
     },
     mixins: [helpers],
@@ -187,6 +190,18 @@
       editorInit () {
         require('brace/mode/sh')
         require('brace/theme/eclipse')
+      },
+      /**
+       * Directly call child component LaunchContainer::open()
+       * - huge speed improvement over component instance per table row
+       */
+      launch_script (script) {
+        this.$refs.LaunchContainer.open({
+          script: script,
+          remote: '',
+          fingerprint: '',
+          description: ''
+        })
       },
       /**
        * Create script

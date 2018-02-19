@@ -96,7 +96,7 @@ export default {
       //
       // lxc file push [-r|--recursive] [-p|--create-dirs] [--uid=UID] [--gid=GID] [--mode=MODE] <source path> [<source path>...] [<remote>:]<container>/<path>
       var shellescape = require('shell-escape')
-      this.exec('lxc file push --mode=600 --uid=0 --uid=0 ' + shellescape([key, 'local:' + name + '/root/.ssh/authorized_keys']), (response) => {
+      this.exec('lxc file push --mode=600 --uid=0 --gid=0 ' + shellescape([key, 'local:' + name + '/root/.ssh/authorized_keys']), (response) => {
         this.exec('lxc exec ' + name + ' -- /bin/sh -c "sed -i \'s/PermitRootLogin prohibit-password/PermitRootLogin yes/g\' /etc/ssh/sshd_config && sed -i \'s/StrictModes yes/StrictModes no/g\' /etc/ssh/sshd_config && service ssh restart"', function (response) {
           callback()
         })

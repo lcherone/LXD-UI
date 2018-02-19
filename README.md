@@ -13,7 +13,7 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
  - Direct access into the containers using xterm.js terminal.
  - Create images from containers.
  - Edit local images.
- - User Scripts (see below).
+ - Scripts, launch a container and execute deployment script (not cloud-init so it works with all remotes).
  - Single click to automatically copy users SSH key to root users authorized_keys file.
  - Port checks:
    - If port 22 open, shows a link to open in file explorer over SSH.
@@ -27,7 +27,6 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
  - Manage profiles.
  - Further work on per-container config, like setting max cpu, memory etc.
  - Mount local devices/disks into containers, whilst avoiding need to sudo.
- - User Scripts - An easy single click solution to deploy stuff. (not cloud init, due to it not being included in `images:` images, rather use the file copy and then open a pipe and execute it)
  - Add LXD settings.
  - Add in-app docs.
  - Add app settings.
