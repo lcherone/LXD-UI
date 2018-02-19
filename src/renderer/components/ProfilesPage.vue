@@ -1,62 +1,43 @@
 <template>
-  <div id="wrapper">
-    <div class="container is-fluid">
-      <main-header v-bind:current="$route.name" @search-event="handleSearchEvent"></main-header>
-      <div id="content-wrapper">
-        <div class="columns">
-          <div class="column">
-            <strong class="title is-5">
-              <span class="icon">
-                <i class="fa fa-cogs"></i>
-              </span>
-              Profiles
-            </strong>
+  <div>
+    <!-- Main header -->
+    <main-header :current="$route.path"></main-header>
 
-            ...
+    <!-- Main element -->
+    <el-main>
+      <div class="columns">
+        <div class="column is-narrow">
+          <side-menu></side-menu>
+        </div>
+        <div class="column">
+          <h6 class="title is-6">Profiles</h6>
+
+          <div class="box">
+            <div class="card-content">
+              <p>This is a placeholder profiles, this feature will be added soon.</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </el-main>
   </div>
 </template>
 
 <script>
-  // import _ from 'lodash'
-
-  import helpers from '../mixins/helpers.js'
-  import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
+  import SideMenu from './Layout/SideMenu'
 
   export default {
     name: 'profiles-page',
-    components: { MainHeader },
-    mixins: [lxc, helpers],
+    components: { MainHeader, SideMenu },
+    mixins: [],
     data () {
-      return {
-        search: null,
-        search_result: null,
-        containers: [],
-        btn: {
-          refresh_containers: false
-        }
-      }
+      return {}
     },
     mounted: function () {
       document.title = 'LXDui - Profiles'
-      this.$nextTick(() => {
-        // this.get_containers()
-      })
     },
     methods: {
-      /**
-       *
-       */
-      handleSearchEvent (value) {
-        //
-        this.lxc_list(value, (response) => {
-          this.search_result = response
-        })
-      },
       open (link) {
         this.$electron.shell.openExternal(link)
       }
@@ -64,10 +45,6 @@
   }
 </script>
 
-<style>
-
-  #content-wrapper {
-    margin-top: -20px;
-  }
+<style scoped>
 
 </style>
