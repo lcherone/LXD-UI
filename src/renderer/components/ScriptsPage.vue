@@ -50,9 +50,9 @@
                 <table class="table is-fullwidth is-narrow" style="margin-top:-10px">
                   <thead>
                     <tr>
-                      <th style="width:40%">Description</th>
-                      <th style="width:40%">Added</th>
-                      <th style="width:2%"></th>
+                      <th style="width:80%">Description</th>
+                      <th style="width:20%">Added</th>
+                      <th style="width:1%"></th>
                     </tr>
                   </thead>
                   <tbody>

@@ -79,7 +79,7 @@
                                  container.status === 'Running' && 
                                  isIP4(container.state.network.eth0.addresses[0].address)" @click="open('ssh://root@' + container.state.network.eth0.addresses[0].address)">
                         <span class="icon has-text-success is-pulled-right" title="SSH">
-                          <i class="fa fa-terminal"></i>
+                          <i class="fa fa-folder-open"></i>
                         </span>
                       </a>
                       <a v-show="
@@ -181,8 +181,21 @@
                             </span>
                             <span>Image</span>
                           </a>
-                          <hr class="dropdown-divider">
-                          <a @click="copy_ssh_key(container.name)" class="dropdown-item" v-if="container.status === 'Running'">
+                          <hr class="dropdown-divider"
+                              v-show="(container.status === 'Running' &&
+                                      ssh[index] &&
+                                      container.state && 
+                                      container.state.network.eth0.addresses.length > 0 && 
+                                      container.status === 'Running' && 
+                                      isIP4(container.state.network.eth0.addresses[0].address)) || container.status === 'Stopped'">
+                          <a @click="copy_ssh_key(container.name)" 
+                             class="dropdown-item" 
+                             v-show="container.status === 'Running' &&
+                                     ssh[index] &&
+                                     container.state && 
+                                     container.state.network.eth0.addresses.length > 0 && 
+                                     container.status === 'Running' && 
+                                     isIP4(container.state.network.eth0.addresses[0].address)">
                             <span class="icon">
                               <i class="fa fa-key"></i> 
                             </span>

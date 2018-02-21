@@ -64,6 +64,7 @@
     "element-ui": "^2.2.0",
     "font-awesome": "^4.7.0",
     "moment": "^2.20.1",
+    "node-petname": "^1.0.1",
     "shell-escape": "^0.2.0",
     "vue": "^2.3.3",
     "vue-electron": "^1.0.6",
