@@ -71,14 +71,19 @@
                     </edit-container>
                   </td>
                   <td>
-                    <div style="display:flex">
+                    <div style="display:flex" class="has-text-left">
+                      <a v-if="check_started_with_ip(container) && container.services.vnc" @click="openCmd('xterm -e vncviewer -quality 5 -encodings \'copyrect tight hextile zlib corre rre raw\' -compresslevel 5 ' + container.state.network.eth0.addresses[0].address + ':5901')">
+                        <span class="icon has-text-info is-pulled-right" title="VNC">
+                          <i class="fa fa-desktop"></i>
+                        </span>
+                      </a>
                       <a v-if="check_started_with_ip(container) && container.services.ssh" @click="open('ssh://root@' + container.state.network.eth0.addresses[0].address)">
-                        <span class="icon has-text-success is-pulled-right" title="SSH">
+                        <span class="icon has-text-info is-pulled-right" title="SSH">
                           <i class="fa fa-folder-open"></i>
                         </span>
                       </a>
                       <a v-if="check_started_with_ip(container) && container.services.http" @click="open('http://' + container.state.network.eth0.addresses[0].address)">
-                        <span class="icon has-text-success is-pulled-right" title="HTTP">
+                        <span class="icon has-text-info is-pulled-right" title="HTTP">
                           <i class="fa fa-globe"></i>
                         </span>
                       </a>
@@ -289,6 +294,14 @@
         })
       },
       /**
+       * Checks a containers ip for an open port
+       */
+      check_vnc (ip, index) {
+        checkPort(5901, {host: ip}).then((reachable) => {
+          this.containers[index].services.vnc = reachable
+        })
+      },
+      /**
        *
        */
       check_started_with_ip (container) {
@@ -353,10 +366,11 @@
           this.containers = response
           // check http of containers
           for (let key in this.containers) {
-            this.$set(this.containers[key], 'services', {http: false, ssh: false})
+            this.$set(this.containers[key], 'services', {http: false, ssh: false, vnc: false})
             if (this.check_started_with_ip(this.containers[key])) {
               this.check_http(this.containers[key].state.network.eth0.addresses[0].address, key)
               this.check_ssh(this.containers[key].state.network.eth0.addresses[0].address, key)
+              this.check_vnc(this.containers[key].state.network.eth0.addresses[0].address, key)
             }
           }
           if (typeof callback === 'function') {
@@ -583,6 +597,13 @@
       open (link) {
         this.manage_dropdown_close_all()
         this.$electron.shell.openExternal(link)
+      },
+      /**
+       *
+       */
+      openCmd (link) {
+        var childProcess = require('child_process')
+        childProcess.execSync(link)
       }
     }
   }

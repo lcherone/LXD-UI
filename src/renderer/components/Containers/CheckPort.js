@@ -3,7 +3,7 @@
 const net = require('net')
 
 export default (port, opts) => {
-  opts = Object.assign({timeout: 1000}, opts)
+  opts = Object.assign({timeout: 2000}, opts)
 
   return new Promise((resolve, reject) => {
     const socket = new net.Socket()
