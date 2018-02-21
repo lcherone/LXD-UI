@@ -1,5 +1,5 @@
 <template>
-  <div v-cloak>
+  <div>
     <!-- Main header -->
     <main-header :current="$route.path"></main-header>
 
@@ -72,22 +72,12 @@
                   </td>
                   <td>
                     <div style="display:flex">
-                      <a v-show="
-                                 ssh[index] &&
-                                 container.state && 
-                                 container.state.network.eth0.addresses.length > 0 && 
-                                 container.status === 'Running' && 
-                                 isIP4(container.state.network.eth0.addresses[0].address)" @click="open('ssh://root@' + container.state.network.eth0.addresses[0].address)">
+                      <a v-if="check_started_with_ip(container) && container.services.ssh" @click="open('ssh://root@' + container.state.network.eth0.addresses[0].address)">
                         <span class="icon has-text-success is-pulled-right" title="SSH">
                           <i class="fa fa-folder-open"></i>
                         </span>
                       </a>
-                      <a v-show="
-                                 http[index] &&
-                                 container.state && 
-                                 container.state.network.eth0.addresses.length > 0 && 
-                                 container.status === 'Running' && 
-                                 isIP4(container.state.network.eth0.addresses[0].address)" @click="open('http://' + container.state.network.eth0.addresses[0].address)">
+                      <a v-if="check_started_with_ip(container) && container.services.http" @click="open('http://' + container.state.network.eth0.addresses[0].address)">
                         <span class="icon has-text-success is-pulled-right" title="HTTP">
                           <i class="fa fa-globe"></i>
                         </span>
@@ -97,10 +87,7 @@
                   <td>
                     <!-- Running is ip4 -->
                     <a 
-                       v-if="container.state && 
-                             container.state.network.eth0.addresses.length > 0 && 
-                             container.status === 'Running' && 
-                             isIP4(container.state.network.eth0.addresses[0].address)" 
+                       v-if="check_started_with_ip(container)" 
                        @click="open('http://' + container.state.network.eth0.addresses[0].address)">
                       {{ container.state && container.state.network ? container.state.network.eth0.addresses[0].address : '-' }}
                     </a>
@@ -118,8 +105,7 @@
                   <td>{{ container.state && container.state.cpu.usage !== 0 ? Number(container.state.cpu.usage/1000000000).toFixed(2) + ' seconds' : '-' }}</td>
                   <td>{{ container.state && container.state.memory.usage !== 0 ? formatBytes(container.state.memory.usage) : '-' }}</td>
                   <td>
-                    <strong :class="{'has-text-success': (container.status === 'Running'),
-                                    'has-text-danger': (container.status === 'Stopped')}">{{ container.status }}</strong>
+                    <strong :class="{'has-text-success': (container.status === 'Running'), 'has-text-danger': (container.status === 'Stopped')}">{{ container.status }}</strong>
                   </td>
                   <td>
                     <div class="dropdown is-small is-right" :class="manage_dropdown_class(container.name)">
@@ -182,20 +168,10 @@
                             <span>Image</span>
                           </a>
                           <hr class="dropdown-divider"
-                              v-show="(container.status === 'Running' &&
-                                      ssh[index] &&
-                                      container.state && 
-                                      container.state.network.eth0.addresses.length > 0 && 
-                                      container.status === 'Running' && 
-                                      isIP4(container.state.network.eth0.addresses[0].address)) || container.status === 'Stopped'">
+                              v-show="check_started_with_ip(container) || container.status === 'Stopped'">
                           <a @click="copy_ssh_key(container.name)" 
                              class="dropdown-item" 
-                             v-show="container.status === 'Running' &&
-                                     ssh[index] &&
-                                     container.state && 
-                                     container.state.network.eth0.addresses.length > 0 && 
-                                     container.status === 'Running' && 
-                                     isIP4(container.state.network.eth0.addresses[0].address)">
+                             v-show="check_started_with_ip(container) && container.services.ssh">
                             <span class="icon">
                               <i class="fa fa-key"></i> 
                             </span>
@@ -252,8 +228,6 @@
         search: null,
         search_result: null,
         containers: [],
-        http: [],
-        ssh: [],
         btn: {
           refresh_containers: false
         }
@@ -272,21 +246,9 @@
     },
     mounted: function () {
       document.title = 'LXDui - Containers'
-
       this.$nextTick(() => {
         this.get_containers(() => {
           this.loading = false
-          // check http of containers
-          for (let key in this.containers) {
-            let container = this.containers[key]
-            if (container.state &&
-                container.state.network.eth0.addresses.length > 0 &&
-                container.status === 'Running' &&
-                this.isIP4(container.state.network.eth0.addresses[0].address)) {
-              this.check_http(container.state.network.eth0.addresses[0].address, key)
-              this.check_ssh(container.state.network.eth0.addresses[0].address, key)
-            }
-          }
         })
       })
     },
@@ -314,19 +276,28 @@
        * Checks a containers ip for an open port
        */
       check_http (ip, index) {
-        this.$set(this.http, index, false)
         checkPort(80, {host: ip}).then((reachable) => {
-          this.$set(this.http, index, reachable)
+          this.containers[index].services.http = reachable
         })
       },
       /**
        * Checks a containers ip for an open port
        */
       check_ssh (ip, index) {
-        this.$set(this.ssh, index, false)
         checkPort(22, {host: ip}).then((reachable) => {
-          this.$set(this.ssh, index, reachable)
+          this.containers[index].services.ssh = reachable
         })
+      },
+      /**
+       *
+       */
+      check_started_with_ip (container) {
+        return (
+          container.state &&
+          container.state.network.eth0.addresses.length > 0 &&
+          container.status === 'Running' &&
+          this.isIP4(container.state.network.eth0.addresses[0].address)
+        )
       },
       /**
        *
@@ -380,6 +351,14 @@
       get_containers (callback) {
         this.lxc_list(null, (response) => {
           this.containers = response
+          // check http of containers
+          for (let key in this.containers) {
+            this.$set(this.containers[key], 'services', {http: false, ssh: false})
+            if (this.check_started_with_ip(this.containers[key])) {
+              this.check_http(this.containers[key].state.network.eth0.addresses[0].address, key)
+              this.check_ssh(this.containers[key].state.network.eth0.addresses[0].address, key)
+            }
+          }
           if (typeof callback === 'function') {
             callback()
           }

@@ -25,7 +25,6 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
  - Finish off:
    - Create image from snapshot.
  - Manage profiles.
- - Further work on per-container config, like setting max cpu, memory etc.
  - Mount local devices/disks into containers, whilst avoiding need to sudo.
  - Add LXD settings.
  - Add in-app docs.

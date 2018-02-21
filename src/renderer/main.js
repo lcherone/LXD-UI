@@ -42,8 +42,8 @@ import {
   // DatePicker,
   // TimeSelect,
   // TimePicker,
-  // Popover,
-  // Tooltip,
+  Popover,
+  Tooltip,
   // Breadcrumb,
   // BreadcrumbItem,
   Form,
@@ -62,8 +62,8 @@ import {
   Badge,
   Card,
   // Rate,
-  // Steps,
-  // Step,
+  Steps,
+  Step,
   // Carousel,
   // CarouselItem,
   // Collapse,
@@ -115,8 +115,8 @@ Vue.use(TableColumn)
 // Vue.use(DatePicker)
 // Vue.use(TimeSelect)
 // Vue.use(TimePicker)
-// Vue.use(Popover)
-// Vue.use(Tooltip)
+Vue.use(Popover)
+Vue.use(Tooltip)
 // Vue.use(Breadcrumb)
 // Vue.use(BreadcrumbItem)
 Vue.use(Form)
@@ -135,8 +135,8 @@ Vue.use(Progress)
 Vue.use(Badge)
 Vue.use(Card)
 // Vue.use(Rate)
-// Vue.use(Steps)
-// Vue.use(Step)
+Vue.use(Steps)
+Vue.use(Step)
 // Vue.use(Carousel)
 // Vue.use(CarouselItem)
 // Vue.use(Collapse)
