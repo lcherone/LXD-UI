@@ -18,6 +18,7 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
  - Port checks:
    - If port 22 open, shows a link to open in file explorer over SSH.
    - If port 80 open, shows a link to open in browser.
+   - If port 5901 open, spawns vncviewer.
   
 
 **Planned features:**
@@ -25,10 +26,9 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
  - Finish off:
    - Create image from snapshot.
  - Manage profiles.
- - Mount local devices/disks into containers, whilst avoiding need to sudo.
  - Add LXD settings.
- - Add in-app docs.
  - Add app settings.
+ - Add in-app docs.
 
 Want anything else added? Feel free to open an issue...
 
