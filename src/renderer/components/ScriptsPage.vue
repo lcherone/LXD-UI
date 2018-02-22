@@ -125,8 +125,6 @@
     encryptionKey: 'obfuscation'
   })
 
-  // const editor = require('./Scripts/Ace.js')
-
   export default {
     name: 'scripts-page',
     components: {

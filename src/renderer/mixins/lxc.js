@@ -6,7 +6,7 @@ export default {
     /**
      *
      */
-    lxc_query: function (remote, action, data, callback, index) {
+    lxc_query: function (remote, action, data, callback) {
       //
       if (remote === undefined || remote === null) {
         remote = '/'
@@ -27,12 +27,11 @@ export default {
       }
       //
       var shellescape = require('shell-escape')
-      // console.log('lxc query -X ' + action + ' ' + (data !== false ? '-d ' + shellescape([data]) + '' : '') + ' ' + shellescape([remote]))
       this.exec('lxc query -X ' + action + ' ' + (data !== false ? '-d ' + shellescape([data]) + '' : '') + ' ' + shellescape([remote]), function (response) {
         if (response === '') {
           response = '[]'
         }
-        callback(JSON.parse(response), index)
+        callback(JSON.parse(response))
       })
     },
     /**
