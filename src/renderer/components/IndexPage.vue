@@ -12,18 +12,20 @@
         <div class="column">
           <h6 class="title is-6">
             Dashboard
-            <div class="is-pulled-right" v-if="isDevelopment">
+            <div class="is-pulled-right">
               <button 
-                      class="button is-small is-success is-pulled-right" 
-                      @click="clear_cache">
+                      class="button is-small is-info is-pulled-right" 
+                      @click="refresh_cache"
+                      v-bind:class="{ 'is-loading': btn.refreshing_cache }" 
+                      :disabled="btn.refreshing_cache">
                 <span class="icon">
-                  <i class="fa fa-check"></i> 
+                  <i class="fa fa-refresh"></i> 
                 </span>
-                <span>Clear Cache</span>
+                <span>Refresh</span>
               </button>
             </div>
           </h6>
-          <div class="columns">
+          <div class="columns" v-loading="loading">
             <div class="column">
               <div class="card">
                 <div class="card-content">
@@ -35,12 +37,32 @@
                     </div>
                     <div class="media-content">
                       <p class="title is-5">CPUs</p>
-                      <p class="subtitle is-6">
+                      <p class="subtitle is-6" style="margin-top:-20px">
                         {{ info.resources.cpu.sockets[0].name }} - {{ info.resources.cpu.total }} @ {{ Number(info.resources.cpu.sockets[0].frequency_turbo / 1000).toFixed(2) }}GHz
                       </p>
-                      <p style="margin-top:-6px">
-                        <strong>Load:</strong> {{ info.loadavg[0].toFixed(2) }}, {{ info.loadavg[1].toFixed(2) }}, {{ info.loadavg[2].toFixed(2) }}
-                      </p>
+                    </div>
+                  </div>
+                  <div class="content">
+                    <div class="field is-grouped is-grouped-multiline">
+                      <strong>Load:</strong>&nbsp;
+                      <div class="control" stlye="margin-right: 0.40rem;">
+                        <div class="tags has-addons">
+                          <span class="tag is-dark">1m</span>
+                          <span class="tag is-info">{{ info.loadavg[0].toFixed(2) }}</span>
+                        </div>
+                      </div>
+                      <div class="control" stlye="margin-right: 0.40rem;">
+                        <div class="tags has-addons">
+                          <span class="tag is-dark">5m</span>
+                          <span class="tag is-success">{{ info.loadavg[1].toFixed(2) }}</span>
+                        </div>
+                      </div>
+                      <div class="control" stlye="margin-right: 0.40rem;">
+                        <div class="tags has-addons">
+                          <span class="tag is-dark">15m</span>
+                          <span class="tag is-primary">{{ info.loadavg[2].toFixed(2) }}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -61,29 +83,37 @@
                     </div>
                   </div>
                   <div class="content">
-                    <strong>Total:</strong> {{ formatBytes(info.resources.memory.total) }}
-                    <strong>Used:</strong> {{ formatBytes(info.resources.memory.used) }}
+                    <div class="field is-grouped is-grouped-multiline">
+                      <strong>Usage:</strong>&nbsp;
+                      <div class="control" stlye="margin-right: 0.40rem;">
+                        <div class="tags has-addons">
+                          <span class="tag is-dark">Total</span>
+                          <span class="tag is-info">{{ formatBytes(info.resources.memory.total) }}</span>
+                        </div>
+                      </div>
+                      <div class="control" stlye="margin-right: 0.40rem;">
+                        <div class="tags has-addons">
+                          <span class="tag is-dark">Used</span>
+                          <span class="tag is-success">{{ formatBytes(info.resources.memory.used) }}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="columns">
+          <div class="columns" v-loading="loading">
             <div class="column">
               <div class="card">
                 <header class="card-header">
                   <p class="card-header-title">
-                    Containers {{ info.containers.length }}
+                    Containers&nbsp;&nbsp;<span class="tag" v-bind:class="{
+                      'is-info': info.containers.length <= 20,
+                      'is-danger': info.containers.length >= 20
+                      }">{{ info.containers.length }}</span>
                   </p>
                 </header>
-                <footer class="card-footer">
-                  <a href="#" class="card-footer-item is-success">
-                    <span class="icon">
-                      <i class="fa fa-plus"></i>
-                    </span>
-                    New
-                  </a>
-                </footer>
               </div>
             </div>
             <div class="column">
@@ -93,14 +123,6 @@
                     Profiles {{ info.profiles.length }}
                   </p>
                 </header>
-                <footer class="card-footer">
-                  <a href="#" class="card-footer-item is-success">
-                    <span class="icon">
-                      <i class="fa fa-plus"></i>
-                    </span>
-                    New
-                  </a>
-                </footer>
               </div>
             </div>
             <div class="column">
@@ -110,18 +132,10 @@
                     Images {{ info.images.length }}
                   </p>
                 </header>
-                <footer class="card-footer">
-                  <a href="#" class="card-footer-item is-success">
-                    <span class="icon">
-                      <i class="fa fa-plus"></i>
-                    </span>
-                    New
-                  </a>
-                </footer>
               </div>
             </div>
           </div>
-          <!--          <pre>{{ info }}</pre>-->
+          <!--          <pre style="width:calc(100vw - 270px)">{{ info }}</pre>-->
         </div>
       </div>
     </el-main>
@@ -148,9 +162,13 @@
     mixins: [lxc, helpers],
     data () {
       return {
+        loading: true,
+        btn: {
+          refreshing_cache: false
+        },
         cache_time: Number(1000 * 86400),
         info: {
-          loadavg: require('os').loadavg(),
+          loadavg: [],
           resources: {
             cpu: {
               sockets: [
@@ -209,7 +227,6 @@
           certificates: [],
           images: [],
           networks: [],
-          events: [],
           operations: {},
           'storage-pools': []
         }
@@ -223,44 +240,49 @@
     mounted: function () {
       document.title = 'LXDui - Home'
 
-      // info.server
-      this.get_info('server')
-
-      // info.resources
-      this.get_info('resources')
-
-      // info.containers
-      this.get_info('containers')
-
-      // info.profiles
-      this.get_info('profiles')
-
-      // info.images
-      this.get_info('images')
-
-      // info.certificates
-      this.get_info('certificates')
-
-      // info.networks
-      this.get_info('networks')
-
-      // info.networks
-      this.get_info('operations')
-
-      // info.storage-pools
-      this.get_info('storage-pools')
+      this.$nextTick(() => {
+        this.init()
+      })
     },
     methods: {
-      clear_cache () {
+      refresh_cache () {
         storage.clear()
-        this.$notify({
-          duration: 1200,
-          title: 'Success',
-          message: 'Cached cleared.',
-          type: 'success'
-        })
+        this.init()
+      },
+      init () {
+        // info.server
+        this.get_info('server')
+
+        // info.resources
+        this.get_info('resources')
+
+        // info.containers
+        this.get_info('containers')
+
+        // info.profiles
+        this.get_info('profiles')
+
+        // info.images
+        this.get_info('images')
+
+        // info.certificates
+        this.get_info('certificates')
+
+        // info.networks
+        this.get_info('networks')
+
+        // info.networks
+        this.get_info('operations')
+
+        // info.storage-pools
+        this.get_info('storage-pools')
+
+        // update loadavg
+        this.info.loadavg = require('os').loadavg()
       },
       get_info (type) {
+        this.loading = true
+        this.btn.refreshing_cache = true
         new Promise((resolve, reject) => {
           if (Date.now() - Number(storage.get('cache_time.' + type, 0)) > this.cache_time) {
             //
@@ -274,6 +296,8 @@
           }
         }).then((response) => {
           this.info[type] = response
+          this.btn.refreshing_cache = false
+          this.loading = false
         })
       }
     }
@@ -315,5 +339,10 @@
 
   .el-container:nth-child(7) .el-aside {
     line-height: 320px;
+  }
+
+  .field.is-grouped > .control:not(:last-child) {
+    margin-bottom: 0;
+    margin-right: 0.40rem;
   }
 </style>

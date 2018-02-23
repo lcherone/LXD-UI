@@ -12,7 +12,7 @@
         Containers
         <div v-if="containers.length > 0" class="is-pulled-right">
           <button
-                  class="button is-small is-link" 
+                  class="button is-small is-info" 
                   @click="refresh_containers()" 
                   :class="{ 'is-loading': btn.refresh_containers }" 
                   :disabled="btn.refresh_containers">

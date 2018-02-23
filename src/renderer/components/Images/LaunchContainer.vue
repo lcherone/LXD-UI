@@ -364,6 +364,7 @@
         }
 
         storage.set('images_cached.local', 0)
+        storage.set('cache_time.containers', 0)
       },
       /**
        *
