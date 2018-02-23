@@ -5,104 +5,98 @@
 
     <!-- Main element -->
     <el-main>
-      <div class="columns">
-        <div class="column is-narrow">
-          <side-menu></side-menu>
+
+      <h6 class="title is-6">
+        Scripts
+        <div class="is-pulled-right">
+          <button 
+                  class="button is-small is-success is-pulled-right" 
+                  @click="save" 
+                  v-if="state === 'create' || state === 'edit'" 
+                  :disabled="script.description === ''">
+            <span class="icon">
+              <i class="fa fa-check"></i> 
+            </span>
+            <span>Save</span>
+          </button>
+          &nbsp;
+          <button 
+                  class="button is-small is-success" 
+                  @click="create()" 
+                  v-if="state !== 'create' && state !== 'edit'">
+            <span class="icon">
+              <i class="fa fa-plus"></i> 
+            </span>
+            <span>New</span>
+          </button>
+          <button v-else class="button is-small is-light" @click="state = 'view'">
+            <span>Back</span>
+          </button>
         </div>
-        <div class="column">
-          <h6 class="title is-6">
-            Scripts
-            <div class="is-pulled-right">
-              <button 
-                      class="button is-small is-success is-pulled-right" 
-                      @click="save" 
-                      v-if="state === 'create' || state === 'edit'" 
-                      :disabled="script.description === ''">
-                <span class="icon">
-                  <i class="fa fa-check"></i> 
-                </span>
-                <span>Save</span>
-              </button>
-              &nbsp;
-              <button 
-                      class="button is-small is-success" 
-                      @click="create()" 
-                      v-if="state !== 'create' && state !== 'edit'">
-                <span class="icon">
-                  <i class="fa fa-plus"></i> 
-                </span>
-                <span>New</span>
-              </button>
-              <button v-else class="button is-small is-light" @click="state = 'view'">
-                <span>Back</span>
-              </button>
-            </div>
-          </h6>
-          <div class="box">
-            <div class="card-content">
-              <div v-if="state === 'view'">
-                <!-- All Scripts -->
-                <div class="field is-pulled-right">
-                  <div class="control">
-                    <input class="input" type="text" v-model="table_filter" placeholder="Filter...">
-                  </div>
-                </div>
-                <table class="table is-fullwidth is-narrow" style="margin-top:-10px">
-                  <thead>
-                    <tr>
-                      <th style="width:80%">Description</th>
-                      <th style="width:20%">Added</th>
-                      <th style="width:1%"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="item in scripts_list" v-show="scripts_list.length > 0">
-                      <td><a @click="edit(item.key)">{{ item.description }}</a></td>
-                      <td><span>{{ item.date | formatDate }}</span></td>
-                      <td>
-                        <div style="display: flex">
-                          <a class="button is-danger is-small" @click="delete_script(item.key)"><i class="fa fa-times"></i></a>
-                          <a class="button is-primary is-small" @click="launch_script(item)">Launch</a>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr v-show="scripts_list.length === 0">
-                      <td colspan="3" v-if="scripts.length === 0">No scripts have been created.</td>
-                      <td colspan="3" v-else>No scripts found matching filter.</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <!-- /All Scripts -->
-              </div>
-              <div v-else>
-                <!-- Create Script -->
-                <div class="field is-horizontal">
-                  <div class="field-label is-normal">
-                    <label class="label" for="description">Description</label>
-                  </div>
-                  <div class="field-body">
-                    <div class="field">
-                      <p class="control">
-                        <el-input placeholder="Enter description for script..." v-model="script.description"></el-input>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div class="field is-horizontal">
-                  <div class="field-label is-normal">
-                    <label class="label" for="content">Source</label>
-                  </div>
-                  <div class="field-body">
-                    <div class="field">
-                      <p class="control">
-                        <editor v-model="script.content" @init="editorInit" lang="sh" theme="eclipse" width="100%" height="calc(100vh - 230px)"></editor>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <!-- /Create Script -->
+      </h6>
+      <div class="box">
+        <div class="card-content">
+          <div v-if="state === 'view'">
+            <!-- All Scripts -->
+            <div class="field is-pulled-right">
+              <div class="control">
+                <input class="input" type="text" v-model="table_filter" placeholder="Filter...">
               </div>
             </div>
+            <table class="table is-fullwidth is-narrow" style="margin-top:-10px">
+              <thead>
+                <tr>
+                  <th style="width:80%">Description</th>
+                  <th style="width:20%">Added</th>
+                  <th style="width:1%"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in scripts_list" v-show="scripts_list.length > 0">
+                  <td><a @click="edit(item.key)">{{ item.description }}</a></td>
+                  <td><span>{{ item.date | formatDate }}</span></td>
+                  <td>
+                    <div style="display: flex">
+                      <a class="button is-danger is-small" @click="delete_script(item.key)"><i class="fa fa-times"></i></a>
+                      <a class="button is-primary is-small" @click="launch_script(item)">Launch</a>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-show="scripts_list.length === 0">
+                  <td colspan="3" v-if="scripts.length === 0">No scripts have been created.</td>
+                  <td colspan="3" v-else>No scripts found matching filter.</td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- /All Scripts -->
+          </div>
+          <div v-else>
+            <!-- Create Script -->
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label" for="description">Description</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <p class="control">
+                    <el-input placeholder="Enter description for script..." v-model="script.description"></el-input>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label" for="content">Source</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <p class="control">
+                    <editor v-model="script.content" @init="editorInit" lang="sh" theme="eclipse" width="100%" height="calc(100vh - 230px)"></editor>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <!-- /Create Script -->
           </div>
         </div>
       </div>

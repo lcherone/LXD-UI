@@ -10,10 +10,7 @@
           <button class="delete" aria-label="close" @click="isActive = false"></button>
         </header>
         <section class="modal-card-body">
-          <!--          <pre>{{ container }}</pre>-->
-
           <h5 class="title is-5" style="margin-bottom:10px">General</h5>
-
           <div class="columns">
             <div class="column">
               <div class="field">

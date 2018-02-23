@@ -10,7 +10,19 @@
           <side-menu></side-menu>
         </div>
         <div class="column">
-          <h6 class="title is-6">Dashboard</h6>
+          <h6 class="title is-6">
+            Dashboard
+            <div class="is-pulled-right" v-if="isDevelopment">
+              <button 
+                      class="button is-small is-success is-pulled-right" 
+                      @click="clear_cache">
+                <span class="icon">
+                  <i class="fa fa-check"></i> 
+                </span>
+                <span>Clear Cache</span>
+              </button>
+            </div>
+          </h6>
           <div class="columns">
             <div class="column">
               <div class="card">
@@ -61,7 +73,7 @@
               <div class="card">
                 <header class="card-header">
                   <p class="card-header-title">
-                    Containers {{ info.containers }}
+                    Containers {{ info.containers.length }}
                   </p>
                 </header>
                 <footer class="card-footer">
@@ -78,7 +90,7 @@
               <div class="card">
                 <header class="card-header">
                   <p class="card-header-title">
-                    Profiles {{ info.profiles }}
+                    Profiles {{ info.profiles.length }}
                   </p>
                 </header>
                 <footer class="card-footer">
@@ -95,7 +107,7 @@
               <div class="card">
                 <header class="card-header">
                   <p class="card-header-title">
-                    Images {{ info.images }}
+                    Images {{ info.images.length }}
                   </p>
                 </header>
                 <footer class="card-footer">
@@ -109,6 +121,7 @@
               </div>
             </div>
           </div>
+          <!--          <pre>{{ info }}</pre>-->
         </div>
       </div>
     </el-main>
@@ -135,7 +148,7 @@
     mixins: [lxc, helpers],
     data () {
       return {
-        activeIndex: '/',
+        cache_time: Number(1000 * 86400),
         info: {
           loadavg: require('os').loadavg(),
           resources: {
@@ -191,92 +204,79 @@
             },
             public: false
           },
-          containers: 0,
-          profiles: 0,
-          certificates: 0,
-          images: 0,
-          remotes: 0,
-          networks: 0
+          containers: [],
+          profiles: [],
+          certificates: [],
+          images: [],
+          networks: [],
+          events: [],
+          operations: {},
+          'storage-pools': []
         }
+      }
+    },
+    computed: {
+      isDevelopment: () => {
+        return process.env.NODE_ENV === 'development'
       }
     },
     mounted: function () {
       document.title = 'LXDui - Home'
 
-      //
-      let cacheTime = 0
-
       // info.server
-      // cacheTime = 1 day
-      /*
-      cacheTime = Number(1000 * 86400)
-      if (Date.now() - Number(storage.get('info.server.cached', 0)) > cacheTime) {
-        this.lxc_info('/', (response) => {
-          this.info.server = response
-          response.cached = Date.now()
-          storage.set('info.server', response)
-        })
-      } else {
-        this.info.server = storage.get('info.server')
-      }
-      */
+      this.get_info('server')
+
       // info.resources
-      // cacheTime = 1 day
-      cacheTime = Number(1000 * 86400)
-      if (Date.now() - Number(storage.get('info.resources.cached', 0)) > cacheTime) {
-        //
-        this.lxc_query('/1.0/resources', 'GET', null, (response) => {
-          this.info.resources = response
-          response.cached = Date.now()
-          storage.set('info.resources', response)
-        })
-      } else {
-        this.info.resources = storage.get('info.resources')
-      }
+      this.get_info('resources')
 
       // info.containers
-      // cacheTime = 1 day
-      cacheTime = Number(1000 * 86400)
-      if (Date.now() - Number(storage.get('info.containers.cached', 0)) > cacheTime) {
-        //
-        this.lxc_query('/1.0/containers', 'GET', null, (response) => {
-          this.info.containers = response.length
-          response.cached = Date.now()
-          storage.set('info.containers', response)
-        })
-      } else {
-        this.info.containers = storage.get('info.containers')
-      }
+      this.get_info('containers')
 
       // info.profiles
-      // cacheTime = 1 day
-      cacheTime = Number(1000 * 86400)
-      if (Date.now() - Number(storage.get('info.profiles.cached', 0)) > cacheTime) {
-        //
-        this.lxc_query('/1.0/profiles', 'GET', null, (response) => {
-          this.info.profiles = response.length
-          response.cached = Date.now()
-          storage.set('info.profiles', response)
-        })
-      } else {
-        this.info.profiles = storage.get('info.profiles')
-      }
+      this.get_info('profiles')
 
       // info.images
-      // cacheTime = 1 day
-      cacheTime = Number(1000 * 86400)
-      if (Date.now() - Number(storage.get('info.images.cached', 0)) > cacheTime) {
-        //
-        this.lxc_query('/1.0/images', 'GET', null, (response) => {
-          this.info.images = response.length
-          response.cached = Date.now()
-          storage.set('info.images', response)
-        })
-      } else {
-        this.info.images = storage.get('info.images')
-      }
+      this.get_info('images')
+
+      // info.certificates
+      this.get_info('certificates')
+
+      // info.networks
+      this.get_info('networks')
+
+      // info.networks
+      this.get_info('operations')
+
+      // info.storage-pools
+      this.get_info('storage-pools')
     },
-    methods: {}
+    methods: {
+      clear_cache () {
+        storage.clear()
+        this.$notify({
+          duration: 1200,
+          title: 'Success',
+          message: 'Cached cleared.',
+          type: 'success'
+        })
+      },
+      get_info (type) {
+        new Promise((resolve, reject) => {
+          if (Date.now() - Number(storage.get('cache_time.' + type, 0)) > this.cache_time) {
+            //
+            this.lxc_query('/1.0' + (type === 'server' ? '' : '/' + type), 'GET', null, (response) => {
+              storage.set('cache_time.' + type, Date.now())
+              storage.set('info.' + type, response)
+              resolve(response)
+            })
+          } else {
+            resolve(storage.get('info.' + type))
+          }
+        }).then((response) => {
+          this.info[type] = response
+        })
+      }
+    }
   }
 </script>
 
