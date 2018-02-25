@@ -124,7 +124,7 @@
                       </div>
                       <div class="dropdown-menu" id="dropdown-menu3" role="menu">
                         <div class="dropdown-content">
-                          <router-link class="dropdown-item" v-show="container.status === 'Running'" :to="{ path: '/terminal/' + container.name + '/' + container.config['image.os'] }" target="_blank" v-on:click.native="manage_dropdown_close_all()" title="Open terminal">
+                          <router-link class="dropdown-item" v-if="container.status !== 'Error' && container.status === 'Running'" :to="{ path: '/terminal/' + container.name + '/' + container.config['image.os'] }" target="_blank" v-on:click.native="manage_dropdown_close_all()" title="Open terminal">
                             <span class="icon">
                               <i class="fa fa-terminal"></i> 
                             </span>
@@ -173,7 +173,7 @@
                             <span>Image</span>
                           </a>
                           <hr class="dropdown-divider"
-                              v-show="check_started_with_ip(container) || container.status === 'Stopped'">
+                              v-show="(check_started_with_ip(container) && container.services.ssh) || container.status === 'Stopped'">
                           <a @click="copy_ssh_key(container.name)" 
                              class="dropdown-item" 
                              v-show="check_started_with_ip(container) && container.services.ssh">

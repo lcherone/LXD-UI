@@ -428,6 +428,51 @@ export default {
       this.exec('lxc image delete ' + fingerprint, function (response) {
         callback(response)
       })
+    },
+    /**
+     *
+     */
+    lxc_config_set: function (key, value, callback) {
+      //
+      if (key === undefined || key === null) {
+        key = ''
+      }
+      //
+      if (value === undefined || value === null) {
+        value = ''
+      }
+      if (typeof callback !== 'function') {
+        callback = function (response) {
+          console.log('ERROR: no callback supplied for lxc_config_set(' + key + ', ' + value + ', *missing)')
+          console.log(response)
+        }
+      }
+      //
+      var shellescape = require('shell-escape')
+      // console.error('lxc config set ' + shellescape([key, value]))
+      this.exec('lxc config set ' + shellescape([key, value]), function (response) {
+        callback()
+      })
+    },
+    /**
+     *
+     */
+    lxc_config_unset: function (key, callback) {
+      //
+      if (key === undefined || key === null) {
+        key = ''
+      }
+      if (typeof callback !== 'function') {
+        callback = function (response) {
+          console.log('ERROR: no callback supplied for lxc_config_unset(' + key + ', *missing)')
+          console.log(response)
+        }
+      }
+      //
+      var shellescape = require('shell-escape')
+      this.exec('lxc config unset ' + shellescape([key]), function (response) {
+        callback()
+      })
     }
   }
 }

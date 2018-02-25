@@ -48,19 +48,19 @@
                       <div class="control" stlye="margin-right: 0.40rem;">
                         <div class="tags has-addons">
                           <span class="tag is-dark">1m</span>
-                          <span class="tag is-info">{{ info.loadavg[0].toFixed(2) }}</span>
+                          <span class="tag" v-bind:class="tag_load_1m">{{ info.loadavg[0].toFixed(2) }}</span>
                         </div>
                       </div>
                       <div class="control" stlye="margin-right: 0.40rem;">
                         <div class="tags has-addons">
                           <span class="tag is-dark">5m</span>
-                          <span class="tag is-success">{{ info.loadavg[1].toFixed(2) }}</span>
+                          <span class="tag" v-bind:class="tag_load_5m">{{ info.loadavg[1].toFixed(2) }}</span>
                         </div>
                       </div>
                       <div class="control" stlye="margin-right: 0.40rem;">
                         <div class="tags has-addons">
                           <span class="tag is-dark">15m</span>
-                          <span class="tag is-primary">{{ info.loadavg[2].toFixed(2) }}</span>
+                          <span class="tag" v-bind:class="tag_load_15m">{{ info.loadavg[2].toFixed(2) }}</span>
                         </div>
                       </div>
                     </div>
@@ -108,10 +108,7 @@
               <div class="card">
                 <header class="card-header">
                   <p class="card-header-title">
-                    Containers&nbsp;&nbsp;<span class="tag" v-bind:class="{
-                      'is-info': info.containers.length <= 20,
-                      'is-danger': info.containers.length >= 20
-                      }">{{ info.containers.length }}</span>
+                    Containers&nbsp;&nbsp;<span class="tag" v-bind:class="tag_containers">{{ info.containers.length }}</span>
                   </p>
                 </header>
               </div>
@@ -120,7 +117,7 @@
               <div class="card">
                 <header class="card-header">
                   <p class="card-header-title">
-                    Profiles {{ info.profiles.length }}
+                    Profiles&nbsp;&nbsp;<span class="tag" v-bind:class="tag_profiles">{{ info.profiles.length }}</span>
                   </p>
                 </header>
               </div>
@@ -129,7 +126,7 @@
               <div class="card">
                 <header class="card-header">
                   <p class="card-header-title">
-                    Images {{ info.images.length }}
+                    Images&nbsp;&nbsp;<span class="tag" v-bind:class="tag_images">{{ info.images.length }}</span>
                   </p>
                 </header>
               </div>
@@ -143,8 +140,7 @@
 </template>
 
 <script>
-  // import _ from 'lodash'
-
+  import _ from 'lodash'
   import helpers from '../mixins/helpers.js'
   import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
@@ -155,6 +151,8 @@
     cwd: 'lxd-ui' // ,
     // encryptionKey: 'obfuscation'
   })
+
+  const os = require('os')
 
   export default {
     name: 'index-page',
@@ -168,7 +166,7 @@
         },
         cache_time: Number(1000 * 86400),
         info: {
-          loadavg: [],
+          loadavg: os.loadavg(),
           resources: {
             cpu: {
               sockets: [
@@ -233,13 +231,117 @@
       }
     },
     computed: {
-      isDevelopment: () => {
-        return process.env.NODE_ENV === 'development'
+      tag_load_1m: function () {
+        if (this.info === undefined) {
+          return {
+            'is-light': true
+          }
+        }
+
+        let cpus = this.info.resources.cpu.total
+        let load = this.info.loadavg[0].toFixed(2)
+        let actual = load / cpus
+
+        if (actual === Infinity) {
+          return {
+            'is-light': true
+          }
+        }
+
+        return {
+          'is-success': _.inRange((load / cpus), 0, 0.75),
+          'is-warning': _.inRange((load / cpus), 0.75, 1),
+          'is-danger': _.inRange((load / cpus), 1, 100)
+        }
+      },
+      tag_load_5m: function () {
+        if (this.info === undefined) {
+          return {
+            'is-light': true
+          }
+        }
+
+        let cpus = this.info.resources.cpu.total
+        let load = this.info.loadavg[1].toFixed(2)
+        let actual = load / cpus
+
+        if (actual === Infinity) {
+          return {
+            'is-light': true
+          }
+        }
+
+        return {
+          'is-success': _.inRange((load / cpus), 0, 0.75),
+          'is-warning': _.inRange((load / cpus), 0.75, 1),
+          'is-danger': _.inRange((load / cpus), 1, 100)
+        }
+      },
+      tag_load_15m: function () {
+        if (this.info === undefined) {
+          return {
+            'is-light': true
+          }
+        }
+
+        let cpus = this.info.resources.cpu.total
+        let load = this.info.loadavg[2].toFixed(2)
+        let actual = load / cpus
+
+        if (actual === Infinity) {
+          return {
+            'is-light': true
+          }
+        }
+
+        return {
+          'is-success': _.inRange((load / cpus), 0, 0.75),
+          'is-warning': _.inRange((load / cpus), 0.75, 1),
+          'is-danger': _.inRange((load / cpus), 1, 100)
+        }
+      },
+      tag_containers: function () {
+        if (this.info === undefined) {
+          return {
+            'is-light': true
+          }
+        }
+        return {
+          'is-light': this.info.containers.length === 0,
+          'is-success': _.inRange(this.info.containers.length, 1, 5),
+          'is-warning': _.inRange(this.info.containers.length, 6, 10),
+          'is-danger': _.inRange(this.info.containers.length, 11, 1000)
+        }
+      },
+      tag_profiles: function () {
+        if (this.info === undefined) {
+          return {
+            'is-light': true
+          }
+        }
+        return {
+          'is-light': this.info.profiles.length === 0,
+          'is-success': _.inRange(this.info.profiles.length, 1, 5),
+          'is-warning': _.inRange(this.info.profiles.length, 6, 10),
+          'is-danger': _.inRange(this.info.profiles.length, 11, 1000)
+        }
+      },
+      tag_images: function () {
+        if (this.info === undefined) {
+          return {
+            'is-light': true
+          }
+        }
+        return {
+          'is-light': this.info.images.length === 0,
+          'is-success': _.inRange(this.info.images.length, 1, 5),
+          'is-warning': _.inRange(this.info.images.length, 6, 10),
+          'is-danger': _.inRange(this.info.images.length, 11, 1000)
+        }
       }
     },
     mounted: function () {
       document.title = 'LXDui - Home'
-
       this.$nextTick(() => {
         this.init()
       })
@@ -278,7 +380,7 @@
         this.get_info('storage-pools')
 
         // update loadavg
-        this.info.loadavg = require('os').loadavg()
+        this.info.loadavg = os.loadavg()
       },
       get_info (type) {
         this.loading = true
