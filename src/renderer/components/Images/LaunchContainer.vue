@@ -51,8 +51,11 @@
               <div class="field-body">
                 <div class="field">
                   <el-select v-model="profiles" multiple placeholder="Select container profile">
-                    <el-option label="default" value="default"></el-option>
-                    <el-option label="profile-nameb" value="profile-nameb"></el-option>
+                    <el-option v-for="item in profilesList"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value">
+                    </el-option>
                   </el-select>
                 </div>
               </div>
@@ -102,6 +105,7 @@
   import * as fit from 'xterm/lib/addons/fit/fit'
   import path from 'path'
   import { remote } from 'electron'
+  import lxc from '../../mixins/lxc.js'
 
   import ElectronStore from 'electron-store'
   const storage = new ElectronStore({
@@ -113,6 +117,7 @@
   const petname = require('node-petname')
 
   export default {
+    mixins: [lxc],
     data () {
       return {
         isActive: false,
@@ -121,6 +126,7 @@
         remote: null,
         name: null,
         profiles: ['default'],
+        profilesList: [],
         images: [],
         selected_image: [],
         script: {},
@@ -136,6 +142,8 @@
        * Fired from parent
        */
       open (value) {
+        this.get_profiles()
+
         this.script = value.script || ''
         this.isActive = true
         this.remote = value.remote
@@ -162,6 +170,22 @@
             */
           })
         }
+      },
+      /**
+       *
+       */
+      get_profiles: function () {
+        //
+        this.lxc_query('/1.0/profiles', 'GET', null, (response) => {
+          let profilesList = []
+          _.each(response, function (value, key) {
+            profilesList.push({
+              lable: value.substring(value.lastIndexOf('/') + 1),
+              value: value.substring(value.lastIndexOf('/') + 1)
+            })
+          })
+          this.profilesList = profilesList
+        })
       },
       /**
        *

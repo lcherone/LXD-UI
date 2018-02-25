@@ -34,7 +34,11 @@
                 <div class="field-body">
                   <div class="field">
                     <el-select v-model="container.profiles" multiple placeholder="Select container profile">
-                      <el-option label="Default" value="default"></el-option>
+                      <el-option v-for="item in profiles"
+                                 :key="item.value"
+                                 :label="item.label"
+                                 :value="item.value">
+                      </el-option>
                     </el-select>
                   </div>
                 </div>
@@ -98,7 +102,7 @@
                 </div>
                 <div class="field-body">
                   <div class="field" style="margin-top:-3px">
-                    <el-slider v-model="container.config['limits.cpu']" :min="1" :max="4" :step="1"></el-slider>
+                    <el-slider v-model="container.config['limits.cpu']" :min="1" :max="max_cpu" :step="1"></el-slider>
                   </div>
                 </div>
               </div>
@@ -108,7 +112,7 @@
                 </div>
                 <div class="field-body">
                   <div class="field" style="margin-top:-3px">
-                    <el-slider v-model="container.config['limits.processes']" :min="100" :max="10000" :step="100"></el-slider>
+                    <el-slider v-model="container.config['limits.processes']" :min="100" :max="32750" :step="100"></el-slider>
                   </div>
                 </div>
               </div>
@@ -145,7 +149,7 @@
                 </div>
                 <div class="field-body">
                   <div class="field" style="margin-top:-3px">
-                    <el-slider :min="64" :max="2000" :step="32" v-model="container.config['limits.memory']"></el-slider>
+                    <el-slider :min="64" :max="max_memory" :step="32" v-model="container.config['limits.memory']"></el-slider>
                   </div>
                 </div>
               </div> 
@@ -274,16 +278,26 @@
       return {
         isActive: false,
         isSaving: false,
-        container: container.empty()
+        container: container.empty(),
+        profiles: []
       }
     },
-    mounted: function () {},
+    computed: {
+      max_memory: function () {
+        return (container.max_memory() / 1024) / 1024
+      },
+      max_cpu: function () {
+        return container.max_cpu()
+      }
+    },
     methods: {
       /**
        *
        */
       initialise () {
         this.$emit('clicked')
+
+        this.get_profiles()
 
         this.lxc_list(this.name, (response) => {
           if (response[0]) {
@@ -366,6 +380,22 @@
             //
             this.initialise()
           })
+        })
+      },
+      /**
+       *
+       */
+      get_profiles: function () {
+        //
+        this.lxc_query('/1.0/profiles', 'GET', null, (response) => {
+          let profiles = []
+          _.each(response, function (value, key) {
+            profiles.push({
+              lable: value.substring(value.lastIndexOf('/') + 1),
+              value: value.substring(value.lastIndexOf('/') + 1)
+            })
+          })
+          this.profiles = profiles
         })
       },
       /**
