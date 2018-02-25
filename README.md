@@ -13,20 +13,20 @@ A LXD user interface, which allows you to manage your local LXD instance in a GU
  - Direct access into the containers using xterm.js terminal.
  - Create images from containers.
  - Edit local images.
+ - Edit LXD settings.
  - Scripts, launch a container and execute deployment script (not cloud-init so it works with all remotes).
  - Single click to automatically copy users SSH key to root users authorized_keys file.
  - Port checks:
-   - If port 22 open, shows a link to open in file explorer over SSH.
-   - If port 80 open, shows a link to open in browser.
-   - If port 5901 open, spawns vncviewer.
+   - If port 22 open, shows link to open in file explorer over SSH.
+   - If port 80 open, shows link to open in browser.
+   - If port 5901 open, shows link to open vncviewer.
   
 
 **Planned features:**
 
  - Finish off:
    - Create image from snapshot.
- - Manage profiles.
- - Add LXD settings.
+ - Manage profiles (configuration done, still need to add devices).
  - Add app settings.
  - Add in-app docs.
 
