@@ -89,7 +89,6 @@
               </div>
             </div>
           </div>
-
           <h5 class="title is-5" style="margin-bottom:10px">CPU</h5>
           <div class="columns">
             <div class="column">
@@ -137,7 +136,6 @@
               </div>
             </div>
           </div>
-
           <h5 class="title is-5" style="margin-bottom:10px">Memory</h5>
           <div class="columns">
             <div class="column">
@@ -165,22 +163,6 @@
             <div class="column">
               <div class="field">
                 <div class="field-label is-normal">
-                  <label style="text-align: left" class="label" for="autostart">Swap</label>
-                </div>
-                <div class="field-body">
-                  <div class="field" style="margin-top:-3px">
-                    <el-select v-model="container.config['limits.memory.swap']" placeholder="Select">
-                      <el-option v-for="item in [{value: '1', label: 'Yes'}, {value: '0', label: 'No'}]"
-                                 :key="item.value"
-                                 :label="item.label"
-                                 :value="item.value">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </div>
-              </div>
-              <div class="field">
-                <div class="field-label is-normal">
                   <label style="text-align: left" class="label" for="autostart">Enforce</label>
                 </div>
                 <div class="field-body">
@@ -195,9 +177,24 @@
                   </div>
                 </div>
               </div>  
+              <div class="field">
+                <div class="field-label is-normal">
+                  <label style="text-align: left" class="label" for="autostart">Swap</label>
+                </div>
+                <div class="field-body">
+                  <div class="field" style="margin-top:-3px">
+                    <el-select v-model="container.config['limits.memory.swap']" placeholder="Select">
+                      <el-option v-for="item in [{value: '1', label: 'Yes'}, {value: '0', label: 'No'}]"
+                                 :key="item.value"
+                                 :label="item.label"
+                                 :value="item.value">
+                      </el-option>
+                    </el-select>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
           <div class="columns">
             <div class="column">
               <h5 class="title is-5" style="margin-bottom:10px">Disk</h5>
@@ -226,7 +223,6 @@
               </div>
             </div>
           </div>
-
           <h5 class="title is-5" style="margin-bottom:10px">Snapshots</h5>
           <table class="table is-fullwidth is-narrow">
             <tbody>
@@ -244,7 +240,6 @@
               </tr>
             </tbody>
           </table>
-
         </section>
         <footer class="modal-card-foot">
           <button 
@@ -265,6 +260,8 @@
 
   import lxc from '../../mixins/lxc.js'
 
+  const container = require('./Container')
+
   // import ElectronStore from 'electron-store'
   // const storage = new ElectronStore({
   //   cwd: 'lxd-ui'
@@ -277,43 +274,7 @@
       return {
         isActive: false,
         isSaving: false,
-        container: {
-          architecture: '',
-          config: {},
-          devices: {},
-          ephemeral: false,
-          privileged: false,
-          profiles: [
-            'default'
-          ],
-          stateful: true,
-          description: '',
-          created_at: '',
-          expanded_config: {},
-          expanded_devices: {},
-          name: '',
-          status: '',
-          status_code: 0,
-          last_used_at: '',
-          state: {
-            status: '',
-            status_code: 0,
-            disk: {},
-            memory: {
-              usage: 0,
-              usage_peak: 0,
-              swap_usage: 0,
-              swap_usage_peak: 0
-            },
-            network: {},
-            pid: 0,
-            processes: 0,
-            cpu: {
-              usage: 0
-            }
-          },
-          snapshots: []
-        }
+        container: container.empty()
       }
     },
     mounted: function () {},
@@ -326,31 +287,7 @@
 
         this.lxc_list(this.name, (response) => {
           if (response[0]) {
-            this.container = response[0]
-
-            // cast inbound config values to bool
-            this.container.config['boot.autostart'] = (this.container.config['boot.autostart'] === '1')
-            this.container.config['security.privileged'] = (this.container.config['security.privileged'] === '1')
-            this.container.config['security.nesting'] = (this.container.config['security.nesting'] === '1')
-
-            // strip off MB from end of string
-            if (this.container.config['limits.memory'] !== undefined) {
-              this.container.config['limits.memory'] = Number(this.container.config['limits.memory'].substring(0, this.container.config['limits.memory'].indexOf('MB')))
-            }
-
-            // strip off % from end of string
-            if (this.container.config['limits.cpu.allowance'] !== undefined) {
-              this.container.config['limits.cpu.allowance'] = Number(this.container.config['limits.cpu.allowance'].substring(0, this.container.config['limits.cpu.allowance'].indexOf('%')))
-            }
-
-            // parse all stings to numbers
-            this.container.config['limits.cpu'] = Number(this.container.config['limits.cpu'])
-            this.container.config['limits.cpu.priority'] = Number(this.container.config['limits.cpu.priority'])
-            this.container.config['limits.processes'] = Number(this.container.config['limits.processes'])
-            this.container.config['limits.memory.swap.priority'] = Number(this.container.config['limits.memory.swap.priority'])
-            this.container.config['limits.disk.priority'] = Number(this.container.config['limits.disk.priority'])
-            this.container.config['limits.network.priority'] = Number(this.container.config['limits.network.priority'])
-
+            this.container = container.infix(response[0])
             this.isActive = true
           } else {
             this.$notify({
@@ -438,39 +375,12 @@
         //
         this.isSaving = true
 
-        let config = {
-          'boot.autostart': (this.container.config['boot.autostart'] === true ? '1' : '0'),
-          // security
-          'security.privileged': (this.container.config['security.privileged'] === true ? '1' : '0'),
-          'security.nesting': (this.container.config['security.nesting'] === true ? '1' : '0'),
-          // cpu
-          'limits.cpu': String(this.container.config['limits.cpu']),
-          'limits.cpu.allowance': String(this.container.config['limits.cpu.allowance']) + '%',
-          'limits.cpu.priority': String(this.container.config['limits.cpu.priority']),
-          'limits.processes': String(this.container.config['limits.processes']),
-          // memory
-          'limits.memory': String(this.container.config['limits.memory']) + 'MB',
-          'limits.memory.swap': String(this.container.config['limits.memory.swap']),
-          'limits.memory.swap.priority': String(this.container.config['limits.memory.swap.priority']),
-          'limits.memory.enforce': String(this.container.config['limits.memory.enforce']),
-          // disk and network priority
-          'limits.disk.priority': String(this.container.config['limits.disk.priority']),
-          'limits.network.priority': String(this.container.config['limits.network.priority'])
-        }
-
-        // if !defined set to soft
-        if (this.container.config['limits.memory.enforce'] === undefined) {
-          this.container.config['limits.memory.enforce'] = 'soft'
-        }
-
-        // if !defined set to 0
-        if (this.container.config['limits.memory.swap'] === undefined) {
-          this.container.config['limits.memory.swap'] = '0'
-        }
+        // apply model fixes
+        this.container = container.outfix(this.container)
 
         //
         this.lxc_query('/1.0/containers/' + this.name, 'PATCH', JSON.stringify({
-          config: config,
+          config: this.container.config,
           ephemeral: this.container.ephemeral,
           stateful: this.container.stateful,
           profiles: this.container.profiles
@@ -505,6 +415,9 @@
           }
           this.isActive = false
         })
+
+        // fix back so model dont funk out
+        this.container = container.infix(this.container)
       }
     }
   }

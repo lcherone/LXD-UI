@@ -1,4 +1,9 @@
-'use strict'
+
+const ElectronStore = require('electron-store')
+const storage = new ElectronStore({
+  cwd: 'lxd-ui' // ,
+  // encryptionKey: 'obfuscation'
+})
 
 module.exports = {
   empty: function () {
@@ -35,6 +40,12 @@ module.exports = {
       used_by: {},
       ephemeral: false
     }
+  },
+  max_memory: function () {
+    return storage.get('info.resources.memory.total', 1000000)
+  },
+  max_cpu: function () {
+    return storage.get('info.resources.cpu.total', 1)
   },
   /**
    * in fix: should be called before applying to model

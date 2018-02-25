@@ -137,7 +137,7 @@
                       </div>
                       <div class="field-body">
                         <div class="field" style="margin-top:-3px">
-                          <el-slider v-model="profile.config['limits.cpu']" :min="1" :max="4" :step="1"></el-slider>
+                          <el-slider v-model="profile.config['limits.cpu']" :min="1" :max="max_cpu" :step="1"></el-slider>
                         </div>
                       </div>
                     </div>
@@ -147,7 +147,7 @@
                       </div>
                       <div class="field-body">
                         <div class="field" style="margin-top:-3px">
-                          <el-slider v-model="profile.config['limits.processes']" :min="100" :max="10000" :step="100"></el-slider>
+                          <el-slider v-model="profile.config['limits.processes']" :min="100" :max="32750" :step="100"></el-slider>
                         </div>
                       </div>
                     </div>
@@ -184,7 +184,7 @@
                       </div>
                       <div class="field-body">
                         <div class="field" style="margin-top:-3px">
-                          <el-slider :min="64" :max="2000" :step="32" v-model="profile.config['limits.memory']"></el-slider>
+                          <el-slider :min="64" :max="max_memory" :step="32" v-model="profile.config['limits.memory']"></el-slider>
                         </div>
                       </div>
                     </div> 
@@ -202,6 +202,22 @@
                   <div class="column">
                     <div class="field">
                       <div class="field-label is-normal">
+                        <label style="text-align: left" class="label" for="autostart">Enforce</label>
+                      </div>
+                      <div class="field-body">
+                        <div class="field" style="margin-top:-3px">
+                          <el-select v-model="profile.config['limits.memory.enforce']" placeholder="Select">
+                            <el-option v-for="item in [{value: 'soft', label: 'Soft'}, {value: 'hard', label: 'Hard'}]"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value">
+                            </el-option>
+                          </el-select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <div class="field-label is-normal">
                         <label style="text-align: left" class="label" for="autostart">Swap</label>
                       </div>
                       <div class="field-body">
@@ -216,22 +232,6 @@
                         </div>
                       </div>
                     </div>
-                    <div class="field">
-                      <div class="field-label is-normal">
-                        <label style="text-align: left" class="label" for="autostart">Enforce</label>
-                      </div>
-                      <div class="field-body">
-                        <div class="field" style="margin-top:-3px">
-                          <el-select v-model="profile.config['limits.memory.enforce']" placeholder="Select">
-                            <el-option v-for="item in [{value: 'soft', label: 'Soft'}, {value: 'hard', label: 'Hard'}]"
-                                       :key="item.value"
-                                       :label="item.label"
-                                       :value="item.value">
-                            </el-option>
-                          </el-select>
-                        </div>
-                      </div>
-                    </div>  
                   </div>
                 </div>
                 <div class="columns">
@@ -269,19 +269,19 @@
               </div>
             </div>
             <!--
-            <table class="table is-fullwidth is-narrow">
-            <thead>
-            <tr>
-            <th>Container</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="container in profile.used_by">
-            <td>{{ container }}</td>
-            </tr>
-            </tbody>
-            </table>
-            -->
+<table class="table is-fullwidth is-narrow">
+<thead>
+<tr>
+<th>Container</th>
+</tr>
+</thead>
+<tbody>
+<tr v-for="container in profile.used_by">
+<td>{{ container }}</td>
+</tr>
+</tbody>
+</table>
+-->
           </div>
           <div v-else>
             Currently, there are no profiles.
@@ -349,6 +349,12 @@
       },
       profiles_list: function () {
         return _.uniq(this.profiles)
+      },
+      max_memory: function () {
+        return (profile.max_memory() / 1024) / 1024
+      },
+      max_cpu: function () {
+        return profile.max_cpu()
       }
     },
     mounted: function () {
