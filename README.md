@@ -35,7 +35,7 @@ Want anything else added? Feel free to open an issue...
 **Screens**
 ![Screenshot](https://i.imgur.com/Yr0WaCy.gif)
 
-**XFCE4 over VNC in seconds!**
+**XFCE4 over VNC!**
 ![Screenshot](https://i.imgur.com/3VoYpCX.gif)
 
 
