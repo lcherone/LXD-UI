@@ -32,9 +32,11 @@ A simple easy to use GUI for your local LXD server.
 
 Want anything else added? Feel free to open an issue...
 
-**Screen**
+**Screens**
 ![Screenshot](https://i.imgur.com/Yr0WaCy.gif)
 
+**XFCE4 over VNC in seconds!**
+![Screenshot](https://i.imgur.com/3VoYpCX.gif)
 
 
 #### Downloads (.AppImage)
