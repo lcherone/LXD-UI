@@ -1,10 +1,8 @@
-
-
 # LXD-UI
 
-A simple easy to use GUI for your local LXD server.
+<img src="https://i.imgur.com/MDcbkne.png" alt="LXDui screen" title="LXDui" align="right" />
 
-<img src="http://imgur.com/VMBkqr8l.png" alt="LXDui screen" title="LXDui" align="right" />
+A simple easy to use GUI for your local LXD server.
 
 **No dependencies!** simply run the self contained AppImage!
 
