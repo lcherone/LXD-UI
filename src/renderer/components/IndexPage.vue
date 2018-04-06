@@ -341,7 +341,7 @@
         }
       },
       tag_containers: function () {
-        if (this.info === undefined) {
+        if (this.info === undefined || this.info.containers === undefined) {
           return {
             'is-light': true
           }
@@ -354,7 +354,7 @@
         }
       },
       tag_profiles: function () {
-        if (this.info === undefined) {
+        if (this.info === undefined || this.info.profiles === undefined) {
           return {
             'is-light': true
           }
@@ -367,7 +367,7 @@
         }
       },
       tag_images: function () {
-        if (this.info === undefined) {
+        if (this.info === undefined || this.info.images === undefined) {
           return {
             'is-light': true
           }
@@ -412,6 +412,7 @@
 
         // info.images
         // this.get_info('images')
+        this.load_remote_images('local')
         this.info.images = storage.get('images.local')
 
         // info.certificates

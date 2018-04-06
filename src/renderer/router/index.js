@@ -53,7 +53,7 @@ export default new Router({
     },
     {
       path: '/profiles/:param_profile',
-      name: 'profiles',
+      name: 'profilesB',
       component: require('@/components/ProfilesPage').default,
       props: true
     },
