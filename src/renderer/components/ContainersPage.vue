@@ -172,8 +172,7 @@
                             </span>
                             <span>Image</span>
                           </a>
-                          <hr class="dropdown-divider"
-                              v-show="(check_started_with_ip(container) && container.services.ssh) || container.status === 'Stopped'">
+                          <hr class="dropdown-divider">
                           <a @click="copy_ssh_key(container.name)" 
                              class="dropdown-item" 
                              v-show="check_started_with_ip(container) && container.services.ssh">
@@ -182,11 +181,23 @@
                             </span>
                             <span>Copy SSH Key</span>
                           </a>
-                          <a @click="delete_container(container.name)" class="dropdown-item" v-if="container.status === 'Stopped'">
+                          <a @click="delete_container(container.name)" class="dropdown-item" v-if="container.status === 'Stopped' && !locked_container(container.name)">
                             <span class="icon">
                               <i class="fa fa-times"></i> 
                             </span>
                             <span>Delete</span>
+                          </a>
+                          <a @click="lock_container(container.name)" class="dropdown-item" v-if="!locked_container(container.name)">
+                            <span class="icon">
+                              <i class="fa fa-lock"></i> 
+                            </span>
+                            <span>Lock</span>
+                          </a>
+                          <a @click="unlock_container(container.name)" class="dropdown-item" v-if="locked_container(container.name)">
+                            <span class="icon">
+                              <i class="fa fa-lock"></i> 
+                            </span>
+                            <span>UnLock</span>
                           </a>
                         </div>
                       </div>
@@ -216,11 +227,11 @@
 
   import ElectronStore from 'electron-store'
   const storage = new ElectronStore({
-    cwd: 'lxd-ui' // ,
-    // encryptionKey: 'obfuscation'
+    cwd: 'lxd-ui'
   })
 
   const checkPort = require('./Containers/CheckPort.js').default
+  const hash = require('hash.js')
 
   export default {
     name: 'containers-page',
@@ -562,7 +573,6 @@
           }
           // init poll
           setTimeout(pollOperation, 1000)
-
           //
           this.get_containers()
         })
@@ -594,8 +604,31 @@
       /**
        *
        */
+      lock_container (name) {
+        this.manage_dropdown_close_all()
+
+        storage.set('locked_containers.' + hash.sha256().update(name).digest('hex'), 1)
+      },
+      /**
+       *
+       */
+      unlock_container (name) {
+        this.manage_dropdown_close_all()
+
+        storage.delete('locked_containers.' + hash.sha256().update(name).digest('hex'))
+      },
+      /**
+       *
+       */
+      locked_container (name) {
+        return storage.has('locked_containers.' + hash.sha256().update(name).digest('hex'))
+      },
+      /**
+       *
+       */
       open (link) {
         this.manage_dropdown_close_all()
+
         this.$electron.shell.openExternal(link)
       },
       /**

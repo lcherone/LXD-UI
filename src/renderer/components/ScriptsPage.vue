@@ -58,7 +58,12 @@
                   <td>
                     <div style="display: flex">
                       <a class="button is-danger is-small" @click="delete_script(item.key)"><i class="fa fa-times"></i></a>
-                      <a class="button is-primary is-small" @click="launch_script(item)">Launch</a>
+                      <a class="button is-primary is-small" @click="launch_script(item)">
+                        <span class="icon" style="margin-right:1px">
+                          <i class="fa fa-rocket"></i>
+                        </span>
+                        Launch
+                      </a>
                     </div>
                   </td>
                 </tr>
@@ -118,6 +123,8 @@
     cwd: 'lxd-ui-scripts'
   })
 
+  // const octokit = require('@octokit/rest')()
+
   export default {
     name: 'scripts-page',
     components: {
@@ -161,6 +168,29 @@
     },
     mounted: function () {
       document.title = 'LXDui - Scripts'
+      // auth basic - this might evolve into something..
+      /*
+      octokit.authenticate({
+        type: 'basic',
+        username: '',
+        password: ''
+      })
+      octokit.gists.create({
+        files: {'test.sh': {content: 'this is the content'}},
+        public: true,
+        description: 'this is a test'
+      }).then(result => {
+        console.log(result)
+      })
+      */
+      /*
+      octokit.repos.getForOrg({
+        org: 'lxd-images',
+        type: 'public'
+      }).then(({data}) => {
+        console.log(data)
+      })
+      */
     },
     methods: {
       /**
@@ -170,7 +200,16 @@
         this.script = {
           key: '',
           description: '',
-          content: '',
+          content: '' +
+          '#!/bin/bash\n\n' +
+          '# upon launch wait for internet connection\n' +
+          'echo "Waiting for network connection."\n' +
+          'while [ 1 ]; do\n' +
+          '  if ping -q -c 1 -W 1 8.8.8.8 > /dev/null 2>&1; then\n' +
+          '    break;\n' +
+          '  fi\n' +
+          '  sleep 1\n' +
+          'done\n',
           date: new Date()
         }
         return this.script
@@ -188,10 +227,14 @@
        */
       launch_script (script) {
         this.$refs.LaunchContainer.open({
+          name: '',
+          description: '',
+          fingerprint: null,
+          remote: 'local',
           script: script,
-          remote: '',
-          fingerprint: '',
-          description: ''
+          staging: false,
+          launching: false,
+          launched: false
         })
       },
       /**

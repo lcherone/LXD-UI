@@ -362,9 +362,6 @@ class="button is-small is-success"
     },
     mounted: function () {
       document.title = 'LXDui - Profiles'
-
-      console.log(this.param_profile)
-
       this.$nextTick(() => {
         //
         this.lxc_query('/1.0/profiles', 'GET', null, (response) => {

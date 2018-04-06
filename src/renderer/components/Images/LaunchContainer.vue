@@ -86,7 +86,7 @@
           <button 
                   @click="launch()" 
                   v-bind:class="{ 'is-loading': launching }" 
-                  v-bind:disabled="launching"
+                  v-bind:disabled="launching || staging"
                   class="button is-success">Launch</button>
           <button class="button" @click="isActive = false" v-bind:disabled="launching">Cancel</button>
         </footer>
@@ -131,6 +131,7 @@
         script: {},
         count: 1,
         ephemeral: null,
+        staging: false,
         launching: false,
         launched: false,
         xterm: null
@@ -143,30 +144,36 @@
       open (value) {
         this.get_profiles()
 
+        this.name = value.name || ''
         this.script = value.script || ''
+        this.launching = value.launching || false
+        this.launched = value.launched || false
+        this.staging = value.staging || false
         this.isActive = true
         this.remote = value.remote
-        this.fingerprint = value.fingerprint
+        this.fingerprint = value.fingerprint || null
         this.description = value.description
 
-        if (this.fingerprint === '') {
+        if (this.fingerprint === null) {
           this.remote = 'local'
           this.get_images('local')
         }
 
+        // place script into actual file so it can be pushed into container
         if (this.script !== '') {
+          this.staging = true
           fs.writeFile(path.join(remote.app.getPath('userData'), '/script.sh'), this.script.content, 'utf8', (err) => {
             if (err) {
+              this.$notify({
+                duration: 2000,
+                title: 'Error',
+                message: 'Could not placed script on filesystem.',
+                type: 'error'
+              })
               return console.log(err)
+            } else {
+              this.staging = false
             }
-            /*
-            this.$notify({
-              duration: 2000,
-              title: 'Success',
-              message: 'Script placed on filesystem',
-              type: 'success'
-            })
-            */
           })
         }
       },
