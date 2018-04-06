@@ -352,6 +352,9 @@
           this.initialise()
         })
       },
+      /**
+       *
+       */
       delete_snapshot (name) {
         this.lxc_snapshot_delete(this.container.name, name.substring(name.indexOf('/') + 1), (response) => {
           this.$notify({
@@ -364,6 +367,9 @@
           this.initialise()
         })
       },
+      /**
+       *
+       */
       restore_snapshot (name) {
         this.$confirm('Are you sure you want restore container from this snapshot?', 'Warning', {
           confirmButtonText: 'OK',

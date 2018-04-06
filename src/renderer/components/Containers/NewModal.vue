@@ -8,7 +8,6 @@
           <button class="delete" aria-label="close" @click="close_modal()"></button>
         </header>
         <section class="modal-card-body">
-
           <div class="field is-horizontal">
             <div class="field-label is-normal">
               <label class="label" for="name">Name</label>
@@ -21,7 +20,6 @@
               </div>
             </div>
           </div>
-
           <div class="field is-horizontal">
             <div class="field-label is-normal">
               <label class="label" for="image">Image</label>
@@ -40,7 +38,6 @@
               </div>
             </div>
           </div>
-
           <div class="field is-horizontal">
             <div class="field-label is-normal">
               <label class="label" for="name">Profile</label>
@@ -56,7 +53,6 @@
               </div>
             </div>
           </div>
-
         </section>
         <footer class="modal-card-foot">
           <button class="button is-success">Launch</button>
@@ -82,6 +78,9 @@
     },
     mounted: function () {},
     methods: {
+      /**
+       *
+       */
       close_modal: function () {
         this.$emit('close-modal', true)
       }

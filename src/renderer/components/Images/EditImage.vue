@@ -114,6 +114,9 @@
     },
     mounted: function () {},
     methods: {
+      /**
+       *
+       */
       initialise () {
         // load images from cache
         this.images = storage.get('images.' + this.remote)
@@ -132,6 +135,9 @@
           this.isActive = false
         }
       },
+      /**
+       *
+       */
       save () {
         //
         this.isSaving = true

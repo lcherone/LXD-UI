@@ -109,8 +109,7 @@
 
   import ElectronStore from 'electron-store'
   const storage = new ElectronStore({
-    cwd: 'lxd-ui' // ,
-    // encryptionKey: 'obfuscation'
+    cwd: 'lxd-ui'
   })
 
   const fs = require('fs')
@@ -217,11 +216,17 @@
           this.distros = storage.get('images_distros.' + remote)
         }
       },
+      /**
+       *
+       */
       set_image () {
         console.log(this.images[this.selected_image])
         this.fingerprint = this.images[this.selected_image].fingerprint
         this.description = this.images[this.selected_image].properties.description
       },
+      /**
+       *
+       */
       clear_image () {
         this.fingerprint = ''
         this.description = ''
@@ -386,7 +391,6 @@
             }
           })
         }
-
         storage.set('images_cached.local', 0)
         storage.set('cache_time.containers', 0)
       },

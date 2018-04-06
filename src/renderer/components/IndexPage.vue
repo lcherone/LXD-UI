@@ -108,31 +108,49 @@
               <div class="card">
                 <header class="card-header">
                   <p class="card-header-title">
-                    Containers&nbsp;&nbsp;<span class="tag" v-bind:class="tag_containers">{{ info.containers.length }}</span>
+                    Containers&nbsp;&nbsp;
+                    <span class="tag" v-bind:class="tag_containers">{{ info.containers.length }}</span>
                   </p>
+                  <router-link :to="{ path: '/containers' }" style="margin-right:10px;margin-top:10px;" class="has-text-right button is-small is-light"><i class="fa fa-list"></i></router-link>
                 </header>
+                <div v-for="container in containerList" class="panel-block noborder">
+                  <edit-container :name="container">
+                    {{ container }}
+                  </edit-container>
+                </div>
+              </div>
+              <div class="card" style="margin-top:20px">
+                <header class="card-header">
+                  <p class="card-header-title">
+                    Profiles&nbsp;&nbsp;
+                    <span class="tag" v-bind:class="tag_profiles">{{ info.profiles.length }}</span>
+                  </p>
+                  <router-link :to="{ path: '/profiles' }" style="margin-right:10px;margin-top:10px;" class="has-text-right button is-small is-light"><i class="fa fa-list"></i></router-link>
+                </header>
+                <div v-for="profile in profileList" class="panel-block noborder">
+                  <router-link :to="{ path: '/profiles/' + profile }">
+                    {{ profile }}
+                  </router-link>
+                </div>
               </div>
             </div>
             <div class="column">
               <div class="card">
                 <header class="card-header">
                   <p class="card-header-title">
-                    Profiles&nbsp;&nbsp;<span class="tag" v-bind:class="tag_profiles">{{ info.profiles.length }}</span>
+                    Images&nbsp;&nbsp;
+                    <span class="tag" v-bind:class="tag_images">{{ info.images.length }}</span>
                   </p>
+                  <router-link :to="{ path: '/images' }" style="margin-right:10px;margin-top:10px;" class="has-text-right button is-small is-light"><i class="fa fa-list"></i></router-link>
                 </header>
-              </div>
-            </div>
-            <div class="column">
-              <div class="card">
-                <header class="card-header">
-                  <p class="card-header-title">
-                    Images&nbsp;&nbsp;<span class="tag" v-bind:class="tag_images">{{ info.images.length }}</span>
-                  </p>
-                </header>
+                <div v-for="image in info.images" class="panel-block noborder">
+                  <edit-image :remote="'local'" :fingerprint="image.fingerprint" @on-save="load_remote_images('local')">
+                    {{ image.properties.description }}
+                  </edit-image>
+                </div>
               </div>
             </div>
           </div>
-          <!--          <pre style="width:calc(100vw - 270px)">{{ info }}</pre>-->
         </div>
       </div>
     </el-main>
@@ -144,19 +162,20 @@
   import helpers from '../mixins/helpers.js'
   import lxc from '../mixins/lxc.js'
   import MainHeader from './Layout/MainHeader'
+  import EditContainer from './Containers/EditContainer'
+  import EditImage from './Images/EditImage'
   import SideMenu from './Layout/SideMenu'
 
   import ElectronStore from 'electron-store'
   const storage = new ElectronStore({
-    cwd: 'lxd-ui' // ,
-    // encryptionKey: 'obfuscation'
+    cwd: 'lxd-ui'
   })
 
   const os = require('os')
 
   export default {
     name: 'index-page',
-    components: { MainHeader, SideMenu },
+    components: { MainHeader, SideMenu, EditContainer, EditImage },
     mixins: [lxc, helpers],
     data () {
       return {
@@ -223,14 +242,35 @@
           containers: [],
           profiles: [],
           certificates: [],
-          images: [],
+          images: storage.get('images.local'),
           networks: [],
           operations: {},
           'storage-pools': []
         }
       }
     },
+    filters: {
+      ucfirst: function (value) {
+        if (value) {
+          return _.upperFirst(value)
+        }
+      }
+    },
     computed: {
+      containerList: function () {
+        let ret = []
+        for (let i in this.info.containers) {
+          ret.push(this.info.containers[i].substring(this.info.containers[i].lastIndexOf('/') + 1))
+        }
+        return ret
+      },
+      profileList: function () {
+        let ret = []
+        for (let i in this.info.profiles) {
+          ret.push(this.info.profiles[i].substring(this.info.profiles[i].lastIndexOf('/') + 1))
+        }
+        return ret
+      },
       tag_load_1m: function () {
         if (this.info === undefined) {
           return {
@@ -347,10 +387,16 @@
       })
     },
     methods: {
+      /**
+       *
+       */
       refresh_cache () {
         storage.clear()
         this.init()
       },
+      /**
+       *
+       */
       init () {
         // info.server
         this.get_info('server')
@@ -365,7 +411,8 @@
         this.get_info('profiles')
 
         // info.images
-        this.get_info('images')
+        // this.get_info('images')
+        this.info.images = storage.get('images.local')
 
         // info.certificates
         this.get_info('certificates')
@@ -382,6 +429,9 @@
         // update loadavg
         this.info.loadavg = os.loadavg()
       },
+      /**
+       *
+       */
       get_info (type) {
         this.loading = true
         this.btn.refreshing_cache = true
@@ -401,12 +451,53 @@
           this.btn.refreshing_cache = false
           this.loading = false
         })
+      },
+      /**
+       *
+       */
+      load_remote_images (remote) {
+        this.active_remote = remote
+        this.active_distro = this.active_distro || 'Ubuntu'
+        this.get_images(remote)
+      },
+      /**
+       *
+       */
+      get_images (remote) {
+        //
+        let architectures = storage.get('info.server.environment.architectures', ['x86_64', 'i686', 'amd64'])
+        // for some reason amd64 is not in server environment architectures array :/ so append it if x86_64 is found
+        if (_.indexOf(architectures, 'x86_64') > -1) {
+          architectures.push('amd64')
+        }
+        let imagefilter = 'architecture=\'' + architectures.join('|') + '\''
+        //
+        this.lxc_images(remote + ':', imagefilter, (response) => {
+          this.distros = []
+          this.images = []
+          for (var key in response) {
+            this.images.push(response[key])
+            this.distros.push(_.upperFirst(response[key].properties.os))
+          }
+          this.distros = _.uniq(this.distros)
+          storage.set('images.' + remote, this.images)
+          storage.set('images_distros.' + remote, this.distros)
+          storage.set('images_cached.' + remote, Date.now())
+        })
+        this.info.images = storage.get('images.local')
       }
     }
   }
 </script>
 
 <style scoped>
+  .noborder {
+    border-bottom: 1px solid #dbdbdb;
+    border-left: 0px;
+    border-right: 0px;
+    padding: 0.3em 0.5em;
+  }
+
   .card-footer-item.is-success {
     background-color: #23d160;
     border-color: transparent;

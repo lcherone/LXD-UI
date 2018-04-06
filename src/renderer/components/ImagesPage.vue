@@ -46,10 +46,10 @@
                                   v-bind:fingerprint="image.fingerprint" 
                                   @on-save="load_remote_images(active_remote)"
                                   >
-                        {{ image.properties.description | ucfirst }}
+                        {{ image.properties.description }}
                       </edit-image>
                     </span>
-                    <span v-else>{{ image.properties.description | ucfirst }}</span>
+                    <span v-else>{{ image.properties.description }}</span>
                   </td>
                   <td>{{ image.properties.version ? image.properties.version : '-' }}</td>
                   <td>{{ image.properties.release | ucfirst }}</td>

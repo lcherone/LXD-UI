@@ -20,14 +20,16 @@
             <span>Save</span>
           </button>
           &nbsp;
-          <button 
-                  class="button is-small is-success" 
-                  @click="new_profile()">
-            <span class="icon">
-              <i class="fa fa-plus"></i> 
-            </span>
-            <span>New</span>
-          </button>
+          <!--
+<button 
+class="button is-small is-success" 
+@click="new_profile()">
+<span class="icon">
+<i class="fa fa-plus"></i> 
+</span>
+<span>New</span>
+</button>
+-->
           <!--
 <button v-else class="button is-small is-light" @click="state = 'view'">
 <span>Back</span>
@@ -304,6 +306,7 @@
 
   export default {
     name: 'profiles-page',
+    props: ['param_profile'],
     components: { MainHeader },
     mixins: [lxc, helpers],
     filters: {
@@ -322,7 +325,7 @@
       return {
         cache_time: Number(1000 * 86400),
         active_section: 'configuration',
-        active_profile: '/1.0/profiles/default',
+        active_profile: '/1.0/profiles/' + (this.param_profile ? this.param_profile : 'default'),
         profile_active: false,
         search_result: null,
         remotes: [],
@@ -360,6 +363,8 @@
     mounted: function () {
       document.title = 'LXDui - Profiles'
 
+      console.log(this.param_profile)
+
       this.$nextTick(() => {
         //
         this.lxc_query('/1.0/profiles', 'GET', null, (response) => {
@@ -370,9 +375,15 @@
       })
     },
     methods: {
+      /**
+       *
+       */
       set_section (name) {
         this.active_section = name
       },
+      /**
+       *
+       */
       edit_profile (name) {
         this.active_profile = name
         this.profile_active = false
@@ -391,6 +402,9 @@
           }
         })
       },
+      /**
+       *
+       */
       save_profile () {
         // change numbers to strings and append any
         let savedProfile = profile.outfix(this.profile)

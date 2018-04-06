@@ -30,6 +30,9 @@
       })
     },
     methods: {
+      /**
+       *
+       */
       console () {
         //
         var width = 100

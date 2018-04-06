@@ -32,11 +32,6 @@ export default new Router({
       component: require('@/components/AboutPage').default
     },
     {
-      path: '/docs',
-      name: 'docs',
-      component: require('@/components/DocsPage').default
-    },
-    {
       path: '/settings/lxd',
       name: 'settings-lxd',
       component: require('@/components/SettingsLxdPage').default
@@ -55,6 +50,12 @@ export default new Router({
       path: '/profiles',
       name: 'profiles',
       component: require('@/components/ProfilesPage').default
+    },
+    {
+      path: '/profiles/:param_profile',
+      name: 'profiles',
+      component: require('@/components/ProfilesPage').default,
+      props: true
     },
     {
       path: '*',

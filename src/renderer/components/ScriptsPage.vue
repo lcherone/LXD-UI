@@ -115,8 +115,7 @@
 
   import ElectronStore from 'electron-store'
   const storage = new ElectronStore({
-    cwd: 'lxd-ui-scripts',
-    encryptionKey: 'obfuscation'
+    cwd: 'lxd-ui-scripts'
   })
 
   export default {

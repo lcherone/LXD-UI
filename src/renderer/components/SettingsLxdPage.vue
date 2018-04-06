@@ -251,10 +251,12 @@
     },
     mounted: function () {
       document.title = 'LXDui - Settings - LXD'
-
       this.get_config()
     },
     methods: {
+      /**
+       *
+       */
       set_default () {
         this.lxd.config = {
           'core.trust_password': this.lxd.config['core.trust_password'],
@@ -272,6 +274,9 @@
           'images.remote_cache_expiry': 10
         }
       },
+      /**
+       *
+       */
       get_config () {
         new Promise((resolve, reject) => {
           this.lxc_query('/1.0', 'GET', null, (response) => {
@@ -296,6 +301,9 @@
           }
         })
       },
+      /**
+       *
+       */
       save () {
         // 'core.https_address': '[::]:8443'
         if (this.lxd.config.hasOwnProperty('core.https_address')) {
@@ -443,9 +451,6 @@
           message: 'LXD settings updated.',
           type: 'success'
         })
-      },
-      open (link) {
-        this.$electron.shell.openExternal(link)
       }
     }
   }
