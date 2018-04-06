@@ -24,7 +24,7 @@ function createWindow () {
     minWidth: 960,
     frame: true
   })
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
   mainWindow.loadURL(winURL)
 
   mainWindow.on('closed', () => {

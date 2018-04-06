@@ -352,7 +352,13 @@
         var self = this
         async function startNgrok () {
           await ngrok.kill()
-          const url = await ngrok.connect({proto: 'http', addr: ip + ':80'})
+          const url = await ngrok.connect({
+            proto: 'http',
+            addr: ip + ':80',
+            binPath: function (dir) {
+              return dir.replace('app.asar', 'app.asar.unpacked')
+            }
+          })
           storage.set('ngrok.' + hash.sha256().update(ip).digest('hex'), url)
           //
           self.get_containers()
