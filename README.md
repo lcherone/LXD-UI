@@ -43,6 +43,7 @@ Want anything else added? Feel free to open an issue...
 
 | File | Description | Platform
 | --- | --- | --- |
+| [LXD-ui-0.0.5a-x86_64.AppImage](https://github.com/lcherone/lxd-ui/releases/download/0.0.5a/LXD-ui-0.0.5-x86_64.AppImage) | Version 0.0.5a - [Release Notes](https://github.com/lcherone/lxd-ui/releases/tag/0.0.5a) | Linux
 | [lxd-ui-0.0.4a-x86_64.AppImage](https://github.com/lcherone/lxd-ui/releases/download/0.0.4a/lxd-ui-0.0.4-x86_64.AppImage) | Version 0.0.4a - [Release Notes](https://github.com/lcherone/lxd-ui/releases/tag/0.0.4a) | Linux
 | [lxd-ui-0.0.3a-x86_64.AppImage](https://github.com/lcherone/lxd-ui/releases/download/0.0.3a/lxd-ui-0.0.3-x86_64.AppImage) | Version 0.0.3a - [Release Notes](https://github.com/lcherone/lxd-ui/releases/tag/0.0.3a) | Linux
 | [lxd-ui-0.0.2a-x86_64.AppImage](https://github.com/lcherone/lxd-ui/releases/download/0.0.2a/lxd-ui-0.0.2-x86_64.AppImage) | Version 0.0.2a - [Release Notes](https://github.com/lcherone/lxd-ui/releases/tag/0.0.2a) | Linux
