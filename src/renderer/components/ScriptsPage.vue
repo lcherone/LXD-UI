@@ -166,6 +166,8 @@
         })
       }
     },
+    beforeDestroy: function () {
+    },
     mounted: function () {
       document.title = 'LXDui - Scripts'
       // auth basic - this might evolve into something..

@@ -87,6 +87,11 @@
                           <i class="fa fa-globe"></i>
                         </span>
                       </a>
+                      <a v-if="check_started_with_ip(container) && check_ngrok(container)" @click="open(get_ngrok(container))">
+                        <span class="icon has-text-info is-pulled-right" title="HTTP (ngrok)">
+                          <i class="fa fa-share-alt"></i>
+                        </span>
+                      </a>
                     </div>
                   </td>
                   <td>
@@ -160,6 +165,18 @@
                             </span>
                             <span>Restart</span>
                           </a>
+                          <a @click="start_ngrok(container.state.network.eth0.addresses[0].address)" class="dropdown-item" v-if="check_started_with_ip(container) && !check_ngrok(container) && container.status === 'Running'">
+                            <span class="icon">
+                              <i class="fa fa-share-alt"></i> 
+                            </span>
+                            <span>ngrok start</span>
+                          </a>
+                          <a @click="stop_ngrok()" class="dropdown-item" v-if="check_started_with_ip(container) && check_ngrok(container) && container.status === 'Running'">
+                            <span class="icon">
+                              <i class="fa fa-share-alt"></i> 
+                            </span>
+                            <span>ngrok stop</span>
+                          </a>
                           <a @click="snapshot_container(container.name)" class="dropdown-item" v-if="container.status === 'Stopped'">
                             <span class="icon">
                               <i class="fa fa-cubes"></i> 
@@ -232,6 +249,7 @@
 
   const checkPort = require('./Containers/CheckPort.js').default
   const hash = require('hash.js')
+  const ngrok = require('ngrok')
 
   export default {
     name: 'containers-page',
@@ -311,6 +329,47 @@
         checkPort(5901, {host: ip}).then((reachable) => {
           this.containers[index].services.vnc = reachable
         })
+      },
+      /**
+       *
+       */
+      check_ngrok (container) {
+        return storage.has('ngrok.' + hash.sha256().update(container.state.network.eth0.addresses[0].address).digest('hex'))
+      },
+      /**
+       *
+       */
+      get_ngrok (container) {
+        return storage.get('ngrok.' + hash.sha256().update(container.state.network.eth0.addresses[0].address).digest('hex'))
+      },
+      /**
+       *
+       */
+      start_ngrok (ip) {
+        //
+        this.manage_dropdown_close_all()
+        storage.delete('ngrok')
+        var self = this
+        async function startNgrok () {
+          await ngrok.kill()
+          const url = await ngrok.connect({proto: 'http', addr: ip + ':80'})
+          storage.set('ngrok.' + hash.sha256().update(ip).digest('hex'), url)
+          //
+          self.get_containers()
+        }
+        startNgrok()
+      },
+      /**
+       *
+       */
+      stop_ngrok () {
+        //
+        this.manage_dropdown_close_all()
+        storage.delete('ngrok')
+        async function stopNgrok () {
+          await ngrok.kill()
+        }
+        stopNgrok()
       },
       /**
        *
@@ -606,7 +665,6 @@
        */
       lock_container (name) {
         this.manage_dropdown_close_all()
-
         storage.set('locked_containers.' + hash.sha256().update(name).digest('hex'), 1)
       },
       /**
@@ -614,7 +672,6 @@
        */
       unlock_container (name) {
         this.manage_dropdown_close_all()
-
         storage.delete('locked_containers.' + hash.sha256().update(name).digest('hex'))
       },
       /**
