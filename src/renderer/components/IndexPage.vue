@@ -242,7 +242,7 @@
           containers: [],
           profiles: [],
           certificates: [],
-          images: storage.get('images.local'),
+          images: storage.get('images.local', []),
           networks: [],
           operations: {},
           'storage-pools': []
@@ -385,6 +385,13 @@
       this.$nextTick(() => {
         this.init()
       })
+      document.addEventListener('keypress', (event) => {
+        alert(String.fromCharCode(event.which))
+        if (event.which === 120) {
+          alert('fresh')
+          window.openDevTools()
+        }
+      })
     },
     methods: {
       /**
@@ -413,7 +420,7 @@
         // info.images
         // this.get_info('images')
         this.load_remote_images('local')
-        this.info.images = storage.get('images.local')
+        this.info.images = storage.get('images.local', [])
 
         // info.certificates
         this.get_info('certificates')
