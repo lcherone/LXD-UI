@@ -43,6 +43,7 @@ Want anything else added? Feel free to open an issue...
 
 | File | Description | Platform
 | --- | --- | --- |
+| [LXDui-0.0.6-x86_64.AppImage](https://github.com/lcherone/lxd-ui/releases/download/0.0.6a/LXDui-0.0.6-x86_64.AppImage) | Version 0.0.6a - [Release Notes](https://github.com/lcherone/lxd-ui/releases/tag/0.0.6a) | Linux
 | [LXDui-0.0.5-x86_64.AppImage](https://github.com/lcherone/lxd-ui/releases/download/0.0.5a/LXDui-0.0.5-x86_64.AppImage) | Version 0.0.5a - [Release Notes](https://github.com/lcherone/lxd-ui/releases/tag/0.0.5a) | Linux
 | [lxd-ui-0.0.4a-x86_64.AppImage](https://github.com/lcherone/lxd-ui/releases/download/0.0.4a/lxd-ui-0.0.4-x86_64.AppImage) | Version 0.0.4a - [Release Notes](https://github.com/lcherone/lxd-ui/releases/tag/0.0.4a) | Linux
 | [lxd-ui-0.0.3a-x86_64.AppImage](https://github.com/lcherone/lxd-ui/releases/download/0.0.3a/lxd-ui-0.0.3-x86_64.AppImage) | Version 0.0.3a - [Release Notes](https://github.com/lcherone/lxd-ui/releases/tag/0.0.3a) | Linux
