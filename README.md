@@ -20,6 +20,7 @@ A simple easy to use GUI for your local LXD server.
    - If port 22 open, shows link to open in file explorer over SSH.
    - If port 80 open, shows link to open in browser.
    - If port 5901 open, shows link to open vncviewer.
+ - ngrok HTTP tunnel.
   
 
 **Planned features:**

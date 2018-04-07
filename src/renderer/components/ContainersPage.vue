@@ -169,13 +169,13 @@
                             <span class="icon">
                               <i class="fa fa-share-alt"></i> 
                             </span>
-                            <span>ngrok start</span>
+                            <span>Ngrok Start</span>
                           </a>
                           <a @click="stop_ngrok()" class="dropdown-item" v-if="check_started_with_ip(container) && check_ngrok(container) && container.status === 'Running'">
                             <span class="icon">
                               <i class="fa fa-share-alt"></i> 
                             </span>
-                            <span>ngrok stop</span>
+                            <span>Ngrok Stop</span>
                           </a>
                           <a @click="snapshot_container(container.name)" class="dropdown-item" v-if="container.status === 'Stopped'">
                             <span class="icon">
