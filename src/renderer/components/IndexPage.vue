@@ -385,13 +385,6 @@
       this.$nextTick(() => {
         this.init()
       })
-      document.addEventListener('keypress', (event) => {
-        alert(String.fromCharCode(event.which))
-        if (event.which === 120) {
-          alert('fresh')
-          window.openDevTools()
-        }
-      })
     },
     methods: {
       /**
@@ -420,19 +413,18 @@
         // info.images
         // this.get_info('images')
         this.load_remote_images('local')
-        this.info.images = storage.get('images.local', [])
 
         // info.certificates
-        this.get_info('certificates')
+        // this.get_info('certificates')
 
         // info.networks
-        this.get_info('networks')
+        // this.get_info('networks')
 
         // info.networks
-        this.get_info('operations')
+        // this.get_info('operations')
 
         // info.storage-pools
-        this.get_info('storage-pools')
+        // this.get_info('storage-pools')
 
         // update loadavg
         this.info.loadavg = os.loadavg()
@@ -491,8 +483,8 @@
           storage.set('images.' + remote, this.images)
           storage.set('images_distros.' + remote, this.distros)
           storage.set('images_cached.' + remote, Date.now())
+          this.info.images = storage.get('images.local')
         })
-        this.info.images = storage.get('images.local')
       }
     }
   }
