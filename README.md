@@ -4,6 +4,8 @@
 
 A simple easy to use GUI for your local LXD server.
 
+**You must be using >= LXD 2.17**
+
 **No dependencies!** simply run the self contained AppImage!
 
 **Features:**
