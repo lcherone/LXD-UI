@@ -1,6 +1,6 @@
 {
   "name": "LXDui",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": "Lawrence Cherone <lawrence@cherone.co.uk>",
   "description": "A LXD user interface, powered by electron-vue, which will allow you to manage local LXC containers in a GUI.",
   "homepage": "http://cherone.co.uk",

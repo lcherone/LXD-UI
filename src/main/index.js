@@ -28,10 +28,12 @@ function createWindow () {
   mainWindow.loadURL(winURL)
 
   // Ctrl-X open dev tools in production
+  /*
   const {globalShortcut} = require('electron')
   globalShortcut.register('CommandOrControl+X', () => {
     mainWindow.webContents.openDevTools()
   })
+  */
 
   mainWindow.on('closed', () => {
     mainWindow = null
