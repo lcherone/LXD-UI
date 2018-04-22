@@ -85,4 +85,9 @@ npm run lint
 
 ```
 
+## Developer Support / Sponsor
+
+If you enjoy using this app and want to show your appreciation,
+please feel free to make a donation [https://www.paypal.me/lcherone](https://www.paypal.me/lcherone), thanks.
+
 Built with [electron-vue](https://github.com/SimulatedGREG/electron-vue).
