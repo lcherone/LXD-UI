@@ -5,10 +5,7 @@
 
     <!-- Main element -->
     <el-main>
-      <h6 class="title is-6">
-        <span class="icon">
-          <i class="fa fa-cubes"></i>
-        </span>
+      <h6 class="title is-5">
         Profiles
         <div class="is-pulled-right">
           <button 
@@ -420,7 +417,7 @@ class="button is-small is-success"
           this.$notify({
             duration: 1200,
             title: 'Success',
-            message: 'Profile updated.',
+            message: 'Profile saved.',
             type: 'success'
           })
         })

@@ -5,10 +5,7 @@
 
     <!-- Main element -->
     <el-main>
-      <h6 class="title is-6">
-        <span class="icon">
-          <i class="fa fa-cubes"></i>
-        </span>
+      <h6 class="title is-5">
         Images
         <div class="tabs is-small is-toggle is-pulled-right">
           <ul>
@@ -89,8 +86,7 @@
 
   import ElectronStore from 'electron-store'
   const storage = new ElectronStore({
-    cwd: 'lxd-ui' // ,
-    // encryptionKey: 'obfuscation'
+    cwd: 'lxd-ui'
   })
 
   export default {

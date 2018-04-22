@@ -10,16 +10,16 @@
           <side-menu></side-menu>
         </div>
         <div class="column">
-          <h6 class="title is-6">
+          <h6 class="title is-5">
             LXD Settings
             <div class="is-pulled-right">
-              <button class="button is-small is-link is-pulled-right" @click="set_default">
+              <button class="button is-small is-link" @click="set_default">
                 <span class="icon">
                   <i class="fa fa-list"></i> 
                 </span>
                 <span>Set Default</span>
               </button>
-              <button class="button is-small is-success is-pulled-right" @click="save">
+              <button class="button is-small is-success" @click="save">
                 <span class="icon">
                   <i class="fa fa-check"></i> 
                 </span>
@@ -219,7 +219,6 @@
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>

@@ -1,9 +1,9 @@
 {
   "name": "LXDui",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "Lawrence Cherone <lawrence@cherone.co.uk>",
-  "description": "A LXD user interface, powered by electron-vue, which will allow you to manage local LXC containers in a GUI.",
-  "homepage": "http://cherone.co.uk",
+  "description": "A simple easy to use GUI for your local LXD server.",
+  "homepage": "https://github.com/lcherone/lxd-ui",
   "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
@@ -57,7 +57,6 @@
     }
   },
   "dependencies": {
-    "@octokit/rest": "^15.2.6",
     "axios": "^0.16.1",
     "brace": "^0.11.1",
     "bulma": "^0.6.2",
@@ -72,7 +71,6 @@
     "vue-electron": "^1.0.6",
     "vue-router": "^2.5.3",
     "vue2-ace-editor-electron": "0.0.4",
-    "vuex": "^2.3.1",
     "ws": "^4.0.0",
     "xterm": "^3.1.0"
   },

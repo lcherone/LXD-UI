@@ -5,8 +5,7 @@
 
     <!-- Main element -->
     <el-main>
-
-      <h6 class="title is-6">
+      <h6 class="title is-5">
         Scripts
         <div class="is-pulled-right">
           <button 
@@ -123,8 +122,6 @@
     cwd: 'lxd-ui-scripts'
   })
 
-  // const octokit = require('@octokit/rest')()
-
   export default {
     name: 'scripts-page',
     components: {
@@ -170,29 +167,6 @@
     },
     mounted: function () {
       document.title = 'LXDui - Scripts'
-      // auth basic - this might evolve into something..
-      /*
-      octokit.authenticate({
-        type: 'basic',
-        username: '',
-        password: ''
-      })
-      octokit.gists.create({
-        files: {'test.sh': {content: 'this is the content'}},
-        public: true,
-        description: 'this is a test'
-      }).then(result => {
-        console.log(result)
-      })
-      */
-      /*
-      octokit.repos.getForOrg({
-        org: 'lxd-images',
-        type: 'public'
-      }).then(({data}) => {
-        console.log(data)
-      })
-      */
     },
     methods: {
       /**

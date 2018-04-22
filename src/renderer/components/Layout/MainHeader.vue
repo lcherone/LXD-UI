@@ -27,15 +27,12 @@
 
 <script>
   export default {
-    // components: { },
     props: ['current'],
     data () {
       return {
         activeIndex: this.current
       }
-    }// ,
-    // mounted: function () {},
-    // methods: {}
+    }
   }
 </script>
 

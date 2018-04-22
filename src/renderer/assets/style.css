@@ -4,24 +4,24 @@
 
 html::-webkit-scrollbar {
   width: 0px;
-  background: transparent;
+  background: transparent
 }
 
 html {
   overflow: scroll;
-  overflow-x: hidden;
+  overflow-x: hidden
 }
 
 div::-webkit-scrollbar, 
 main::-webkit-scrollbar {
-  width: 12px;
+  width: 12px
 }
 
 div::-webkit-scrollbar-track, 
 main::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.3); 
   -webkit-border-radius: 2px;
-  border-radius: 2px;
+  border-radius: 2px
 }
 
 div::-webkit-scrollbar-thumb,
@@ -29,12 +29,12 @@ main::-webkit-scrollbar-thumb {
   -webkit-border-radius: 1px;
   border-radius: 1px;
   background: rgba(227, 75, 20, 0.6); 
-  -webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.3); 
+  -webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.3)
 }
 
 div::-webkit-scrollbar-thumb:window-inactive,
 main::-webkit-scrollbar-thumb:window-inactive {
-  background: rgba(227, 75, 20, 0.5); 
+  background: rgba(227, 75, 20, 0.5)
 }
 
 body {
@@ -44,6 +44,7 @@ body {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  font-size: 15px
 }
 
 .table tr:hover {
@@ -75,6 +76,11 @@ body {
   padding: 0.90rem 1rem
 }
 
+.panel-block {
+  font-size: 13px;
+  padding:5px
+}
+
 .menu-list a.is-active {
   background-color: #fff;
   color: #363636;
@@ -83,5 +89,13 @@ body {
 
 .el-menu--horizontal {
   border-right: none;
-  border-bottom: none;
+  border-bottom: none
+}
+
+.tag:not(body) {
+  height: 1.6em
+}
+
+.subtitle.is-6 {
+    font-size: 0.9rem
 }

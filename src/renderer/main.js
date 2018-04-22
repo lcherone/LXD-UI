@@ -3,7 +3,7 @@ import axios from 'axios'
 
 import App from './App'
 import router from './router'
-import store from './store'
+// import store from './store'
 
 import 'font-awesome/css/font-awesome.min.css'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -37,8 +37,8 @@ import {
   OptionGroup,
   Button,
   ButtonGroup,
-  Table,
-  TableColumn,
+  // Table,
+  // TableColumn,
   // DatePicker,
   // TimeSelect,
   // TimePicker,
@@ -58,12 +58,12 @@ import {
   Row,
   Col,
   // Upload,
-  Progress,
+  // Progress,
   Badge,
   Card,
   // Rate,
-  Steps,
-  Step,
+  // Steps,
+  // Step,
   // Carousel,
   // CarouselItem,
   // Collapse,
@@ -110,8 +110,8 @@ Vue.use(Option)
 Vue.use(OptionGroup)
 Vue.use(Button)
 Vue.use(ButtonGroup)
-Vue.use(Table)
-Vue.use(TableColumn)
+// Vue.use(Table)
+// Vue.use(TableColumn)
 // Vue.use(DatePicker)
 // Vue.use(TimeSelect)
 // Vue.use(TimePicker)
@@ -131,12 +131,12 @@ Vue.use(Icon)
 Vue.use(Row)
 Vue.use(Col)
 // Vue.use(Upload)
-Vue.use(Progress)
+// Vue.use(Progress)
 Vue.use(Badge)
 Vue.use(Card)
 // Vue.use(Rate)
-Vue.use(Steps)
-Vue.use(Step)
+// Vue.use(Steps)
+// Vue.use(Step)
 // Vue.use(Carousel)
 // Vue.use(CarouselItem)
 // Vue.use(Collapse)
@@ -165,6 +165,6 @@ Vue.prototype.$message = Message
 new Vue({
   components: { App },
   router,
-  store,
+  // store,
   template: '<App/>'
 }).$mount('#app')

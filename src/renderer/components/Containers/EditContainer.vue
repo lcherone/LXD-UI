@@ -451,7 +451,6 @@
           }
           this.isActive = false
         })
-
         // fix back so model dont funk out
         this.container = container.infix(this.container)
       }

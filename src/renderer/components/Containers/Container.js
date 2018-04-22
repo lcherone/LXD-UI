@@ -1,8 +1,7 @@
 
 const ElectronStore = require('electron-store')
 const storage = new ElectronStore({
-  cwd: 'lxd-ui' // ,
-  // encryptionKey: 'obfuscation'
+  cwd: 'lxd-ui'
 })
 
 module.exports = {

@@ -10,7 +10,7 @@
           <side-menu></side-menu>
         </div>
         <div class="column">
-          <h6 class="title is-6">
+          <h6 class="title is-5">
             Dashboard
             <div class="is-pulled-right">
               <button 
@@ -45,22 +45,24 @@
                   <div class="content">
                     <div class="field is-grouped is-grouped-multiline">
                       <strong>Load:</strong>&nbsp;
-                      <div class="control" stlye="margin-right: 0.40rem;">
-                        <div class="tags has-addons">
-                          <span class="tag is-dark">1m</span>
-                          <span class="tag" v-bind:class="tag_load_1m">{{ info.loadavg[0].toFixed(2) }}</span>
-                        </div>
-                      </div>
-                      <div class="control" stlye="margin-right: 0.40rem;">
-                        <div class="tags has-addons">
-                          <span class="tag is-dark">5m</span>
-                          <span class="tag" v-bind:class="tag_load_5m">{{ info.loadavg[1].toFixed(2) }}</span>
-                        </div>
-                      </div>
-                      <div class="control" stlye="margin-right: 0.40rem;">
-                        <div class="tags has-addons">
-                          <span class="tag is-dark">15m</span>
-                          <span class="tag" v-bind:class="tag_load_15m">{{ info.loadavg[2].toFixed(2) }}</span>
+                      <div style="display:flex;margin-bottom:10px">
+                        <div class="control">
+                          <div class="tags has-addons">
+                            <span class="tag is-dark">1m</span>
+                            <span class="tag" v-bind:class="tag_load_1m">{{ info.loadavg[0].toFixed(2) }}</span>
+                          </div>
+                        </div>&nbsp;
+                        <div class="control">
+                          <div class="tags has-addons">
+                            <span class="tag is-dark">5m</span>
+                            <span class="tag" v-bind:class="tag_load_5m">{{ info.loadavg[1].toFixed(2) }}</span>
+                          </div>
+                        </div>&nbsp;
+                        <div class="control">
+                          <div class="tags has-addons">
+                            <span class="tag is-dark">15m</span>
+                            <span class="tag" v-bind:class="tag_load_15m">{{ info.loadavg[2].toFixed(2) }}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -85,16 +87,18 @@
                   <div class="content">
                     <div class="field is-grouped is-grouped-multiline">
                       <strong>Usage:</strong>&nbsp;
-                      <div class="control" stlye="margin-right: 0.40rem;">
-                        <div class="tags has-addons">
-                          <span class="tag is-dark">Total</span>
-                          <span class="tag is-info">{{ formatBytes(info.resources.memory.total) }}</span>
-                        </div>
-                      </div>
-                      <div class="control" stlye="margin-right: 0.40rem;">
-                        <div class="tags has-addons">
-                          <span class="tag is-dark">Used</span>
-                          <span class="tag is-success">{{ formatBytes(info.resources.memory.used) }}</span>
+                      <div style="display:flex;margin-bottom:10px">
+                        <div class="control">
+                          <div class="tags has-addons">
+                            <span class="tag is-dark">Total</span>
+                            <span class="tag is-info">{{ formatBytes(info.resources.memory.total) }}</span>
+                          </div>
+                        </div>&nbsp;
+                        <div class="control">
+                          <div class="tags has-addons">
+                            <span class="tag is-dark">Used</span>
+                            <span class="tag is-success">{{ formatBytes(info.resources.memory.used) }}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -109,7 +113,7 @@
                 <header class="card-header">
                   <p class="card-header-title">
                     Containers&nbsp;&nbsp;
-                    <span class="tag" v-bind:class="tag_containers">{{ info.containers.length }}</span>
+                    <span class="tag is-success" v-bind:class="tag_containers">{{ info.containers.length }}</span>
                   </p>
                   <router-link :to="{ path: '/containers' }" style="margin-right:10px;margin-top:10px;" class="has-text-right button is-small is-light"><i class="fa fa-list"></i></router-link>
                 </header>
@@ -123,7 +127,7 @@
                 <header class="card-header">
                   <p class="card-header-title">
                     Profiles&nbsp;&nbsp;
-                    <span class="tag" v-bind:class="tag_profiles">{{ info.profiles.length }}</span>
+                    <span class="tag is-success" v-bind:class="tag_profiles">{{ info.profiles.length }}</span>
                   </p>
                   <router-link :to="{ path: '/profiles' }" style="margin-right:10px;margin-top:10px;" class="has-text-right button is-small is-light"><i class="fa fa-list"></i></router-link>
                 </header>
@@ -139,7 +143,7 @@
                 <header class="card-header">
                   <p class="card-header-title">
                     Images&nbsp;&nbsp;
-                    <span class="tag" v-bind:class="tag_images">{{ info.images.length }}</span>
+                    <span class="tag is-success" v-bind:class="tag_images">{{ info.images.length }}</span>
                   </p>
                   <router-link :to="{ path: '/images' }" style="margin-right:10px;margin-top:10px;" class="has-text-right button is-small is-light"><i class="fa fa-list"></i></router-link>
                 </header>
@@ -239,8 +243,8 @@
             },
             public: false
           },
-          containers: [],
-          profiles: [],
+          containers: storage.get('info.containers', []),
+          profiles: storage.get('info.profiles', []),
           certificates: [],
           images: storage.get('images.local', []),
           networks: [],

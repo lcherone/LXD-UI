@@ -5,10 +5,7 @@
 
     <!-- Main element -->
     <el-main>
-      <h6 class="title is-6">
-        <span class="icon">
-          <i class="fa fa-cubes"></i>
-        </span>
+      <h6 class="title is-5">
         Containers
         <div v-if="containers.length > 0" class="is-pulled-right">
           <button

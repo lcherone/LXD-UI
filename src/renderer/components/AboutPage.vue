@@ -10,10 +10,7 @@
           <side-menu></side-menu>
         </div>
         <div class="column">
-          <h6 class="title is-6">About</h6>
-          
-<!--          <webview id="github" src="http://10.158.250.140" style="display:inline-flex; width:100%; height:480px" autosize minwidth="576" minheight="432"></webview>-->
-
+          <h6 class="title is-5">About</h6>
           <div class="box">
             <div class="card-content">
               <p>A simple easy to use local <a @click="open('https://linuxcontainers.org/lxd/')">LXD</a> server user interface.</p>
