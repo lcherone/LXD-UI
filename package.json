@@ -4,6 +4,7 @@
   "author": "Lawrence Cherone <lawrence@cherone.co.uk>",
   "description": "A simple easy to use GUI for your local LXD server.",
   "homepage": "https://github.com/lcherone/lxd-ui",
+  "screenshot": "https://i.imgur.com/MDcbkne.png",
   "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
@@ -30,6 +31,12 @@
     },
     "files": [
       "dist/electron/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "static/LXDui-0.0.9-x86_64.appdata.xml",
+        "to": "usr/share/metainfo/LXDui-0.0.9-x86_64.appdata.xml"
+      }
     ],
     "dmg": {
       "contents": [
