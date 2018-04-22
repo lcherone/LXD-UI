@@ -46,7 +46,7 @@ Want anything else added? Feel free to open an issue...
 
 | File | Description | Platform
 | --- | --- | --- |
-| [LXDui-0.0.8-x86_64.AppImage](https://github.com/lcherone/lxd-ui/releases/download/0.0.8a/LXDui-0.0.8-x86_64.AppImage) | Version 0.0.8a - [Release Notes](https://github.com/lcherone/lxd-ui/releases/tag/0.0.8a) | Linux
+| [LXDui-0.0.9-x86_64.AppImage](https://github.com/lcherone/lxd-ui/releases/download/0.0.9a/LXDui-0.0.9-x86_64.AppImage) | Version 0.0.9a - [Release Notes](https://github.com/lcherone/lxd-ui/releases/tag/0.0.9a) | Linux
 
 As versions are released, they will be posted here: [https://github.com/lcherone/lxd-ui/releases](https://github.com/lcherone/lxd-ui/releases) 
 which you can just download and run. Or you can build as shown below. Windows or mac its not supported.
