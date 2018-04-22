@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+	<id>LXDui-0.0.9-x86_64</id>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>MIT</project_license>
+	<name>LXDui</name>
+	<summary>Simple easy to use GUI for your local LXD server</summary>
+	<description>
+		<p>A simple easy to use GUI for your local LXD server.</p>
+	</description>
+	<launchable type="desktop-id">LXDui-0.0.9-x86_64.desktop</launchable>
+	<url type="homepage">https://github.com/lcherone/lxd-ui/</url>
+	<screenshots>
+		<screenshot type="default">
+			<image>https://i.imgur.com/MDcbkne.png</image>
+		</screenshot>
+	</screenshots>
+	<provides>
+		<id>LXDui-0.0.9-x86_64.desktop</id>
+	</provides>
+</component>
