@@ -32,7 +32,7 @@
               <h5 class="title is-5" style="margin-bottom:10px">Core</h5>
               <div class="field">
                 <div class="field-label is-normal">
-                  <label style="text-align: left" class="label" for="name">Trust Password ({{ lxd.config['core.trust_password'] ? 'Currently set' : 'Not set' }})</label>
+                  <label style="text-align: left" class="label" for="name">Trust Password ({{ lxd.config && lxd.config['core.trust_password'] ? 'Currently set' : 'Not set' }})</label>
                 </div>
                 <div class="field-body">
                   <div class="field">
@@ -232,11 +232,23 @@
   import MainHeader from './Layout/MainHeader'
   import SideMenu from './Layout/SideMenu'
 
-  //  import ElectronStore from 'electron-store'
-  //  const storage = new ElectronStore({
-  //    cwd: 'lxd-ui' // ,
-  //    // encryptionKey: 'obfuscation'
-  //  })
+  const lxcQuery = require('lxc-query')
+
+  const lxdConfig = {
+    'core.trust_password': false,
+    'core.https_address': '[::]:8443',
+    'core.https_allowed_credentials': true,
+    'core.https_allowed_headers': 'Origin, X-Requested-With, Content-Type, Accept',
+    'core.https_allowed_methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'core.https_allowed_origin': '*',
+    'core.proxy_https': '',
+    'core.proxy_http': '',
+    'core.proxy_ignore_hosts': '',
+    'images.auto_update_cached': true,
+    'images.auto_update_interval': 6,
+    'images.compression_algorithm': 'none',
+    'images.remote_cache_expiry': 10
+  }
 
   export default {
     name: 'lxd-settings-page',
@@ -245,7 +257,9 @@
     data () {
       return {
         trust_password: '',
-        lxd: []
+        lxd: {
+          config: lxdConfig
+        }
       }
     },
     mounted: function () {
@@ -277,11 +291,7 @@
        *
        */
       get_config () {
-        new Promise((resolve, reject) => {
-          this.lxc_query('/1.0', 'GET', null, (response) => {
-            resolve(response)
-          })
-        }).then((response) => {
+        lxcQuery.query('local:/1.0', 'GET', {}).then(response => {
           this.lxd = response
           this.lxd.config = {
             'core.trust_password': Boolean(response.config['core.trust_password']),

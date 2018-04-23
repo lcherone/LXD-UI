@@ -89,6 +89,8 @@
     cwd: 'lxd-ui'
   })
 
+  const lxcQuery = require('lxc-query')
+
   export default {
     name: 'images-page',
     components: { MainHeader, LaunchContainer, EditImage },
@@ -210,8 +212,8 @@
             architectures.push('amd64')
           }
           let imagefilter = 'architecture=\'' + architectures.join('|') + '\''
-          //
-          this.lxc_images(remote + ':', imagefilter, (response) => {
+
+          lxcQuery.images.list(remote, imagefilter).then(response => {
             this.distros = []
             this.images = []
             for (var key in response) {
@@ -222,6 +224,15 @@
             storage.set('images.' + remote, this.images)
             storage.set('images_distros.' + remote, this.distros)
             storage.set('images_cached.' + remote, Date.now())
+          }, err => {
+            console.error(err)
+            this.load_remote_images('local')
+            this.$notify({
+              duration: 2000,
+              title: 'Error',
+              message: 'Could not load images.',
+              type: 'error'
+            })
           })
         } else {
           this.images = storage.get('images.' + remote)

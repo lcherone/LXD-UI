@@ -17,21 +17,6 @@
             <span>Save</span>
           </button>
           &nbsp;
-          <!--
-<button 
-class="button is-small is-success" 
-@click="new_profile()">
-<span class="icon">
-<i class="fa fa-plus"></i> 
-</span>
-<span>New</span>
-</button>
--->
-          <!--
-<button v-else class="button is-small is-light" @click="state = 'view'">
-<span>Back</span>
-</button>
--->
         </div>
       </h6>
       <div class="box">
@@ -267,20 +252,6 @@ class="button is-small is-success"
                 <p>Coming soon!</p>
               </div>
             </div>
-            <!--
-<table class="table is-fullwidth is-narrow">
-<thead>
-<tr>
-<th>Container</th>
-</tr>
-</thead>
-<tbody>
-<tr v-for="container in profile.used_by">
-<td>{{ container }}</td>
-</tr>
-</tbody>
-</table>
--->
           </div>
           <div v-else>
             Currently, there are no profiles.

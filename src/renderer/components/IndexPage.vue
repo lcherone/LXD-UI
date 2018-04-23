@@ -386,9 +386,9 @@
     },
     mounted: function () {
       document.title = 'LXDui - Home'
-      this.$nextTick(() => {
-        this.init()
-      })
+      // this.$nextTick(() => {
+      this.init()
+      // })
     },
     methods: {
       /**
@@ -415,20 +415,7 @@
         this.get_info('profiles')
 
         // info.images
-        // this.get_info('images')
         this.load_remote_images('local')
-
-        // info.certificates
-        // this.get_info('certificates')
-
-        // info.networks
-        // this.get_info('networks')
-
-        // info.networks
-        // this.get_info('operations')
-
-        // info.storage-pools
-        // this.get_info('storage-pools')
 
         // update loadavg
         this.info.loadavg = os.loadavg()
@@ -468,27 +455,31 @@
        *
        */
       get_images (remote) {
-        //
-        let architectures = storage.get('info.server.environment.architectures', ['x86_64', 'i686', 'amd64'])
-        // for some reason amd64 is not in server environment architectures array :/ so append it if x86_64 is found
-        if (_.indexOf(architectures, 'x86_64') > -1) {
-          architectures.push('amd64')
-        }
-        let imagefilter = 'architecture=\'' + architectures.join('|') + '\''
-        //
-        this.lxc_images(remote + ':', imagefilter, (response) => {
-          this.distros = []
-          this.images = []
-          for (var key in response) {
-            this.images.push(response[key])
-            this.distros.push(_.upperFirst(response[key].properties.os))
+        if (Date.now() - Number(storage.get('images_cached.' + remote, 0)) > this.cache_time) {
+          //
+          let architectures = storage.get('info.server.environment.architectures', ['x86_64', 'i686', 'amd64'])
+          // for some reason amd64 is not in server environment architectures array :/ so append it if x86_64 is found
+          if (_.indexOf(architectures, 'x86_64') > -1) {
+            architectures.push('amd64')
           }
-          this.distros = _.uniq(this.distros)
-          storage.set('images.' + remote, this.images)
-          storage.set('images_distros.' + remote, this.distros)
-          storage.set('images_cached.' + remote, Date.now())
+          let imagefilter = 'architecture=\'' + architectures.join('|') + '\''
+          //
+          this.lxc_images(remote + ':', imagefilter, (response) => {
+            this.distros = []
+            this.images = []
+            for (var key in response) {
+              this.images.push(response[key])
+              this.distros.push(_.upperFirst(response[key].properties.os))
+            }
+            this.distros = _.uniq(this.distros)
+            storage.set('images.' + remote, this.images)
+            storage.set('images_distros.' + remote, this.distros)
+            storage.set('images_cached.' + remote, Date.now())
+            this.info.images = storage.get('images.local')
+          })
+        } else {
           this.info.images = storage.get('images.local')
-        })
+        }
       }
     }
   }
