@@ -1,6 +1,6 @@
 {
   "name": "LXDui",
-  "version": "0.0.9",
+  "version": "1.0.0",
   "author": "Lawrence Cherone <lawrence@cherone.co.uk>",
   "description": "A simple easy to use GUI for your local LXD server.",
   "homepage": "https://github.com/lcherone/lxd-ui",
