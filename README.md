@@ -85,6 +85,12 @@ npm run lint
 
 ```
 
+## Issues
+
+ - Home and Containers pages hang :( - This will happen if you have an older version of LXD installed or you have recently installed the LXD snap without removing the old apt version of `lxd` and the `lxd-client`, the app does not check for `lxd.lxc` but instead expects the standard lxc commands to hit the correct binary.
+ 
+If you encounter anything else which does not work, please open an issue.
+
 ## Developer Support / Sponsor
 
 If you enjoy using this app and want to show your appreciation,
