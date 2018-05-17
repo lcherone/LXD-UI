@@ -32,12 +32,6 @@
     "files": [
       "dist/electron/**/*"
     ],
-    "extraResources": [
-      {
-        "from": "static/LXDui-0.0.9-x86_64.appdata.xml",
-        "to": "../../usr/share/metainfo/LXDui-0.0.9-x86_64.appdata.xml"
-      }
-    ],
     "dmg": {
       "contents": [
         {

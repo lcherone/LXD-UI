@@ -46,7 +46,7 @@ Want anything else added? Feel free to open an issue...
 
 | File | Description | Platform
 | --- | --- | --- |
-| [LXDui-0.0.9-x86_64.AppImage](https://github.com/lcherone/lxd-ui/releases/download/0.0.9a/LXDui-0.0.9-x86_64.AppImage) | Version 0.0.9a - [Release Notes](https://github.com/lcherone/lxd-ui/releases/tag/0.0.9a) | Linux
+| [LXDui-1.0.0-x86_64.AppImage](https://github.com/lcherone/lxd-ui/releases/download/1.0.0/LXDui-1.0.0-x86_64.AppImage) | Version 1.0.0 - [Release Notes](https://github.com/lcherone/lxd-ui/releases/tag/1.0.0) | Linux
 
 As versions are released, they will be posted here: [https://github.com/lcherone/lxd-ui/releases](https://github.com/lcherone/lxd-ui/releases) 
 which you can just download and run. Or you can build as shown below. Windows or mac its not supported.
@@ -60,7 +60,7 @@ git clone git@github.com:lcherone/lxd-ui.git && cd lxd-ui
 # install dependencies
 npm install
 
-# build application - built app will be here: ./build/lxd-ui-0.0.*-x86_64.AppImage
+# build application - built app will be in: ./build
 npm run build
 
 ```
