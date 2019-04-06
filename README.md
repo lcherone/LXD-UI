@@ -35,7 +35,6 @@ A simple easy to use GUI for your **local** LXD server.
 
 Want anything else added? Feel free to open an issue... 
 
-**Looking for a web based UI?** Try [Conext](https://github.com/lcherone/Conext) the **full**-featured decentralized LXD server control panel with sugar! 
 
 **Screens**
 ![Screenshot](https://i.imgur.com/Yr0WaCy.gif)
